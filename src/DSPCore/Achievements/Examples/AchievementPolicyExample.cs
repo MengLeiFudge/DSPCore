@@ -7,7 +7,7 @@ namespace ExampleMod;
 //
 // 用途：
 // - 模组作者只需要 using DSPCore，即可使用 Achievements 这个短入口。
-// - 每个模组声明自己的成就策略，DSPCore 会汇总所有声明。
+// - 每个模组只声明自己的 GUID 和是否禁用成就，DSPCore 会汇总所有声明。
 // - 只要任意模组声明 DisableAchievements = true，最终策略就是禁用成就。
 //
 // 建议调用位置：
@@ -16,7 +16,7 @@ namespace ExampleMod;
 //
 // Usage:
 // - Add using DSPCore, then call the short Achievements entry point.
-// - Declare only your own mod's policy. DSPCore aggregates all declarations.
+// - Declare only your own mod GUID and achievement-disable flag. DSPCore aggregates all declarations.
 // - Call this once during plugin startup or feature registration.
 public static class AchievementPolicyExample
 {
@@ -24,19 +24,6 @@ public static class AchievementPolicyExample
     {
         // ModGuid 必须稳定，建议使用你的 BepInEx GUID。
         // Use a stable mod GUID, normally your BepInEx plugin GUID.
-        Achievements.Declare(new AchievementPolicyDeclaration(
-            ModGuid: "com.example.balance",
-            DisableAchievements: true,
-            Reason: "Changes balance",
-            SourceVersion: "1.0.0"));
-
-        // 这些是全局上传/平台同步策略。默认建议保持 false。
-        // Keep these false unless your mod has a clear reason to allow uploads.
-        Achievements.AllowPlatformAchievements = false;
-        Achievements.AllowMilkyWayUpload = false;
-
-        // DeclarationsOnly 只保留声明级元数据，避免默认收集过多作者/玩家信息。
-        // DeclarationsOnly keeps metadata minimal.
-        Achievements.MetadataMode = AchievementMetadataMode.DeclarationsOnly;
+        Achievements.Declare("com.example.balance", disableAchievements: true);
     }
 }

@@ -7,13 +7,13 @@ internal static class AchievementRuntime
 {
     public static bool AllowAchievementMutation()
     {
-        var disabled = DspCore.Achievements.ShouldDisableAchievements();
-        if (disabled)
+        var blocked = DspCore.Achievements.ShouldBlockAchievementAccess();
+        if (blocked)
         {
             DspCore.Logger?.LogDebug("Achievement mutation was blocked by DSPCore aggregated achievement policy.");
         }
 
-        return !disabled;
+        return !blocked;
     }
 
     public static bool AllowAbnormalityCheck()
@@ -21,14 +21,14 @@ internal static class AchievementRuntime
         return !DspCore.Achievements.ShouldBlockAbnormalityChecks();
     }
 
-    public static bool AllowMilkyWayUpload()
+    public static bool AllowLeaderboardUpload()
     {
-        return !DspCore.Achievements.ShouldBlockMilkyWayUpload();
+        return !DspCore.Achievements.ShouldBlockLeaderboardUpload();
     }
 
-    public static bool AllowPlatformAchievement()
+    public static bool AllowPlatformMetadata()
     {
-        return !DspCore.Achievements.ShouldBlockPlatformAchievements();
+        return !DspCore.Achievements.ShouldBlockPlatformMetadata();
     }
 
     public static void ClearAbnormalityRuntimeData(ref AbnormalityRuntimeData data)
@@ -81,7 +81,7 @@ internal static class AchievementRuntimePatches
     [HarmonyPatch(typeof(STEAMX), "UploadScoreToLeaderboard")]
     private static bool MilkyWayUpload()
     {
-        return AchievementRuntime.AllowMilkyWayUpload();
+        return AchievementRuntime.AllowLeaderboardUpload();
     }
 
     [HarmonyPrefix]
@@ -102,28 +102,28 @@ internal static class AchievementRuntimePatches
     [HarmonyPatch(typeof(AchievementSystem), nameof(AchievementSystem.PullAchievementsFromPlatform))]
     private static bool PullAchievementsFromPlatform()
     {
-        return AchievementRuntime.AllowPlatformAchievement();
+        return AchievementRuntime.AllowPlatformMetadata();
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(AchievementSystem), nameof(AchievementSystem.SyncAchievementsToPlatform))]
     private static bool SyncAchievementsToPlatform()
     {
-        return AchievementRuntime.AllowPlatformAchievement();
+        return AchievementRuntime.AllowPlatformMetadata();
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(AchievementSystem), "UnlockPlatformAchievement")]
     private static bool UnlockPlatformAchievement()
     {
-        return AchievementRuntime.AllowPlatformAchievement();
+        return AchievementRuntime.AllowPlatformMetadata();
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(AchievementSystem), "SetPlatformAchievementProgress")]
     private static bool SetPlatformAchievementProgress()
     {
-        return AchievementRuntime.AllowPlatformAchievement();
+        return AchievementRuntime.AllowPlatformMetadata();
     }
 
     [HarmonyPrefix]
@@ -145,6 +145,6 @@ internal static class AchievementRuntimePatches
     [HarmonyPatch(typeof(XGPX), "SetAchievementProgress")]
     private static bool PlatformAchievement()
     {
-        return AchievementRuntime.AllowPlatformAchievement();
+        return AchievementRuntime.AllowPlatformMetadata();
     }
 }

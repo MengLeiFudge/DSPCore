@@ -49,7 +49,7 @@ Implemented runtime bridges:
 - `RecipeTypeRegistry` marks declared recipes as custom recipe types and blocks unsupported assembler machines from selecting them.
 - `KeyBindRegistry` polls registered key bindings and invokes callbacks, including simple `Ctrl`/`Alt`/`Shift` modifier combinations.
 - `SaveRegistry` writes a `.dspcore` sidecar save file and imports handlers by `CoreLoadOrder`.
-- `AchievementPolicyRegistry` blocks vanilla abnormality checks when no mod disables achievements, blocks local achievement mutation when any mod disables achievements, and blocks Milky Way/leaderboard/platform sync unless explicitly allowed.
+- `AchievementPolicyRegistry` only aggregates each mod's GUID and achievement-disable flag; when no mod disables achievements, it blocks vanilla abnormality checks and allows achievement access, leaderboard upload, and platform metadata access; when any mod disables achievements, it blocks those achievement-related capabilities.
 - `ErrorReporter` receives Unity fatal/error logs and fatal-window events.
 - `ResourceRegistry.RegisterLocalization` is applied to DSP localization keys and language strings.
 
@@ -68,11 +68,7 @@ P2/P3 blocks such as custom machine components, planet/star systems, network hel
 ```csharp
 using DSPCore;
 
-Achievements.Declare(new AchievementPolicyDeclaration(
-    ModGuid: "com.example.my-mod",
-    DisableAchievements: true,
-    Reason: "Changes production balance",
-    SourceVersion: "1.0.0"));
+Achievements.Declare("com.example.my-mod", disableAchievements: true);
 
 bool disabled = Achievements.ShouldDisableAchievements();
 ```

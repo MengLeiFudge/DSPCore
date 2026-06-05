@@ -10,25 +10,7 @@ namespace DSPCore;
 /// </summary>
 public sealed class AchievementPolicyRegistry
 {
-    private readonly Dictionary<string, AchievementPolicyDeclaration> declarations = new(StringComparer.Ordinal);
-
-    /// <summary>
-    /// 是否允许把成就同步到 Steam、RAIL 或 XGP 平台；默认关闭。
-    /// Gets or sets whether achievement sync to Steam, RAIL, or XGP platforms is allowed; disabled by default.
-    /// </summary>
-    public bool AllowPlatformAchievements { get; set; }
-
-    /// <summary>
-    /// 是否允许上传 Milky Way/排行榜数据；默认关闭。
-    /// Gets or sets whether Milky Way and leaderboard upload is allowed; disabled by default.
-    /// </summary>
-    public bool AllowMilkyWayUpload { get; set; }
-
-    /// <summary>
-    /// 控制 DSPCore 对成就策略元数据的保留量。
-    /// Controls how much achievement-policy metadata DSPCore keeps.
-    /// </summary>
-    public AchievementMetadataMode MetadataMode { get; set; } = AchievementMetadataMode.DeclarationsOnly;
+    private readonly Dictionary<string, bool> declarations = new(StringComparer.Ordinal);
 
     /// <summary>
     /// 声明一个模组是否要求禁用成就。
@@ -42,7 +24,18 @@ public sealed class AchievementPolicyRegistry
             throw new ArgumentException("Mod GUID cannot be empty.", nameof(declaration));
         }
 
-        declarations[declaration.ModGuid] = declaration;
+        declarations[declaration.ModGuid] = declaration.DisableAchievements;
+    }
+
+    /// <summary>
+    /// 声明一个模组是否要求禁用成就。
+    /// Declares whether a mod requires achievements to be disabled.
+    /// </summary>
+    /// <param name="modGuid">模组 GUID。Mod GUID.</param>
+    /// <param name="disableAchievements">是否禁用成就。Whether achievements should be disabled.</param>
+    public void Declare(string modGuid, bool disableAchievements)
+    {
+        Declare(new AchievementPolicyDeclaration(modGuid, disableAchievements));
     }
 
     /// <summary>
@@ -52,7 +45,7 @@ public sealed class AchievementPolicyRegistry
     /// <returns>任意模组声明禁用时返回 true。Returns true when any mod declares achievement disabling.</returns>
     public bool ShouldDisableAchievements()
     {
-        return declarations.Values.Any(item => item.DisableAchievements);
+        return declarations.Values.Any(disableAchievements => disableAchievements);
     }
 
     /// <summary>
@@ -66,13 +59,13 @@ public sealed class AchievementPolicyRegistry
     }
 
     /// <summary>
-    /// 获取是否应阻止平台成就同步。
-    /// Gets whether platform achievement synchronization should be blocked.
+    /// 获取是否应阻止本地成就获取。
+    /// Gets whether local achievement access should be blocked.
     /// </summary>
-    /// <returns>需要阻止平台成就同步时返回 true。Returns true when platform sync should be blocked.</returns>
-    public bool ShouldBlockPlatformAchievements()
+    /// <returns>需要阻止本地成就获取时返回 true。Returns true when local achievement access should be blocked.</returns>
+    public bool ShouldBlockAchievementAccess()
     {
-        return ShouldDisableAchievements() || !AllowPlatformAchievements;
+        return ShouldDisableAchievements();
     }
 
     /// <summary>
@@ -80,9 +73,19 @@ public sealed class AchievementPolicyRegistry
     /// Gets whether Milky Way and leaderboard uploads should be blocked.
     /// </summary>
     /// <returns>需要阻止上传时返回 true。Returns true when uploads should be blocked.</returns>
-    public bool ShouldBlockMilkyWayUpload()
+    public bool ShouldBlockLeaderboardUpload()
     {
-        return ShouldDisableAchievements() || !AllowMilkyWayUpload;
+        return ShouldDisableAchievements();
+    }
+
+    /// <summary>
+    /// 获取是否应阻止平台成就和元数据调用。
+    /// Gets whether platform achievement and metadata calls should be blocked.
+    /// </summary>
+    /// <returns>需要阻止平台成就和元数据调用时返回 true。Returns true when platform achievement and metadata calls should be blocked.</returns>
+    public bool ShouldBlockPlatformMetadata()
+    {
+        return ShouldDisableAchievements();
     }
 
     /// <summary>
@@ -92,6 +95,8 @@ public sealed class AchievementPolicyRegistry
     /// <returns>声明快照。Snapshot of declarations.</returns>
     public IReadOnlyCollection<AchievementPolicyDeclaration> GetDeclarations()
     {
-        return declarations.Values;
+        return declarations
+            .Select(item => new AchievementPolicyDeclaration(item.Key, item.Value))
+            .ToArray();
     }
 }
