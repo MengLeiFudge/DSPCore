@@ -6,6 +6,7 @@ This block records compatibility patch declarations as feature-level metadata.
 
 ## Public API
 
+- `Compatibility`: author-facing short entry point.
 - `CompatibilityPatchDescriptor`
 - `CompatibilityPatchRegistry`
 

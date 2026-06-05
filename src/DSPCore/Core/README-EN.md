@@ -7,6 +7,8 @@ This block owns the `DspCore` entry point and framework-level registries.
 ## Public API
 
 - `DspCore`
+- `Features`: author-facing feature block short entry point.
+- `Modules`: author-facing module short entry point.
 - `FeatureRegistry`
 - `ModuleRegistry`
 - `PatchRegistry`

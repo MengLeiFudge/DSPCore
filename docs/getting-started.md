@@ -29,13 +29,13 @@ Register P0/P1 feature blocks through the global registries.
 ```csharp
 using DSPCore;
 
-DspCore.Features.Register(new FeatureDescriptor(
+Features.Register(new FeatureDescriptor(
     Id: "example.data",
     DisplayName: "Example Data",
     Priority: 100,
     Initialize: () => { }));
 
-DspCore.Tabs.AddTab(new CoreTabDescriptor(
+Tabs.AddTab(new CoreTabDescriptor(
     "example-machines",
     "com.example.my-mod",
     "Example Machines",

@@ -6,6 +6,7 @@ This block registers icon descriptors and resolves shared icon resources.
 
 ## Public API
 
+- `Icons`: author-facing short entry point.
 - `IconDescriptor`
 - `IconSetRegistry`
 

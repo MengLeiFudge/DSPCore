@@ -1,5 +1,4 @@
 using DSPCore;
-using static DSPCore.DspCore;
 
 namespace ExampleMod;
 

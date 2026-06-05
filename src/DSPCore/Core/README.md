@@ -7,6 +7,8 @@
 ## 公开入口
 
 - `DspCore`
+- `Features`：作者侧功能块短入口。
+- `Modules`：作者侧模块短入口。
 - `FeatureRegistry`
 - `ModuleRegistry`
 - `PatchRegistry`

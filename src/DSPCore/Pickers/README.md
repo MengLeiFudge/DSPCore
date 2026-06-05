@@ -6,6 +6,7 @@
 
 ## 公开入口
 
+- `Pickers`：作者侧短入口。
 - `PickerRequest`
 - `PickerRegistry`
 - `PickerKind`

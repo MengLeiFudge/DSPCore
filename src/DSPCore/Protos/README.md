@@ -6,6 +6,7 @@
 
 ## 公开入口
 
+- `Protos`：作者侧短入口。
 - `ProtoRegistryFacade`
 - `ProtoRegistration`
 - `CoreDataPhase`

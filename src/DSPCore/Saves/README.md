@@ -6,6 +6,7 @@
 
 ## 公开入口
 
+- `Saves`：作者侧短入口。
 - `ICoreSaveHandler`
 - `SaveRegistry`
 - `SaveRegistration`

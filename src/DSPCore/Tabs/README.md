@@ -6,6 +6,7 @@
 
 ## 公开入口
 
+- `Tabs`：作者侧短入口。
 - `CoreTabDescriptor`
 - `TabRegistry`
 

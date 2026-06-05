@@ -6,6 +6,7 @@ This block declares proto registrations and the DSPCore data phases.
 
 ## Public API
 
+- `Protos`: author-facing short entry point.
 - `ProtoRegistryFacade`
 - `ProtoRegistration`
 - `CoreDataPhase`

@@ -6,6 +6,7 @@ This block collects structured error reports and exposes them to diagnostics UI/
 
 ## Public API
 
+- `Errors`: author-facing short entry point.
 - `ErrorReport`
 - `ErrorReporter`
 

@@ -6,6 +6,7 @@ This block aggregates achievement policy declarations from all mods and exposes 
 
 ## Public API
 
+- `Achievements`: author-facing short entry point.
 - `AchievementPolicyDeclaration`: one mod's declaration.
 - `AchievementPolicyRegistry`: global policy registry.
 - `AchievementMetadataMode`: metadata retention level.

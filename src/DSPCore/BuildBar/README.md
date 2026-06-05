@@ -10,6 +10,7 @@
 
 ## 公开入口
 
+- `BuildBar`：作者侧短入口。
 - `BuildBarRegistry.BindItem(tab, row, index, itemId)`
 - `BuildBarRegistry.BindItem(tab, row, index, item)`
 - `BuildBarSlot`

@@ -6,6 +6,7 @@
 
 ## 公开入口
 
+- `Achievements`：作者侧短入口。
 - `AchievementPolicyDeclaration`：单个模组的策略声明。
 - `AchievementPolicyRegistry`：全局策略注册表。
 - `AchievementMetadataMode`：元数据保留级别。

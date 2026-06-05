@@ -6,6 +6,7 @@
 
 ## 公开入口
 
+- `Errors`：作者侧短入口。
 - `ErrorReport`
 - `ErrorReporter`
 

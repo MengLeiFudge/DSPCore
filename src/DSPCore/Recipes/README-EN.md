@@ -6,6 +6,7 @@ This block declares custom recipe types and the machines allowed to use them.
 
 ## Public API
 
+- `RecipeTypes`: author-facing short entry point.
 - `RecipeTypeDescriptor`
 - `RecipeTypeRegistry`
 

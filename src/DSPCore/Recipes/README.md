@@ -6,6 +6,7 @@
 
 ## 公开入口
 
+- `RecipeTypes`：作者侧短入口。
 - `RecipeTypeDescriptor`
 - `RecipeTypeRegistry`
 

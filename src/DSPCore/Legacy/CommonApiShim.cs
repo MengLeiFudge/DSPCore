@@ -22,10 +22,10 @@ public static class CommonAPIPlugin
     /// </summary>
     /// <param name="submodule">子模块名称。Submodule name.</param>
     /// <returns>存在同名模块时返回 true。Returns true when a module with the same name exists.</returns>
-    [Obsolete("Use DSPCore.DspCore.Modules.TryGet instead.")]
+    [Obsolete("Use DSPCore.Modules.TryGet instead.")]
     public static bool IsSubmoduleLoaded(string submodule)
     {
-        return DSPCore.DspCore.Modules.TryGet(submodule, out _);
+        return DSPCore.Modules.TryGet(submodule, out _);
     }
 }
 

@@ -6,6 +6,7 @@
 
 ## 公开入口
 
+- `KeyBinds`：作者侧短入口。
 - `KeyBindDescriptor`
 - `KeyBindRegistry`
 - `CoreKeyAction`

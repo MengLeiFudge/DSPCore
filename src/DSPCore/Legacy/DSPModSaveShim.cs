@@ -23,11 +23,11 @@ public enum LoadOrder
 }
 
 /// <summary>
-/// 旧 DSPModSave 存档设置特性；请迁移到 DSPCore.DspCore.Saves.Register 的 loadOrder 参数。
-/// Legacy DSPModSave save settings attribute; migrate to the loadOrder parameter of DSPCore.DspCore.Saves.Register.
+/// 旧 DSPModSave 存档设置特性；请迁移到 DSPCore.Saves.Register 的 loadOrder 参数。
+/// Legacy DSPModSave save settings attribute; migrate to the loadOrder parameter of DSPCore.Saves.Register.
 /// </summary>
 /// <param name="loadOrder">加载顺序。Load order.</param>
-[System.Obsolete("Use DSPCore.DspCore.Saves.Register(modGuid, handler, loadOrder) instead.")]
+[System.Obsolete("Use DSPCore.Saves.Register(modGuid, handler, loadOrder) instead.")]
 [System.AttributeUsage(System.AttributeTargets.Class)]
 public sealed class ModSaveSettingsAttribute(LoadOrder loadOrder) : System.Attribute
 {
@@ -67,10 +67,10 @@ public interface IModCanSave
 }
 
 /// <summary>
-/// 旧 DSPModSave 插件入口常量和手动注册入口；请迁移到 DSPCore.DspCore.Saves。
-/// Legacy DSPModSave plugin constants and manual registration entry point; migrate to DSPCore.DspCore.Saves.
+/// 旧 DSPModSave 插件入口常量和手动注册入口；请迁移到 DSPCore.Saves。
+/// Legacy DSPModSave plugin constants and manual registration entry point; migrate to DSPCore.Saves.
 /// </summary>
-[System.Obsolete("Use DSPCore.DspCore.Saves instead.")]
+[System.Obsolete("Use DSPCore.Saves instead.")]
 public static class DSPModSavePlugin
 {
     /// <summary>
@@ -84,7 +84,7 @@ public static class DSPModSavePlugin
     /// Compatibility-only manual registration entry point; first version keeps the signature only.
     /// </summary>
     /// <param name="mod">旧模组实例。Legacy mod instance.</param>
-    [System.Obsolete("Use DSPCore.DspCore.Saves.Register(modGuid, handler) instead.")]
+    [System.Obsolete("Use DSPCore.Saves.Register(modGuid, handler) instead.")]
     public static void AddModSaveManually(object mod)
     {
         DSPCore.SaveRuntime.RegisterLegacyHandler(mod);

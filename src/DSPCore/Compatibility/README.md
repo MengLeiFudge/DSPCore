@@ -6,6 +6,7 @@
 
 ## 公开入口
 
+- `Compatibility`：作者侧短入口。
 - `CompatibilityPatchDescriptor`
 - `CompatibilityPatchRegistry`
 

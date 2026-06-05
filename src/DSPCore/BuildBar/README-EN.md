@@ -10,6 +10,7 @@ The new standard slot is `tab`, `row`, and `index`.
 
 ## Public API
 
+- `BuildBar`: author-facing short entry point.
 - `BuildBarRegistry.BindItem(tab, row, index, itemId)`
 - `BuildBarRegistry.BindItem(tab, row, index, item)`
 - `BuildBarSlot`

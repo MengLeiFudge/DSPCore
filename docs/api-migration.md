@@ -11,7 +11,7 @@ xiaoye97.LDBTool.PreAddProto(proto);
 New:
 
 ```csharp
-DSPCore.DspCore.Protos.Register(
+DSPCore.Protos.Register(
     proto.GetType(),
     proto,
     "your.mod.guid",
@@ -52,7 +52,7 @@ Old:
 New:
 
 ```csharp
-DSPCore.DspCore.Features.Register(new DSPCore.FeatureDescriptor(
+DSPCore.Features.Register(new DSPCore.FeatureDescriptor(
     "resources",
     "Resources",
     100,
@@ -70,5 +70,5 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 New:
 
 ```csharp
-DSPCore.DspCore.BuildBar.BindItem(tab: 3, row: 2, index: 4, itemId: 9554);
+DSPCore.BuildBar.BindItem(tab: 3, row: 2, index: 4, itemId: 9554);
 ```

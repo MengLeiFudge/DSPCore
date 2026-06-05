@@ -6,6 +6,7 @@ This block declares key bindings and their trigger behavior.
 
 ## Public API
 
+- `KeyBinds`: author-facing short entry point.
 - `KeyBindDescriptor`
 - `KeyBindRegistry`
 - `CoreKeyAction`

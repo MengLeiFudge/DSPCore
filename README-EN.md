@@ -68,13 +68,13 @@ P2/P3 blocks such as custom machine components, planet/star systems, network hel
 ```csharp
 using DSPCore;
 
-DspCore.Achievements.Declare(new AchievementPolicyDeclaration(
+Achievements.Declare(new AchievementPolicyDeclaration(
     ModGuid: "com.example.my-mod",
     DisableAchievements: true,
     Reason: "Changes production balance",
     SourceVersion: "1.0.0"));
 
-bool disabled = DspCore.Achievements.ShouldDisableAchievements();
+bool disabled = Achievements.ShouldDisableAchievements();
 ```
 
 ## Example: Build Bar
@@ -82,8 +82,8 @@ bool disabled = DspCore.Achievements.ShouldDisableAchievements();
 ```csharp
 using DSPCore;
 
-DspCore.BuildBar.BindItem(tab: 3, row: 2, index: 4, itemId: 9554);
-DspCore.BuildBar.BindItem(tab: 3, row: 2, index: 5, item: myItemProto);
+BuildBar.BindItem(tab: 3, row: 2, index: 4, itemId: 9554);
+BuildBar.BindItem(tab: 3, row: 2, index: 5, item: myItemProto);
 ```
 
 ## Example: Tabs
@@ -91,7 +91,7 @@ DspCore.BuildBar.BindItem(tab: 3, row: 2, index: 5, item: myItemProto);
 ```csharp
 using DSPCore;
 
-DspCore.Tabs.AddTab(new CoreTabDescriptor(
+Tabs.AddTab(new CoreTabDescriptor(
     Id: "example-machines",
     OwnerModGuid: "com.example.my-mod",
     Title: "Example Machines",
@@ -107,7 +107,7 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 #pragma warning restore CS0618
 ```
 
-The old call is accepted, but it is marked obsolete. New mods should use `DSPCore.DspCore.BuildBar`.
+The old call is accepted, but it is marked obsolete. New mods should use `DSPCore.BuildBar`.
 
 ## Documentation
 

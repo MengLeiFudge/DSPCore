@@ -6,6 +6,7 @@ This block declares custom UI tabs for item, recipe, and replicator surfaces.
 
 ## Public API
 
+- `Tabs`: author-facing short entry point.
 - `CoreTabDescriptor`
 - `TabRegistry`
 

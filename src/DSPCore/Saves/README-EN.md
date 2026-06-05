@@ -6,6 +6,7 @@ This block declares mod save handlers and tagged block save helpers.
 
 ## Public API
 
+- `Saves`: author-facing short entry point.
 - `ICoreSaveHandler`
 - `SaveRegistry`
 - `SaveRegistration`
