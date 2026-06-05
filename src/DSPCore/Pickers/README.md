@@ -7,6 +7,7 @@
 ## 公开入口
 
 - `Pickers`：作者侧短入口。
+- `Pickers.Open(request)`：请求打开一次选择器弹窗。
 - `PickerRequest`
 - `PickerRegistry`
 - `PickerKind`

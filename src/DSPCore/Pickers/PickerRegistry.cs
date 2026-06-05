@@ -3,19 +3,19 @@ using System.Collections.Generic;
 namespace DSPCore;
 
 /// <summary>
-/// 管理选择器请求和过滤扩展。
-/// Manages picker requests and filter extensions.
+/// 管理待打开的选择器请求和过滤扩展。
+/// Manages queued picker requests and filter extensions.
 /// </summary>
 public sealed class PickerRegistry
 {
     private readonly List<PickerRequest> requests = new();
 
     /// <summary>
-    /// 注册一个选择器请求，真实 UI 弹出由运行时适配层完成。
-    /// Registers a picker request; the runtime adapter opens the real UI.
+    /// 将一个选择器请求加入待打开队列，真实 UI 弹出由运行时适配层完成。
+    /// Enqueues a picker request; the runtime adapter opens the real UI.
     /// </summary>
     /// <param name="request">选择器请求。Picker request.</param>
-    public void Register(PickerRequest request)
+    public void Enqueue(PickerRequest request)
     {
         requests.Add(request);
     }

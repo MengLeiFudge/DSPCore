@@ -30,7 +30,7 @@ P0/P1 blocks are the current implementation target.
 - Feature lifecycle: declare feature blocks, dependencies, priority, and initialization.
 - Data phases: `Data`, `DataUpdates`, and `DataFinalFixes`.
 - Proto features: item, recipe, tech, tutorial, model/building binding, and vanilla data query descriptors.
-- Build bar placement: bind an item id or `ItemProto` to a tab/row/index slot. Other feature blocks, such as item registration, call this binding API when they need a shortcut entry.
+- Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot. Other feature blocks, such as item registration, should prefer `ItemProto.BindQuickBar(...)` after they have the item proto.
 - Resources, icons, and localization: resource roots, icon descriptors, and translation entries.
 - Tabs and pickers: authors can declare custom tabs for item, recipe, and replicator surfaces, and can open item/recipe/signal picker requests.
 - Saves: raw `BinaryReader`/`BinaryWriter` handlers and tagged block helpers.
@@ -42,10 +42,10 @@ Implemented runtime bridges:
 
 - `DSPCorePlugin` starts from BepInEx and applies Harmony patches.
 - Proto registrations are applied around `VFPreload.InvokeOnLoadWorkEnded`; DSPCore rebuilds `ProtoSet` indices and key derived caches after final fixes.
-- `BuildBarRegistry.BindItem` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons.
+- `BuildBarRegistry.BindQuickBar` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons.
 - `IconSetRegistry` can load Unity `Resources` sprites or local PNG files, cache them, and apply them to target protos.
 - `TabRegistry` projects custom tabs to item picker, recipe picker, and replicator surfaces through the existing GridIndex category flow.
-- `PickerRegistry` opens item, recipe, and signal picker popups and invokes the request callback.
+- `Pickers.Open` requests item, recipe, and signal picker popups and invokes the request callback.
 - `RecipeTypeRegistry` marks declared recipes as custom recipe types and blocks unsupported assembler machines from selecting them.
 - `KeyBindRegistry` polls registered key bindings and invokes callbacks, including simple `Ctrl`/`Alt`/`Shift` modifier combinations.
 - `SaveRegistry` writes a `.dspcore` sidecar save file and imports handlers by `CoreLoadOrder`.
@@ -78,8 +78,8 @@ bool disabled = Achievements.ShouldDisableAchievements();
 ```csharp
 using DSPCore;
 
-BuildBar.BindItem(tab: 3, row: 2, index: 4, itemId: 9554);
-BuildBar.BindItem(tab: 3, row: 2, index: 5, item: myItemProto);
+myItemProto.BindQuickBar(tab: 3, row: 2, index: 5);
+BuildBar.BindQuickBar(tab: 3, row: 2, index: 4, itemId: 9554);
 ```
 
 ## Example: Tabs
@@ -103,7 +103,7 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 #pragma warning restore CS0618
 ```
 
-The old call is accepted, but it is marked obsolete. New mods should use `DSPCore.BuildBar`.
+The old call is accepted, but it is marked obsolete. New mods should prefer `ItemProto.BindQuickBar(...)`, and use `DSPCore.BuildBar.BindQuickBar(...)` only when they only have an item id.
 
 ## Documentation
 

@@ -17,7 +17,7 @@ public static class PickerExample
 {
     public static void OpenItemPicker()
     {
-        Pickers.Register(new PickerRequest(
+        Pickers.Open(new PickerRequest(
             Kind: PickerKind.Item,
             OwnerModGuid: "com.example.my-mod",
 

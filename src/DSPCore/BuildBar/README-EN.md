@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-This block only binds an item id or `ItemProto` to a build bar shortcut slot.
+This block only binds an item id or `ItemProto` to a quick build bar slot.
 
 ## Slot Model
 
@@ -10,9 +10,10 @@ The new standard slot is `tab`, `row`, and `index`.
 
 ## Public API
 
-- `BuildBar`: author-facing short entry point.
-- `BuildBarRegistry.BindItem(tab, row, index, itemId)`
-- `BuildBarRegistry.BindItem(tab, row, index, item)`
+- `ItemProto.BindQuickBar(tab, row, index)`: preferred author-facing style.
+- `ItemProto.BindQuickBar(buildIndex, row)`: for migrating BuildIndex-style code.
+- `BuildBar.BindQuickBar(tab, row, index, itemId)`: use this when you only have an item id.
+- `BuildBarRegistry.BindQuickBar(tab, row, index, itemId)`
 - `BuildBarSlot`
 - `BuildBarTier` for obsolete compatibility calls.
 
@@ -26,4 +27,4 @@ The new standard slot is `tab`, `row`, and `index`.
 
 ## Boundaries
 
-Item creation belongs to proto/item features. Those features may call `BindItem` after creating or modifying an item.
+Item creation belongs to proto/item features. Those features may call `ItemProto.BindQuickBar(...)` after creating or modifying an item. Legacy `SetBuildBar` is kept only for BuildBarTool and LDBTool compatibility.

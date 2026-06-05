@@ -9,12 +9,12 @@ namespace DSPCore;
 public static class Pickers
 {
     /// <summary>
-    /// 注册一个选择器请求，真实 UI 弹出由运行时适配层完成。
-    /// Registers a picker request; the runtime adapter opens the real UI.
+    /// 请求打开一个选择器，真实 UI 弹出由运行时适配层完成。
+    /// Requests opening a picker; the runtime adapter opens the real UI.
     /// </summary>
-    public static void Register(PickerRequest request)
+    public static void Open(PickerRequest request)
     {
-        DspCore.Pickers.Register(request);
+        DspCore.Pickers.Enqueue(request);
     }
 
     /// <summary>

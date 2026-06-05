@@ -30,7 +30,7 @@ P0/P1 是当前实现目标。
 - 功能生命周期：声明功能块、依赖、优先级和初始化。
 - 数据阶段：`Data`、`DataUpdates` 和 `DataFinalFixes`。
 - 原型功能：物品、配方、科技、指引、模型/建筑绑定和原版数据查询描述。
-- 建造栏位置：将物品 ID 或 `ItemProto` 绑定到 tab/row/index 槽位。其他功能块，例如物品注册，需要快捷栏入口时调用这个绑定 API。
+- 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位。其他功能块，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.BindQuickBar(...)`。
 - 资源、图标和本地化：资源根、图标描述和翻译条目。
 - 分页和选择器：作者可以为物品、配方和制造器界面声明自定义分页，也可以打开物品、配方和信号选择器请求。
 - 存档：原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
@@ -42,10 +42,10 @@ P0/P1 是当前实现目标。
 
 - `DSPCorePlugin` 通过 BepInEx 启动并应用 Harmony 补丁。
 - Proto 注册会在 `VFPreload.InvokeOnLoadWorkEnded` 前后执行；DSPCore 在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
-- `BuildBarRegistry.BindItem` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。
+- `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。
 - `IconSetRegistry` 可以加载 Unity `Resources` sprite 或本地 PNG 文件，缓存后写入目标 Proto。
 - `TabRegistry` 会通过现有 GridIndex 分类流程把自定义分页投射到物品选择器、配方选择器和制造器界面。
-- `PickerRegistry` 会打开物品、配方和信号选择器弹窗，并调用请求回调。
+- `Pickers.Open` 会请求打开物品、配方和信号选择器弹窗，并调用请求回调。
 - `RecipeTypeRegistry` 会把声明的配方标记为自定义配方类型，并阻止不支持的制作器选择这些配方。
 - `KeyBindRegistry` 会轮询已注册按键并调用回调，支持简单的 `Ctrl`/`Alt`/`Shift` 修饰键组合。
 - `SaveRegistry` 会写入 `.dspcore` 独立存档，并按 `CoreLoadOrder` 导入处理器。
@@ -78,8 +78,8 @@ bool disabled = Achievements.ShouldDisableAchievements();
 ```csharp
 using DSPCore;
 
-BuildBar.BindItem(tab: 3, row: 2, index: 4, itemId: 9554);
-BuildBar.BindItem(tab: 3, row: 2, index: 5, item: myItemProto);
+myItemProto.BindQuickBar(tab: 3, row: 2, index: 5);
+BuildBar.BindQuickBar(tab: 3, row: 2, index: 4, itemId: 9554);
 ```
 
 ## 示例：分页
@@ -103,7 +103,7 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 #pragma warning restore CS0618
 ```
 
-旧调用会被接受，但会标记为 obsolete。新模组应使用 `DSPCore.BuildBar`。
+旧调用会被接受，但会标记为 obsolete。新模组应首选使用 `ItemProto.BindQuickBar(...)`，只有手上只有物品 ID 时再使用 `DSPCore.BuildBar.BindQuickBar(...)`。
 
 ## 文档
 

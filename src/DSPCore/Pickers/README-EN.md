@@ -7,6 +7,7 @@ This block declares requests to open vanilla item, recipe, or signal picker popu
 ## Public API
 
 - `Pickers`: author-facing short entry point.
+- `Pickers.Open(request)`: request one picker popup.
 - `PickerRequest`
 - `PickerRegistry`
 - `PickerKind`

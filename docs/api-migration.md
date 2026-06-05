@@ -70,5 +70,6 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 New:
 
 ```csharp
-DSPCore.BuildBar.BindItem(tab: 3, row: 2, index: 4, itemId: 9554);
+itemProto.BindQuickBar(tab: 3, row: 2, index: 4);
+DSPCore.BuildBar.BindQuickBar(tab: 3, row: 2, index: 4, itemId: 9554);
 ```

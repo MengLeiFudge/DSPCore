@@ -8,7 +8,7 @@ namespace ExampleMod;
 // 用途：
 // - BuildBar 只负责把某个物品绑定到建造栏槽位。
 // - 它不创建 ItemProto，也不决定物品属于哪个分页。
-// - 物品创建、图标、配方、本地化等功能应先由对应功能块处理，然后再调用 BuildBar。
+// - 物品创建、图标、配方、本地化等功能应先由对应功能块处理，然后把 ItemProto 绑定到快捷栏。
 //
 // 槽位模型：
 // - tab：建造栏分类，从 1 开始。
@@ -16,19 +16,23 @@ namespace ExampleMod;
 // - index：按钮位置，从 1 开始。
 //
 // Usage:
-// - Call BuildBar.BindItem after the item id is known.
-// - Prefer the tab/row/index API over legacy BuildBarTool semantics.
+// - Call ItemProto.BindQuickBar after the item proto is created.
+// - Use BuildBar.BindQuickBar only when you only have an item id.
 public static class BuildBarExample
 {
     public static void Register(ItemProto myItemProto)
     {
-        // 直接用物品 ID 绑定。
-        // Bind by item id.
-        BuildBar.BindItem(tab: 3, row: 2, index: 4, itemId: 9554);
+        // 首选写法：刚创建 ItemProto 后，直接把它绑定到快捷建造栏。
+        // Preferred style: bind the item proto directly after creating it.
+        myItemProto.BindQuickBar(tab: 3, row: 2, index: 5);
 
-        // 如果你刚创建了 ItemProto，也可以直接传 ItemProto。
-        // Bind by ItemProto when your feature just created the proto.
-        BuildBar.BindItem(tab: 3, row: 2, index: 5, item: myItemProto);
+        // 只有手上只有 item id 时，才使用静态入口。
+        // Use the static entry only when you only have an item id.
+        BuildBar.BindQuickBar(tab: 3, row: 2, index: 4, itemId: 9554);
+
+        // 需要沿用 BuildIndex 风格时，可从 BuildIndex 拆出 category/index。
+        // Use the BuildIndex-style overload when migrating BuildIndex-based code.
+        myItemProto.BindQuickBar(buildIndex: myItemProto.BuildIndex, row: 2);
     }
 
     public static void RegisterLegacy()
