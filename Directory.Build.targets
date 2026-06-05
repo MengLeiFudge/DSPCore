@@ -1,0 +1,9 @@
+<Project>
+  <ItemGroup>
+    <!-- Documentation examples are real C# source files for authors to read/copy, but they are not part of DSPCore compilation. -->
+    <Compile Remove="**/Examples/**/*.cs" />
+    <Compile Remove="$(MSBuildThisFileDirectory)docs/examples/**/*.cs" />
+    <None Include="**/Examples/**/*.cs" />
+    <None Include="$(MSBuildThisFileDirectory)docs/examples/**/*.cs" Link="docs/examples/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

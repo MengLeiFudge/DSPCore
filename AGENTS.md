@@ -71,8 +71,8 @@ Build succeeded.
 
 ## Documentation Rules / 文档规则
 
-- README is for users and mod authors.
-- README 面向玩家和模组作者。
+- README.md is the Chinese document for users and mod authors; README-EN.md is the matching English document.
+- README.md 是面向玩家和模组作者的中文说明；README-EN.md 是对应英文说明。
 
 - AGENTS.md is for repository workflow, validation, and AI rules.
 - AGENTS.md 面向仓库工作流、验证要求和 AI 规则。
@@ -80,8 +80,11 @@ Build succeeded.
 - `docs/api-migration.md` tracks migration from legacy APIs to DSPCore APIs.
 - `docs/api-migration.md` 记录旧 API 到 DSPCore API 的迁移。
 
-- Every public capability should have a concrete example under `docs/examples/`.
-- 每一项公开能力都应在 `docs/examples/` 下有具体示例。
+- Every public capability should have a concrete `.cs` example under its feature block's `Examples/` directory. Cross-feature walkthroughs may use `docs/examples/`. All example `.cs` files are documentation artifacts and must be excluded from compilation.
+- 每一项公开能力都应在所属功能块的 `Examples/` 目录下有具体 `.cs` 示例。跨功能完整流程可以放在 `docs/examples/`。所有示例 `.cs` 文件都属于文档产物，必须排除编译。
+
+- Every feature block directory under `src/DSPCore/` must have `README.md` for Chinese documentation and `README-EN.md` for English documentation, excluding build/metadata directories such as `bin/`, `obj/`, and `Properties/`.
+- `src/DSPCore/` 下每个功能块目录都必须有中文 `README.md` 和英文 `README-EN.md`，但 `bin/`、`obj/`、`Properties/` 等构建/元数据目录除外。
 
 - User-visible behavior or public API changes require README/docs review in the same task.
 - 用户可见行为或公开 API 变更，必须在同一任务检查 README/docs。
@@ -108,6 +111,7 @@ src/DSPCore/
 ├── Achievements/            # achievement policy aggregation
 ├── BuildBar/                # build bar registration model
 ├── Compatibility/           # compatibility patch declarations
+├── CompatibilityPolyfills/  # target-framework compatibility helpers
 ├── Errors/                  # error report model
 ├── Icons/                   # icon registration model
 ├── Input/                   # key bind declarations
