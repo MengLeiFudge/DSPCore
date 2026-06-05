@@ -10,22 +10,22 @@ namespace xiaoye97;
 public static class LDBTool
 {
     /// <summary>
-    /// 旧 PreAddProto API；请迁移到 DSPCore.DspCore.Protos.RegisterPreload。
-    /// Legacy PreAddProto API; migrate to DSPCore.DspCore.Protos.RegisterPreload.
+    /// 旧 PreAddProto API；请迁移到 DSPCore.DspCore.Protos.Register 或类型化注册方法。
+    /// Legacy PreAddProto API; migrate to DSPCore.DspCore.Protos.Register or typed registration methods.
     /// </summary>
     /// <param name="proto">Proto 对象。Proto object.</param>
-    [Obsolete("Use DSPCore.DspCore.Protos.RegisterPreload(proto.GetType(), proto, ownerModGuid) instead.")]
+    [Obsolete("Use DSPCore.DspCore.Protos.Register(..., CoreDataPhase.Data, ...) or typed registration methods instead.")]
     public static void PreAddProto(object proto)
     {
         DSPCore.DspCore.Protos.RegisterPreload(proto.GetType(), proto, "legacy.ldbtool");
     }
 
     /// <summary>
-    /// 旧 PostAddProto API；请迁移到 DSPCore.DspCore.Protos.RegisterPostload。
-    /// Legacy PostAddProto API; migrate to DSPCore.DspCore.Protos.RegisterPostload.
+    /// 旧 PostAddProto API；请迁移到 DSPCore.DspCore.Protos.Register 或类型化注册方法。
+    /// Legacy PostAddProto API; migrate to DSPCore.DspCore.Protos.Register or typed registration methods.
     /// </summary>
     /// <param name="proto">Proto 对象。Proto object.</param>
-    [Obsolete("Use DSPCore.DspCore.Protos.RegisterPostload(proto.GetType(), proto, ownerModGuid) instead.")]
+    [Obsolete("Use DSPCore.DspCore.Protos.Register(..., CoreDataPhase.DataFinalFixes, ...) or typed registration methods instead.")]
     public static void PostAddProto(object proto)
     {
         DSPCore.DspCore.Protos.RegisterPostload(proto.GetType(), proto, "legacy.ldbtool");

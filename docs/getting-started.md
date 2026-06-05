@@ -18,6 +18,26 @@ using DSPCore;
 DspCore.Initialize();
 ```
 
+Register P0/P1 feature blocks through the global registries.
+
+通过全局注册表注册 P0/P1 功能块。
+
+```csharp
+using DSPCore;
+
+DspCore.Features.Register(new FeatureDescriptor(
+    Id: "example.data",
+    DisplayName: "Example Data",
+    Priority: 100,
+    Initialize: () => { }));
+
+DspCore.Tabs.AddTab(new CoreTabDescriptor(
+    "example-machines",
+    "com.example.my-mod",
+    "Example Machines",
+    "example-tab"));
+```
+
 ## Legacy API / 旧 API
 
 The first version keeps legacy namespaces so existing mods can run without code changes.
@@ -27,3 +47,7 @@ The first version keeps legacy namespaces so existing mods can run without code 
 Legacy APIs are marked `[Obsolete]`. Treat them as migration bridges, not the long-term standard.
 
 旧 API 会标记 `[Obsolete]`。它们是迁移桥，不是长期标准。
+
+Compatibility is secondary to DSPCore's new feature model. Old behavior that cannot map reliably may stay unsupported.
+
+兼容性服从 DSPCore 的新功能模型。无法可靠映射的旧行为可能不会支持。

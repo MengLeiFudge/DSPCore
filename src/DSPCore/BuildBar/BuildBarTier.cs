@@ -1,8 +1,8 @@
 namespace DSPCore;
 
 /// <summary>
-/// 定义建造栏层级。
-/// Defines build bar tiers.
+/// 定义旧 BuildBarTool 兼容层级。
+/// Defines legacy BuildBarTool-compatible build bar tiers.
 /// </summary>
 public enum BuildBarTier
 {

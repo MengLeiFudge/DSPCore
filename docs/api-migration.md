@@ -11,7 +11,12 @@ xiaoye97.LDBTool.PreAddProto(proto);
 New:
 
 ```csharp
-DSPCore.DspCore.Protos.RegisterPreload(proto.GetType(), proto, "your.mod.guid");
+DSPCore.DspCore.Protos.Register(
+    proto.GetType(),
+    proto,
+    "your.mod.guid",
+    DSPCore.CoreDataPhase.Data,
+    DSPCore.ProtoKind.Item);
 ```
 
 旧 API 会保留为 `[Obsolete]` shim。新模组应迁移到 DSPCore。
@@ -47,9 +52,10 @@ Old:
 New:
 
 ```csharp
-DSPCore.DspCore.Modules.Register(new DSPCore.ModuleDescriptor(
-    "ProtoRegistry",
-    "Proto Registry",
+DSPCore.DspCore.Features.Register(new DSPCore.FeatureDescriptor(
+    "resources",
+    "Resources",
+    100,
     () => { }));
 ```
 
@@ -64,5 +70,5 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 New:
 
 ```csharp
-DSPCore.DspCore.BuildBar.SetBuildBar(3, 4, 9554, DSPCore.BuildBarTier.Secondary);
+DSPCore.DspCore.BuildBar.SetBuildBar(3, 4, 9554, layer: 2);
 ```

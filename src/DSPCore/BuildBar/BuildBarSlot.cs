@@ -6,5 +6,5 @@ namespace DSPCore;
 /// </summary>
 /// <param name="Category">建造分类。Build category.</param>
 /// <param name="Index">按钮索引。Button index.</param>
-/// <param name="Tier">建造栏层级。Build bar tier.</param>
-public sealed record BuildBarSlot(int Category, int Index, BuildBarTier Tier);
+/// <param name="Layer">建造栏层级，从 1 开始。Build bar layer, starting from 1.</param>
+public sealed record BuildBarSlot(int Category, int Index, int Layer = 1);

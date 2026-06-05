@@ -7,7 +7,7 @@ Register a secondary-row build button with the new API.
 ```csharp
 using DSPCore;
 
-DspCore.BuildBar.SetBuildBar(3, 4, 9554, BuildBarTier.Secondary);
+DspCore.BuildBar.SetBuildBar(3, 4, 9554, layer: 2);
 ```
 
 Legacy BuildBarTool calls are still accepted but obsolete.

@@ -104,25 +104,33 @@ Build succeeded.
 
 ```text
 src/DSPCore/
-├── Core/                    # framework entry point and module/patch registries
+├── Core/                    # framework entry point plus feature/module registries
 ├── Achievements/            # achievement policy aggregation
 ├── BuildBar/                # build bar registration model
 ├── Compatibility/           # compatibility patch declarations
 ├── Errors/                  # error report model
 ├── Icons/                   # icon registration model
+├── Input/                   # key bind declarations
 ├── Legacy/                  # obsolete legacy API shims
+├── Pickers/                 # picker request declarations
 ├── Protos/                  # Proto registration facade
+├── Recipes/                 # custom recipe type declarations
+├── Resources/               # resource and localization declarations
 ├── Saves/                   # save handler abstraction
+├── Tabs/                    # tab declarations
 └── UI/                      # UI abstraction descriptors
 ```
 
 ## Current Limitations / 当前限制
 
-- The current implementation is an API and documentation preview.
-- 当前实现是 API 和文档预览。
+- The current implementation covers only P0/P1 author-facing API skeletons.
+- 当前实现只覆盖 P0/P1 的作者可见 API 骨架。
 
 - Real BepInEx, Harmony, Unity, and DSP runtime integration is not implemented yet.
 - 尚未实现真实 BepInEx、Harmony、Unity 和 DSP 运行时接入。
+
+- P2/P3 features such as custom machine components, planet/star systems, network helpers, and player convenience modules are not implemented.
+- 自定义机器组件、星球/恒星系统、网络工具和玩家便利模块等 P2/P3 功能尚未实现。
 
 - Legacy shims currently preserve API shape for covered calls, but not full old-library runtime behavior.
 - 当前旧 API shim 保留已覆盖调用的 API 形状，但未完整实现旧库运行时行为。

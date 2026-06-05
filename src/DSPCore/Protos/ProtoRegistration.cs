@@ -10,4 +10,12 @@ namespace DSPCore;
 /// <param name="Proto">Proto 对象。Proto object.</param>
 /// <param name="OwnerModGuid">声明方模组 GUID。Declaring mod GUID.</param>
 /// <param name="Phase">注册阶段。Registration phase.</param>
-public sealed record ProtoRegistration(Type ProtoType, object Proto, string OwnerModGuid, ProtoRegistrationPhase Phase);
+/// <param name="Kind">原型功能类型。Proto feature kind.</param>
+/// <param name="Purpose">注册目的说明。Registration purpose.</param>
+public sealed record ProtoRegistration(
+    Type ProtoType,
+    object Proto,
+    string OwnerModGuid,
+    CoreDataPhase Phase,
+    ProtoKind Kind = ProtoKind.Unknown,
+    string? Purpose = null);
