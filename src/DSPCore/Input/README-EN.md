@@ -17,7 +17,7 @@ This block declares key bindings and their trigger behavior.
 
 ## Runtime
 
-`Runtime/KeyBindRuntime.cs` polls registered key bindings and invokes callbacks for press, hold, or release.
+`KeyBindRuntime.cs` polls registered key bindings and invokes callbacks for press, hold, or release.
 
 ## Boundaries
 

@@ -12,7 +12,7 @@ This block registers shared resources and localization entries.
 
 ## Runtime
 
-`Runtime/LocalizationRuntime.cs` applies localization entries. `Runtime/ResourceRuntime.cs` currently handles icon sprite loading.
+`LocalizationRuntime.cs` applies localization entries. Icon sprite loading is owned by `Icons/IconRuntime.cs`.
 
 ## Boundaries
 

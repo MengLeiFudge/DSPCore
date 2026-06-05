@@ -16,7 +16,7 @@
 
 ## 运行时
 
-`Runtime/TabRuntime.cs` 会克隆现有分类按钮，并通过原版 GridIndex 分类流程处理自定义分页点击。
+`TabRuntime.cs` 会克隆现有分类按钮，并通过原版 GridIndex 分类流程处理自定义分页点击。
 
 ## 边界
 

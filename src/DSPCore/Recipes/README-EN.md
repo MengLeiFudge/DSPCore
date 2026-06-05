@@ -16,7 +16,7 @@ This block declares custom recipe types and the machines allowed to use them.
 
 ## Runtime
 
-`Runtime/RecipeTypeRuntime.cs` marks declared recipes as custom and blocks unsupported assembler recipe selection.
+`RecipeTypeRuntime.cs` marks declared recipes as custom and blocks unsupported assembler recipe selection.
 
 ## Boundaries
 

@@ -67,7 +67,7 @@ internal static class ProtoRuntime
             RecipeTypeRuntime.Apply();
             RebuildRecipeExecuteData();
             SignalProtoSet.InitSignalKeyIdPairs();
-            ResourceRuntime.ApplyIcons();
+            IconRuntime.ApplyIcons();
 
             if (GameMain.iconSet != null)
             {

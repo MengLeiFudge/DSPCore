@@ -76,7 +76,7 @@ internal static class TabRuntime
             if (DspCore.Icons.TryGet(tab.IconId, out var icon))
             {
                 var image = buttonObject.GetComponentInChildren<Image>();
-                var sprite = ResourceRuntime.ResolveSprite(icon);
+                var sprite = IconRuntime.ResolveSprite(icon);
                 if (image != null && sprite != null)
                 {
                     image.sprite = sprite;

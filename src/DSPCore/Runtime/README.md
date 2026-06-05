@@ -1,17 +1,17 @@
-# 运行时桥接
+# 运行时宿主
 
 ## 职责
 
-本功能块把 DSPCore 注册表连接到 BepInEx、Harmony、Unity 和 DSP 运行时对象。
+本目录只保留 BepInEx 插件入口和跨功能运行时装配。
 
 ## 公开入口
 
-`DSPCorePlugin` 是 BepInEx 插件入口。其他运行时类是内部适配器。
+`DSPCorePlugin` 是 BepInEx 插件入口。
 
 ## 运行时
 
-运行时适配器会 patch 游戏方法、应用队列注册、重建缓存、保存 sidecar 数据，并更新 UI 辅助功能。
+`DSPCorePlugin` 会初始化 `DspCore`，注册旧 DSPModSave 处理器，应用各功能块自己的 Harmony patch，并在 Unity `Update` 中驱动需要逐帧轮询的功能块。
 
 ## 边界
 
-Runtime 不应定义新的公开功能语义。公开语义属于各功能块注册表。
+Runtime 不定义公开功能语义，也不承载具体功能运行时实现。具体桥接代码放在对应功能块目录，例如 `BuildBar/BuildBarRuntime.cs`、`Protos/ProtoRuntime.cs` 和 `Saves/SaveRuntime.cs`。

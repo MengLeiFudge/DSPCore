@@ -17,7 +17,7 @@
 
 ## 运行时
 
-`Runtime/PickerRuntime.cs` 会消费队列请求、打开选择器、执行返回时过滤，并调用 `OnReturn`。
+`PickerRuntime.cs` 会消费队列请求、打开选择器、执行返回时过滤，并调用 `OnReturn`。
 
 ## 边界
 

@@ -19,7 +19,7 @@
 
 ## 运行时
 
-`Runtime/ProtoRuntime.cs` 会在 `VFPreload.InvokeOnLoadWorkEnded` 前后应用 Proto 注册，并重建关键派生缓存。
+`ProtoRuntime.cs` 会在 `VFPreload.InvokeOnLoadWorkEnded` 前后应用 Proto 注册，并重建关键派生缓存。
 
 ## 边界
 

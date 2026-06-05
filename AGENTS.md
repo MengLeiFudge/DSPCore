@@ -117,20 +117,20 @@ Build succeeded.
 src/DSPCore/
 ├── Core/                    # framework entry point plus feature/module registries
 ├── Achievements/            # achievement policy aggregation
-├── BuildBar/                # build bar registration model
+├── BuildBar/                # build bar registration model and runtime bridge
 ├── Compatibility/           # compatibility patch declarations
 ├── CompatibilityPolyfills/  # target-framework compatibility helpers
-├── Errors/                  # error report model
-├── Icons/                   # icon registration model
-├── Input/                   # key bind declarations
+├── Errors/                  # error report model and fatal-window runtime bridge
+├── Icons/                   # icon registration model and icon runtime bridge
+├── Input/                   # key bind declarations and polling bridge
 ├── Legacy/                  # obsolete legacy API shims
-├── Pickers/                 # picker request declarations
-├── Protos/                  # Proto registration facade
-├── Recipes/                 # custom recipe type declarations
-├── Resources/               # resource and localization declarations
-├── Runtime/                 # BepInEx, Harmony, DSP runtime bridges
-├── Saves/                   # save handler abstraction
-├── Tabs/                    # tab declarations
+├── Pickers/                 # picker request declarations and popup bridge
+├── Protos/                  # Proto registration facade and data-phase bridge
+├── Recipes/                 # custom recipe type declarations and recipe guard bridge
+├── Resources/               # resource and localization declarations plus localization bridge
+├── Runtime/                 # BepInEx plugin entry and cross-feature runtime assembly only
+├── Saves/                   # save handler abstraction and sidecar save bridge
+├── Tabs/                    # tab declarations and UI projection bridge
 └── UI/                      # UI abstraction descriptors
 ```
 
@@ -144,6 +144,9 @@ src/DSPCore/
 
 - BuildBar owns only item-to-slot binding: item id or `ItemProto` -> tab/row/index. Item, recipe, or other feature blocks must call the BuildBar API when they need shortcut placement; do not move proto creation responsibilities into BuildBar.
 - BuildBar 只负责物品到槽位的绑定：物品 ID 或 `ItemProto` -> tab/row/index。物品、配方或其他功能块需要快捷栏位置时调用 BuildBar API；不要把 Proto 创建职责移入 BuildBar。
+
+- Runtime host owns only BepInEx startup and cross-feature patch assembly. Concrete runtime bridges belong in their feature block directories.
+- Runtime 宿主只负责 BepInEx 启动和跨功能 patch 装配。具体运行时桥接必须放在对应功能块目录。
 
 - P2/P3 features such as custom machine components, planet/star systems, network helpers, and player convenience modules are not implemented.
 - 自定义机器组件、星球/恒星系统、网络工具和玩家便利模块等 P2/P3 功能尚未实现。

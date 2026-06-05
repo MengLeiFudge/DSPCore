@@ -16,7 +16,7 @@ This block registers icon descriptors and resolves shared icon resources.
 
 ## Runtime
 
-`Runtime/ResourceRuntime.cs` loads Unity `Resources` sprites or local PNG files, caches sprites, resolves fallbacks, and applies icons to target protos.
+`IconRuntime.cs` loads Unity `Resources` sprites or local PNG files, caches sprites, resolves fallbacks, and applies icons to target protos.
 
 ## Boundaries
 

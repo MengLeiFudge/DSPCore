@@ -17,7 +17,7 @@ This block declares requests to open vanilla item, recipe, or signal picker popu
 
 ## Runtime
 
-`Runtime/PickerRuntime.cs` consumes queued requests, opens the picker, applies return-time filters, and calls `OnReturn`.
+`PickerRuntime.cs` consumes queued requests, opens the picker, applies return-time filters, and calls `OnReturn`.
 
 ## Boundaries
 

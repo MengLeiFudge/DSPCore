@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DSPCore;
 
-internal static class ResourceRuntime
+internal static class IconRuntime
 {
     private static readonly Dictionary<string, Sprite> SpriteCache = new(StringComparer.Ordinal);
 

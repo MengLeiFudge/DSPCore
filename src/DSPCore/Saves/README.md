@@ -21,7 +21,7 @@
 
 ## 运行时
 
-`Runtime/SaveRuntime.cs` 会读写 `.dspcore` 独立存档，按加载顺序调用处理器，并桥接已覆盖的旧 DSPModSave 处理器。
+`SaveRuntime.cs` 会读写 `.dspcore` 独立存档，按加载顺序调用处理器，并桥接已覆盖的旧 DSPModSave 处理器。
 
 ## 边界
 

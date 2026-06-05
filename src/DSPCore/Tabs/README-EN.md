@@ -16,7 +16,7 @@ This block declares custom UI tabs for item, recipe, and replicator surfaces.
 
 ## Runtime
 
-`Runtime/TabRuntime.cs` clones existing type buttons and routes custom tab clicks through the vanilla GridIndex category flow.
+`TabRuntime.cs` clones existing type buttons and routes custom tab clicks through the vanilla GridIndex category flow.
 
 ## Boundaries
 

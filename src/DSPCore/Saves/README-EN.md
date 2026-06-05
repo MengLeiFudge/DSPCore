@@ -21,7 +21,7 @@ This block declares mod save handlers and tagged block save helpers.
 
 ## Runtime
 
-`Runtime/SaveRuntime.cs` writes and reads `.dspcore` sidecar save files, calls handlers by load order, and bridges covered legacy DSPModSave handlers.
+`SaveRuntime.cs` writes and reads `.dspcore` sidecar save files, calls handlers by load order, and bridges covered legacy DSPModSave handlers.
 
 ## Boundaries
 

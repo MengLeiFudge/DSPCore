@@ -16,7 +16,7 @@
 
 ## 运行时
 
-`Runtime/ResourceRuntime.cs` 会加载 Unity `Resources` sprite 或本地 PNG 文件，缓存 sprite，解析 fallback，并把图标写入目标 Proto。
+`IconRuntime.cs` 会加载 Unity `Resources` sprite 或本地 PNG 文件，缓存 sprite，解析 fallback，并把图标写入目标 Proto。
 
 ## 边界
 

@@ -22,7 +22,7 @@
 
 ## 运行时
 
-`Runtime/BuildBarRuntime.cs` 会把第 1 行写入原版 `UIBuildMenu.protos`，并为第 2 行及以后创建 DSPCore 扩展按钮。
+`BuildBarRuntime.cs` 会把第 1 行写入原版 `UIBuildMenu.protos`，并为第 2 行及以后创建 DSPCore 扩展按钮。
 
 ## 边界
 

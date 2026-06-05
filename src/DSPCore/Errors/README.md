@@ -12,7 +12,7 @@
 
 ## 运行时
 
-`Runtime/ErrorRuntime.cs` 捕获 Unity 日志，并给致命错误窗口添加关闭/复制能力。
+`ErrorRuntime.cs` 捕获 Unity 日志，并给致命错误窗口添加关闭/复制能力。
 
 ## 边界
 

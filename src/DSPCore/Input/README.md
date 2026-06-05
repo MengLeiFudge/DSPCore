@@ -17,7 +17,7 @@
 
 ## 运行时
 
-`Runtime/KeyBindRuntime.cs` 会轮询已注册按键，并在按下、按住或释放时调用回调。
+`KeyBindRuntime.cs` 会轮询已注册按键，并在按下、按住或释放时调用回调。
 
 ## 边界
 

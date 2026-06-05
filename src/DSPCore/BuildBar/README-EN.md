@@ -22,7 +22,7 @@ The new standard slot is `tab`, `row`, and `index`.
 
 ## Runtime
 
-`Runtime/BuildBarRuntime.cs` writes row 1 into vanilla `UIBuildMenu.protos` and creates DSPCore extended buttons for row 2 and later.
+`BuildBarRuntime.cs` writes row 1 into vanilla `UIBuildMenu.protos` and creates DSPCore extended buttons for row 2 and later.
 
 ## Boundaries
 

@@ -19,7 +19,7 @@ This block declares proto registrations and the DSPCore data phases.
 
 ## Runtime
 
-`Runtime/ProtoRuntime.cs` applies proto registrations around `VFPreload.InvokeOnLoadWorkEnded` and rebuilds key derived caches.
+`ProtoRuntime.cs` applies proto registrations around `VFPreload.InvokeOnLoadWorkEnded` and rebuilds key derived caches.
 
 ## Boundaries
 

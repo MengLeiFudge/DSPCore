@@ -16,7 +16,7 @@
 
 ## 运行时
 
-`Runtime/RecipeTypeRuntime.cs` 会把声明配方标记为自定义类型，并阻止不支持的制作器选择这些配方。
+`RecipeTypeRuntime.cs` 会把声明配方标记为自定义类型，并阻止不支持的制作器选择这些配方。
 
 ## 边界
 

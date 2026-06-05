@@ -12,7 +12,7 @@
 
 ## 运行时
 
-`Runtime/LocalizationRuntime.cs` 会写入本地化条目。`Runtime/ResourceRuntime.cs` 当前负责图标 sprite 加载。
+`LocalizationRuntime.cs` 会写入本地化条目。图标 sprite 加载由 `Icons/IconRuntime.cs` 负责。
 
 ## 边界
 
