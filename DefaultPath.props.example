@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Project>
+  <PropertyGroup Label="DefaultPath">
+    <!-- Copy this file to DefaultPath.props and adjust local paths. -->
+    <!-- 复制此文件为 DefaultPath.props，并按本机环境修改路径。 -->
+    <ProfileDir>C:\Users\MLJ\AppData\Roaming\r2modmanPlus-local\DysonSphereProgram\profiles\Default</ProfileDir>
+    <DSPGameDir>D:\Steam\steamapps\common\Dyson Sphere Program</DSPGameDir>
+    <ModSourcesRootDir>D:\project\dsp</ModSourcesRootDir>
+  </PropertyGroup>
+</Project>

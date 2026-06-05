@@ -1,0 +1,9 @@
+{
+  "name": "DSPCore",
+  "version_number": "0.1.0",
+  "website_url": "",
+  "description": "A new common framework standard for Dyson Sphere Program mods. 戴森球计划模组的新通用底层标准。",
+  "dependencies": [
+    "xiaoye97-BepInEx-5.4.17"
+  ]
+}

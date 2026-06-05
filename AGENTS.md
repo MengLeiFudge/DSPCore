@@ -1,0 +1,128 @@
+# AGENTS.md - DSPCore Development Guide
+
+This file is the long-term workflow source for AI agents working in this repository.
+
+本文档是 AI agent 在本仓库工作的长期工作流事实源。
+
+## Project Overview / 项目概览
+
+- Project name: `DSPCore`
+- 项目名：`DSPCore`
+
+- Thunderstore package target: `MengLei-DSPCore`
+- Thunderstore 包名目标：`MengLei-DSPCore`
+
+- Root namespace: `DSPCore`
+- 根命名空间：`DSPCore`
+
+- DLL name: `DSPCore.dll`
+- DLL 名称：`DSPCore.dll`
+
+DSPCore is a new common framework standard for Dyson Sphere Program mods. It is not a personal namespace library and must not use `MLJ` in new public namespaces.
+
+DSPCore 是戴森球计划模组的新通用底层标准。它不是个人命名空间库，新公开命名空间不得使用 `MLJ`。
+
+## Architecture Rules / 架构规则
+
+- New implementation code uses the `DSPCore` namespace.
+- 新实现代码使用 `DSPCore` 命名空间。
+
+- Legacy namespaces are compatibility shims only and must be marked `[Obsolete]`.
+- 旧命名空间只作为兼容 shim，必须标记 `[Obsolete]`。
+
+- First-version compatibility target: existing mods should be able to reference DSPCore without changing source code where the old API surface is covered.
+- 初版兼容目标：已覆盖旧 API 面的已有模组，应能在不改源码的情况下引用 DSPCore。
+
+- Do not make legacy namespaces the internal design language.
+- 不要把旧命名空间作为内部设计语言。
+
+- Public API must include bilingual XML summary: one Chinese sentence and one English sentence.
+- 公开 API 必须包含中英文 XML summary：一句中文，一句英文。
+
+## Build Commands / 构建命令
+
+Primary verification:
+
+```bash
+dotnet build DSPCore.sln
+```
+
+Expected result:
+
+```text
+Build succeeded.
+0 Warning(s)
+0 Error(s)
+```
+
+构建要求：
+
+- Target framework is `net472`.
+- 目标框架是 `net472`。
+
+- Build output is fixed under `bin/` and `obj/`; do not commit build outputs.
+- 构建产物固定在 `bin/` 和 `obj/`；不要提交构建产物。
+
+- `Directory.Build.props` owns shared build settings.
+- `Directory.Build.props` 管理共享构建设置。
+
+- `DefaultPath.props` is local-only and ignored by Git. Update `DefaultPath.props.example` when shared path variables change.
+- `DefaultPath.props` 只用于本机，并被 Git 忽略。共享路径变量变化时更新 `DefaultPath.props.example`。
+
+## Documentation Rules / 文档规则
+
+- README is for users and mod authors.
+- README 面向玩家和模组作者。
+
+- AGENTS.md is for repository workflow, validation, and AI rules.
+- AGENTS.md 面向仓库工作流、验证要求和 AI 规则。
+
+- `docs/api-migration.md` tracks migration from legacy APIs to DSPCore APIs.
+- `docs/api-migration.md` 记录旧 API 到 DSPCore API 的迁移。
+
+- Every public capability should have a concrete example under `docs/examples/`.
+- 每一项公开能力都应在 `docs/examples/` 下有具体示例。
+
+- User-visible behavior or public API changes require README/docs review in the same task.
+- 用户可见行为或公开 API 变更，必须在同一任务检查 README/docs。
+
+## Git Rules / Git 规则
+
+- Use simplified Chinese conventional-style commit messages.
+- 提交信息使用简体中文 conventional 风格。
+
+- Recommended prefixes: `功能：`, `调整：`, `修复：`, `优化：`, `重构：`, `构建：`, `文档：`, `测试：`, `杂项：`。
+- 推荐前缀：`功能：`, `调整：`, `修复：`, `优化：`, `重构：`, `构建：`, `文档：`, `测试：`, `杂项：`。
+
+- Run `dotnet build DSPCore.sln` before commits that touch code, project files, or public API docs.
+- 修改代码、项目文件或公开 API 文档后，提交前运行 `dotnet build DSPCore.sln`。
+
+- Do not push unless the user explicitly approves push.
+- 未经用户明确批准，不要 push。
+
+## Directory Map / 目录说明
+
+```text
+src/DSPCore/
+├── Core/                    # framework entry point and module/patch registries
+├── Achievements/            # achievement policy aggregation
+├── BuildBar/                # build bar registration model
+├── Compatibility/           # compatibility patch declarations
+├── Errors/                  # error report model
+├── Icons/                   # icon registration model
+├── Legacy/                  # obsolete legacy API shims
+├── Protos/                  # Proto registration facade
+├── Saves/                   # save handler abstraction
+└── UI/                      # UI abstraction descriptors
+```
+
+## Current Limitations / 当前限制
+
+- The current implementation is an API and documentation preview.
+- 当前实现是 API 和文档预览。
+
+- Real BepInEx, Harmony, Unity, and DSP runtime integration is not implemented yet.
+- 尚未实现真实 BepInEx、Harmony、Unity 和 DSP 运行时接入。
+
+- Legacy shims currently preserve API shape for covered calls, but not full old-library runtime behavior.
+- 当前旧 API shim 保留已覆盖调用的 API 形状，但未完整实现旧库运行时行为。
