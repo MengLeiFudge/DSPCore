@@ -2,10 +2,23 @@ using DSPCore;
 
 namespace ExampleMod;
 
+// 本文件是文档示例，不参与 DSPCore 编译。
+// This file is a documentation example and is excluded from DSPCore compilation.
+//
+// 用途：
+// - Compatibility 用于声明跨模组、跨版本或游戏版本相关的兼容补丁。
+// - 兼容补丁本身仍应归属于具体功能，例如 Tutorial、BuildBar、Save 或 UI。
+// - 不要把无关修复都塞进一个通用 fixer 名称里；声明 ID 应能看出目标和原因。
+//
+// Usage:
+// - Register a descriptor once during startup.
+// - Keep Apply small and delegate feature-specific work to the owning feature.
 public static class CompatibilityPatchExample
 {
     public static void Register()
     {
+        // Id 应稳定且全局唯一，建议包含功能名和目标。
+        // Use a stable id that names the feature and target.
         Compatibility.Register(new CompatibilityPatchDescriptor(
             Id: "tutorial-fractionation-compat",
             TargetModGuid: "com.menglei.dsp.fe",
@@ -16,5 +29,7 @@ public static class CompatibilityPatchExample
 
     private static void ApplyTutorialPatch()
     {
+        // 在这里调用 Tutorial 功能块或你的兼容修复逻辑。
+        // Call the Tutorial feature block or your compatibility fix here.
     }
 }
