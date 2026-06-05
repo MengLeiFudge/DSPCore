@@ -18,6 +18,10 @@ using DSPCore;
 DspCore.Initialize();
 ```
 
+When installed as a BepInEx plugin, DSPCore initializes itself through `DSPCorePlugin`; mod authors normally do not need to call `DspCore.Initialize()` manually.
+
+作为 BepInEx 插件安装时，DSPCore 会通过 `DSPCorePlugin` 自行初始化；模组作者通常不需要手动调用 `DspCore.Initialize()`。
+
 Register P0/P1 feature blocks through the global registries.
 
 通过全局注册表注册 P0/P1 功能块。

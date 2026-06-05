@@ -26,6 +26,6 @@ DspCore.Protos.RegisterTutorial(
     purpose: "Final tutorial chain fix");
 ```
 
-Runtime wiring is not implemented yet.
+Runtime bridge note: the first implementation applies `Data` and `DataUpdates` in the prefix of `VFPreload.InvokeOnLoadWorkEnded`, then applies `DataFinalFixes` in the postfix and rebuilds key proto caches.
 
-运行时接入尚未实现。
+运行时说明：第一版会在 `VFPreload.InvokeOnLoadWorkEnded` prefix 执行 `Data` 和 `DataUpdates`，在 postfix 执行 `DataFinalFixes`，随后重建关键 Proto 缓存。

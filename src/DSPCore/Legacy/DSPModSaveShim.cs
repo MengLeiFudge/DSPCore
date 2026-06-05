@@ -3,6 +3,42 @@ using System.IO;
 namespace crecheng.DSPModSave;
 
 /// <summary>
+/// 旧 DSPModSave 加载顺序枚举；请迁移到 DSPCore.CoreLoadOrder。
+/// Legacy DSPModSave load-order enum; migrate to DSPCore.CoreLoadOrder.
+/// </summary>
+[System.Obsolete("Use DSPCore.CoreLoadOrder instead.")]
+public enum LoadOrder
+{
+    /// <summary>
+    /// 在游戏存档加载前导入。
+    /// Imports before the game save finishes loading.
+    /// </summary>
+    Preload = 0,
+
+    /// <summary>
+    /// 在游戏存档加载后导入。
+    /// Imports after the game save finishes loading.
+    /// </summary>
+    Postload = 1
+}
+
+/// <summary>
+/// 旧 DSPModSave 存档设置特性；请迁移到 DSPCore.DspCore.Saves.Register 的 loadOrder 参数。
+/// Legacy DSPModSave save settings attribute; migrate to the loadOrder parameter of DSPCore.DspCore.Saves.Register.
+/// </summary>
+/// <param name="loadOrder">加载顺序。Load order.</param>
+[System.Obsolete("Use DSPCore.DspCore.Saves.Register(modGuid, handler, loadOrder) instead.")]
+[System.AttributeUsage(System.AttributeTargets.Class)]
+public sealed class ModSaveSettingsAttribute(LoadOrder loadOrder) : System.Attribute
+{
+    /// <summary>
+    /// 旧加载顺序。
+    /// Legacy load order.
+    /// </summary>
+    public LoadOrder LoadOrder { get; } = loadOrder;
+}
+
+/// <summary>
 /// 旧 DSPModSave 存档接口；请迁移到 DSPCore.ICoreSaveHandler。
 /// Legacy DSPModSave save interface; migrate to DSPCore.ICoreSaveHandler.
 /// </summary>
@@ -51,5 +87,6 @@ public static class DSPModSavePlugin
     [System.Obsolete("Use DSPCore.DspCore.Saves.Register(modGuid, handler) instead.")]
     public static void AddModSaveManually(object mod)
     {
+        DSPCore.SaveRuntime.RegisterLegacyHandler(mod);
     }
 }

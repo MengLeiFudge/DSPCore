@@ -70,5 +70,5 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 New:
 
 ```csharp
-DSPCore.DspCore.BuildBar.SetBuildBar(3, 4, 9554, layer: 2);
+DSPCore.DspCore.BuildBar.BindItem(tab: 3, row: 2, index: 4, itemId: 9554);
 ```

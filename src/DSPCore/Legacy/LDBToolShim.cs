@@ -32,15 +32,15 @@ public static class LDBTool
     }
 
     /// <summary>
-    /// 旧 SetBuildBar API；请迁移到 DSPCore.DspCore.BuildBar.SetBuildBar。
-    /// Legacy SetBuildBar API; migrate to DSPCore.DspCore.BuildBar.SetBuildBar.
+    /// 旧 SetBuildBar API；请迁移到 DSPCore.DspCore.BuildBar.BindItem。
+    /// Legacy SetBuildBar API; migrate to DSPCore.DspCore.BuildBar.BindItem.
     /// </summary>
     /// <param name="category">建造分类。Build category.</param>
     /// <param name="index">按钮索引。Button index.</param>
     /// <param name="itemId">物品 ID。Item id.</param>
-    [Obsolete("Use DSPCore.DspCore.BuildBar.SetBuildBar(category, index, itemId) instead.")]
+    [Obsolete("Use DSPCore.DspCore.BuildBar.BindItem(tab, row, index, itemId) instead.")]
     public static void SetBuildBar(int category, int index, int itemId)
     {
-        DSPCore.DspCore.BuildBar.SetBuildBar(category, index, itemId);
+        DSPCore.DspCore.BuildBar.BindItem(category, 1, index, itemId);
     }
 }

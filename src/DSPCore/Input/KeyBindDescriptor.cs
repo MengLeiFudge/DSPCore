@@ -11,6 +11,7 @@ namespace DSPCore;
 /// <param name="Action">触发方式。Trigger action.</param>
 /// <param name="ConflictGroup">冲突组。Conflict group.</param>
 /// <param name="CanOverride">玩家是否可以重绑定。Whether players can rebind it.</param>
+/// <param name="Callback">触发回调。Trigger callback.</param>
 public sealed record KeyBindDescriptor(
     string Id,
     string OwnerModGuid,
@@ -18,4 +19,5 @@ public sealed record KeyBindDescriptor(
     string DefaultKey,
     CoreKeyAction Action = CoreKeyAction.Press,
     int ConflictGroup = 0,
-    bool CanOverride = true);
+    bool CanOverride = true,
+    System.Action? Callback = null);

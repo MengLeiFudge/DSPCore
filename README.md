@@ -37,9 +37,9 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 - Bilingual XML summaries for public APIs.
 - 公开 API 提供中英文 XML summary。
 
-The current version is still an API and documentation preview. Runtime BepInEx/Harmony wiring and full behavior migration will be implemented feature by feature.
+The current version includes P0/P1 runtime bridges: BepInEx/Harmony startup, proto insertion, multi-row build bar binding, resource/icon loading, tabs for item/recipe/replicator surfaces, picker popups, custom recipe type guards, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error reporting, fatal-window copy/close buttons, and localization entries.
 
-当前版本仍是 API 和文档预览。BepInEx/Harmony 运行时接入和完整行为迁移会按功能块逐步实现。
+当前版本已接入 P0/P1 运行时桥接：BepInEx/Harmony 启动、Proto 写入、多行建造栏绑定、资源/图标加载、物品/配方/制造器分页、选择器弹窗、自定义配方类型限制、按键回调、DSPCore 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误报告、错误窗口复制/关闭按钮和本地化条目。
 
 ## Feature Blocks / 功能块
 
@@ -56,20 +56,81 @@ P0/P1 是当前实现目标。
 - Proto features: item, recipe, tech, tutorial, model/building binding, and vanilla data query descriptors.
 - 原型功能：物品、配方、科技、指引、模型/建筑绑定和原版数据查询描述。
 
-- Build bar placement: multi-layer placement and legacy BuildBarTool tier bridging.
-- 建造栏位置：多层位置声明和旧 BuildBarTool 层级桥接。
+- Build bar placement: bind an item id or `ItemProto` to a tab/row/index slot. Other feature blocks, such as item registration, call this binding API when they need a shortcut entry.
+- 建造栏位置：将物品 ID 或 `ItemProto` 绑定到 tab/row/index 槽位。其他功能块，例如物品注册，需要快捷栏入口时调用这个绑定 API。
 
 - Resources, icons, and localization: resource roots, icon descriptors, and translation entries.
 - 资源、图标和本地化：资源根、图标描述和翻译条目。
 
-- Tabs and pickers: authors declare tabs and picker requests; runtime adapters will project them to item, recipe, replicator, signal, beacon, blueprint, and other UI surfaces.
-- 分页和选择器：作者声明分页和选择器请求；运行时适配层会投射到物品、配方、制造器、信号、信标、蓝图等 UI 表面。
+- Tabs and pickers: authors can declare custom tabs for item, recipe, and replicator surfaces, and can open item/recipe/signal picker requests.
+- 分页和选择器：作者可以为物品、配方和制造器界面声明自定义分页，也可以打开物品、配方和信号选择器请求。
 
 - Saves: raw `BinaryReader`/`BinaryWriter` handlers and tagged block helpers.
 - 存档：原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
 
 - Achievements and errors: achievement policy aggregation and structured error reports.
 - 成就和错误：成就策略聚合和结构化错误报告。
+
+## Runtime Status / 运行时状态
+
+Implemented runtime bridges:
+
+已接入运行时桥接：
+
+- `DSPCorePlugin` starts from BepInEx and applies Harmony patches.
+- `DSPCorePlugin` 通过 BepInEx 启动并应用 Harmony 补丁。
+
+- Proto registrations are applied around `VFPreload.InvokeOnLoadWorkEnded`; DSPCore rebuilds `ProtoSet` indices and key derived caches after final fixes.
+- Proto 注册会在 `VFPreload.InvokeOnLoadWorkEnded` 前后执行；DSPCore 在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
+
+- `BuildBarRegistry.BindItem` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons.
+- `BuildBarRegistry.BindItem` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。
+
+- `IconSetRegistry` can load Unity `Resources` sprites or local PNG files, cache them, and apply them to target protos.
+- `IconSetRegistry` 可以加载 Unity `Resources` sprite 或本地 PNG 文件，缓存后写入目标 Proto。
+
+- `TabRegistry` projects custom tabs to item picker, recipe picker, and replicator surfaces through the existing GridIndex category flow.
+- `TabRegistry` 会通过现有 GridIndex 分类流程把自定义分页投射到物品选择器、配方选择器和制造器界面。
+
+- `PickerRegistry` opens item, recipe, and signal picker popups and invokes the request callback.
+- `PickerRegistry` 会打开物品、配方和信号选择器弹窗，并调用请求回调。
+
+- `RecipeTypeRegistry` marks declared recipes as custom recipe types and blocks unsupported assembler machines from selecting them.
+- `RecipeTypeRegistry` 会把声明的配方标记为自定义配方类型，并阻止不支持的制作器选择这些配方。
+
+- `KeyBindRegistry` polls registered key bindings and invokes callbacks, including simple `Ctrl`/`Alt`/`Shift` modifier combinations.
+- `KeyBindRegistry` 会轮询已注册按键并调用回调，支持简单的 `Ctrl`/`Alt`/`Shift` 修饰键组合。
+
+- `SaveRegistry` writes a `.dspcore` sidecar save file and imports handlers by `CoreLoadOrder`.
+- `SaveRegistry` 会写入 `.dspcore` 独立存档，并按 `CoreLoadOrder` 导入处理器。
+
+- `AchievementPolicyRegistry` blocks vanilla abnormality checks when no mod disables achievements, blocks local achievement mutation when any mod disables achievements, and blocks Milky Way/leaderboard/platform sync unless explicitly allowed.
+- `AchievementPolicyRegistry` 在没有模组禁用成就时屏蔽原版异常检查；任意模组禁用成就时阻断本地成就变化；Milky Way/排行榜/平台同步默认阻断，除非显式允许。
+
+- `ErrorReporter` receives Unity fatal/error logs and fatal-window events.
+- `ErrorReporter` 会接收 Unity fatal/error 日志和错误窗口事件。
+
+- `ResourceRegistry.RegisterLocalization` is applied to DSP localization keys and language strings.
+- `ResourceRegistry.RegisterLocalization` 会写入 DSP 本地化 key 和语言字符串。
+
+Current runtime limits:
+
+当前运行时限制：
+
+- Player-defined build bar positions and RebindBuildBar compatibility are not implemented yet.
+- 玩家自定义建造栏位置和 RebindBuildBar 兼容尚未实现。
+
+- Tab projection currently covers item picker, recipe picker, and replicator surfaces. Signal picker, beacon, blueprint, and other surfaces need a richer tab-content model before they can be supported correctly.
+- 分页投射当前覆盖物品选择器、配方选择器和制造器界面。信号选择器、全息信标、蓝图等界面需要更完整的分页内容模型后才能正确支持。
+
+- Picker filters are applied on return as a safety check; they do not yet hide invalid entries inside the live picker grid.
+- 选择器过滤当前在返回时兜底检查，尚未在实时选择器网格内隐藏无效条目。
+
+- Recipe type runtime blocks unsupported assembler selection, but the assembler recipe picker list is not yet filtered before selection.
+- 自定义配方类型运行时会阻止不支持的制作器选择配方，但制作器配方选择列表尚未在选择前过滤。
+
+- The proto phase hook is a conservative first bridge, not the final VFPreload mid-stage lifecycle.
+- 当前 Proto 阶段挂点是保守的第一版桥接，不是最终 VFPreload 中段生命周期。
 
 P2/P3 blocks such as custom machine components, planet/star systems, network helpers, and player convenience modules are TODO and not implemented yet.
 
@@ -106,11 +167,8 @@ bool disabled = DspCore.Achievements.ShouldDisableAchievements();
 ```csharp
 using DSPCore;
 
-DspCore.BuildBar.SetBuildBar(
-    category: 3,
-    index: 4,
-    itemId: 9554,
-    layer: 2);
+DspCore.BuildBar.BindItem(tab: 3, row: 2, index: 4, itemId: 9554);
+DspCore.BuildBar.BindItem(tab: 3, row: 2, index: 5, item: myItemProto);
 ```
 
 ## Example: Tabs / 示例：分页
@@ -148,6 +206,8 @@ The old call is accepted, but it is marked obsolete. New mods should use `DSPCor
 - `docs/examples/save-blocks.md`
 - `docs/examples/iconset.md`
 - `docs/examples/tabs.md`
+- `docs/examples/picker.md`
+- `docs/examples/recipe-type.md`
 - `docs/examples/proto-phases.md`
 - `docs/examples/key-bind.md`
 - `docs/examples/compatibility-patch.md`

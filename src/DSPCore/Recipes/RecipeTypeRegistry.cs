@@ -10,6 +10,7 @@ namespace DSPCore;
 public sealed class RecipeTypeRegistry
 {
     private readonly Dictionary<string, RecipeTypeDescriptor> recipeTypes = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, int> runtimeIds = new(StringComparer.Ordinal);
 
     /// <summary>
     /// 注册一个自定义配方类型。
@@ -29,5 +30,23 @@ public sealed class RecipeTypeRegistry
     public IReadOnlyCollection<RecipeTypeDescriptor> GetAll()
     {
         return recipeTypes.Values;
+    }
+
+    /// <summary>
+    /// 获取或分配配方类型运行时 ID。
+    /// Gets or assigns a runtime id for a recipe type.
+    /// </summary>
+    /// <param name="id">配方类型 ID。Recipe type id.</param>
+    /// <returns>运行时 ID。Runtime id.</returns>
+    public int GetOrAssignRuntimeId(string id)
+    {
+        if (runtimeIds.TryGetValue(id, out var runtimeId))
+        {
+            return runtimeId;
+        }
+
+        runtimeId = runtimeIds.Count + 1;
+        runtimeIds[id] = runtimeId;
+        return runtimeId;
     }
 }

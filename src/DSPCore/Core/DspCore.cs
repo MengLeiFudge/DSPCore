@@ -1,5 +1,7 @@
 namespace DSPCore;
 
+using BepInEx.Logging;
+
 /// <summary>
 /// DSPCore 的全局入口，提供框架版本、服务注册表和一次性初始化入口。
 /// Global entry point for DSPCore, providing framework version, service registries, and one-time initialization.
@@ -109,12 +111,12 @@ public static class DspCore
     public static CompatibilityPatchRegistry Compatibility { get; } = new();
 
     /// <summary>
-    /// 初始化 DSPCore。初版中此方法只完成幂等标记，真实 BepInEx/Harmony 接入将在后续阶段填充。
-    /// Initializes DSPCore. In this first version this only marks initialization idempotently; real BepInEx/Harmony wiring will be added later.
+    /// 初始化 DSPCore 的功能块和模块注册表。
+    /// Initializes DSPCore feature blocks and module registries.
     /// </summary>
     public static void Initialize()
     {
-        IsInitialized = true;
+        InitializeRuntime(null);
     }
 
     /// <summary>
@@ -122,4 +124,49 @@ public static class DspCore
     /// Indicates whether DSPCore has been initialized.
     /// </summary>
     public static bool IsInitialized { get; private set; }
+
+    internal static ManualLogSource? Logger { get; private set; }
+
+    internal static void InitializeRuntime(ManualLogSource? logger)
+    {
+        if (IsInitialized)
+        {
+            Logger ??= logger;
+            return;
+        }
+
+        Logger = logger;
+        RegisterBuiltInFeatures();
+        foreach (var feature in Features.GetAll())
+        {
+            feature.Initialize();
+        }
+
+        foreach (var module in Modules.GetAll())
+        {
+            module.Initialize();
+        }
+
+        IsInitialized = true;
+    }
+
+    private static void RegisterBuiltInFeatures()
+    {
+        RegisterFeature("core.lifecycle", "Module lifecycle / 模块生命周期", 0);
+        RegisterFeature("core.protos", "Proto runtime bridge / 原型运行时桥接", 10);
+        RegisterFeature("core.resources", "Resource registry / 资源注册", 20);
+        RegisterFeature("core.build-bar", "Build bar placement / 建造栏位置", 30);
+        RegisterFeature("core.saves", "Save sidecar bridge / 存档桥接", 40);
+        RegisterFeature("core.achievements", "Achievement policy / 成就策略", 50);
+        RegisterFeature("core.errors", "Error diagnostics / 错误诊断", 60);
+        RegisterFeature("core.legacy", "Legacy API shims / 旧 API 兼容", 100);
+    }
+
+    private static void RegisterFeature(string id, string displayName, int priority)
+    {
+        if (!Features.TryGet(id, out _))
+        {
+            Features.Register(new FeatureDescriptor(id, displayName, priority, static () => { }));
+        }
+    }
 }

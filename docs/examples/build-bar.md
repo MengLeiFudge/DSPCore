@@ -1,14 +1,19 @@
 # Build Bar / 建造栏
 
-Register a secondary-row build button with the new API.
+BuildBar only binds an item id or `ItemProto` to a shortcut slot. The slot is `tab`, `row`, and `index`.
 
-使用新 API 注册第二行建造栏按钮。
+BuildBar 只负责把物品 ID 或 `ItemProto` 绑定到快捷栏槽位。槽位由 `tab`、`row` 和 `index` 组成。
 
 ```csharp
 using DSPCore;
 
-DspCore.BuildBar.SetBuildBar(3, 4, 9554, layer: 2);
+DspCore.BuildBar.BindItem(tab: 3, row: 2, index: 4, itemId: 9554);
+DspCore.BuildBar.BindItem(tab: 3, row: 2, index: 5, item: myItemProto);
 ```
+
+Other feature blocks should call this API when they create or modify an item that needs a shortcut entry.
+
+其他功能块在创建或修改需要快捷栏入口的物品时，调用这个 API 即可。
 
 Legacy BuildBarTool calls are still accepted but obsolete.
 

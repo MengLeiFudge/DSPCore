@@ -13,6 +13,24 @@ public sealed class AchievementPolicyRegistry
     private readonly Dictionary<string, AchievementPolicyDeclaration> declarations = new(StringComparer.Ordinal);
 
     /// <summary>
+    /// 是否允许把成就同步到 Steam、RAIL 或 XGP 平台；默认关闭。
+    /// Gets or sets whether achievement sync to Steam, RAIL, or XGP platforms is allowed; disabled by default.
+    /// </summary>
+    public bool AllowPlatformAchievements { get; set; }
+
+    /// <summary>
+    /// 是否允许上传 Milky Way/排行榜数据；默认关闭。
+    /// Gets or sets whether Milky Way and leaderboard upload is allowed; disabled by default.
+    /// </summary>
+    public bool AllowMilkyWayUpload { get; set; }
+
+    /// <summary>
+    /// 控制 DSPCore 对成就策略元数据的保留量。
+    /// Controls how much achievement-policy metadata DSPCore keeps.
+    /// </summary>
+    public AchievementMetadataMode MetadataMode { get; set; } = AchievementMetadataMode.DeclarationsOnly;
+
+    /// <summary>
     /// 声明一个模组是否要求禁用成就。
     /// Declares whether a mod requires achievements to be disabled.
     /// </summary>
@@ -35,6 +53,36 @@ public sealed class AchievementPolicyRegistry
     public bool ShouldDisableAchievements()
     {
         return declarations.Values.Any(item => item.DisableAchievements);
+    }
+
+    /// <summary>
+    /// 获取是否应屏蔽原版异常检查，让本地成就保持可用。
+    /// Gets whether vanilla abnormality checks should be blocked so local achievements stay available.
+    /// </summary>
+    /// <returns>没有模组声明禁用成就时返回 true。Returns true when no mod declares achievement disabling.</returns>
+    public bool ShouldBlockAbnormalityChecks()
+    {
+        return !ShouldDisableAchievements();
+    }
+
+    /// <summary>
+    /// 获取是否应阻止平台成就同步。
+    /// Gets whether platform achievement synchronization should be blocked.
+    /// </summary>
+    /// <returns>需要阻止平台成就同步时返回 true。Returns true when platform sync should be blocked.</returns>
+    public bool ShouldBlockPlatformAchievements()
+    {
+        return ShouldDisableAchievements() || !AllowPlatformAchievements;
+    }
+
+    /// <summary>
+    /// 获取是否应阻止 Milky Way 和排行榜上传。
+    /// Gets whether Milky Way and leaderboard uploads should be blocked.
+    /// </summary>
+    /// <returns>需要阻止上传时返回 true。Returns true when uploads should be blocked.</returns>
+    public bool ShouldBlockMilkyWayUpload()
+    {
+        return ShouldDisableAchievements() || !AllowMilkyWayUpload;
     }
 
     /// <summary>

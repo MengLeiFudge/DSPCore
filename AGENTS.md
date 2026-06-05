@@ -116,6 +116,7 @@ src/DSPCore/
 ├── Protos/                  # Proto registration facade
 ├── Recipes/                 # custom recipe type declarations
 ├── Resources/               # resource and localization declarations
+├── Runtime/                 # BepInEx, Harmony, DSP runtime bridges
 ├── Saves/                   # save handler abstraction
 ├── Tabs/                    # tab declarations
 └── UI/                      # UI abstraction descriptors
@@ -123,14 +124,20 @@ src/DSPCore/
 
 ## Current Limitations / 当前限制
 
-- The current implementation covers only P0/P1 author-facing API skeletons.
-- 当前实现只覆盖 P0/P1 的作者可见 API 骨架。
+- The current implementation includes P0/P1 runtime bridges, not just author-facing API skeletons.
+- 当前实现已包含 P0/P1 运行时桥接，不再只是作者可见 API 骨架。
 
-- Real BepInEx, Harmony, Unity, and DSP runtime integration is not implemented yet.
-- 尚未实现真实 BepInEx、Harmony、Unity 和 DSP 运行时接入。
+- Implemented runtime bridges: BepInEx/Harmony startup, proto insertion near `VFPreload.InvokeOnLoadWorkEnded`, multi-row build bar binding, resource/icon loading, item/recipe/replicator tab projection, item/recipe/signal picker popups, custom recipe type guards, key callbacks, `.dspcore` sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error logging/fatal-window buttons, and localization entries.
+- 已实现运行时桥接：BepInEx/Harmony 启动、`VFPreload.InvokeOnLoadWorkEnded` 附近的 Proto 写入、多行建造栏绑定、资源/图标加载、物品/配方/制造器分页投射、物品/配方/信号选择器弹窗、自定义配方类型限制、按键回调、`.dspcore` 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误日志/错误窗口按钮和本地化条目。
+
+- BuildBar owns only item-to-slot binding: item id or `ItemProto` -> tab/row/index. Item, recipe, or other feature blocks must call the BuildBar API when they need shortcut placement; do not move proto creation responsibilities into BuildBar.
+- BuildBar 只负责物品到槽位的绑定：物品 ID 或 `ItemProto` -> tab/row/index。物品、配方或其他功能块需要快捷栏位置时调用 BuildBar API；不要把 Proto 创建职责移入 BuildBar。
 
 - P2/P3 features such as custom machine components, planet/star systems, network helpers, and player convenience modules are not implemented.
 - 自定义机器组件、星球/恒星系统、网络工具和玩家便利模块等 P2/P3 功能尚未实现。
 
-- Legacy shims currently preserve API shape for covered calls, but not full old-library runtime behavior.
-- 当前旧 API shim 保留已覆盖调用的 API 形状，但未完整实现旧库运行时行为。
+- Remaining P0/P1 runtime gaps: player-defined build bar positions, RebindBuildBar compatibility, signal/beacon/blueprint tab surfaces, live picker-grid filtering, and pre-selection assembler recipe list filtering.
+- 剩余 P0/P1 运行时缺口：玩家自定义建造栏位置、RebindBuildBar 兼容、信号/全息信标/蓝图分页界面、选择器实时网格过滤，以及制作器配方列表选择前过滤。
+
+- Legacy shims bridge covered calls to implemented DSPCore runtime blocks, but they are not guaranteed to reproduce every old-library edge behavior.
+- 旧 API shim 会把已覆盖调用桥接到已实现的 DSPCore 运行时功能块，但不保证复刻旧库所有边缘行为。

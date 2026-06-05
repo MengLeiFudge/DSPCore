@@ -29,4 +29,11 @@ public sealed class PickerRegistry
     {
         return requests.ToArray();
     }
+
+    internal IReadOnlyList<PickerRequest> ConsumeAll()
+    {
+        var snapshot = requests.ToArray();
+        requests.Clear();
+        return snapshot;
+    }
 }

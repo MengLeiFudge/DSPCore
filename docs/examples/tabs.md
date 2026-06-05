@@ -1,8 +1,8 @@
 # Tabs / 分页
 
-Authors declare one tab. DSPCore runtime adapters will project it to supported UI surfaces.
+Authors declare one tab. The current runtime projects tabs to item picker, recipe picker, and replicator surfaces through the vanilla GridIndex category flow.
 
-作者只声明一个分页。DSPCore 运行时适配层会把它投射到受支持的 UI 表面。
+作者只声明一个分页。当前运行时通过原版 GridIndex 分类流程，把分页投射到物品选择器、配方选择器和制造器界面。
 
 ```csharp
 using DSPCore;
@@ -15,6 +15,6 @@ DspCore.Tabs.AddTab(new CoreTabDescriptor(
     Order: 100));
 ```
 
-Target UI surfaces include item picker, recipe picker, replicator, signal picker, beacon and blueprint icon selection where supported.
+Signal picker, beacon, blueprint, and other UI surfaces need a richer tab-content model before DSPCore can support them correctly.
 
-目标 UI 表面包括物品选择器、配方选择器、制造器、信号选择器、信标和蓝图图标选择等受支持场景。
+信号选择器、全息信标、蓝图等界面需要更完整的分页内容模型后，DSPCore 才能正确支持。
