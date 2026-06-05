@@ -47,23 +47,23 @@ internal static class AchievementRuntime
 internal static class AchievementRuntimePatches
 {
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(GameAbnormalityData_0925), "NotifyOnAbnormalityChecked")]
-    [HarmonyPatch(typeof(GameAbnormalityData_0925), "TriggerAbnormality")]
-    [HarmonyPatch(typeof(AbnormalityLogic), "GameTick")]
+    [HarmonyPatch(typeof(GameAbnormalityData_0925), nameof(GameAbnormalityData_0925.NotifyOnAbnormalityChecked))]
+    [HarmonyPatch(typeof(GameAbnormalityData_0925), nameof(GameAbnormalityData_0925.TriggerAbnormality))]
+    [HarmonyPatch(typeof(AbnormalityLogic), nameof(AbnormalityLogic.GameTick))]
     private static bool AbnormalityCheck()
     {
         return AchievementRuntime.AllowAbnormalityCheck();
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(AbnormalityRuntimeData), "Import")]
+    [HarmonyPatch(typeof(AbnormalityRuntimeData), nameof(AbnormalityRuntimeData.Import))]
     private static void AbnormalityRuntimeDataImport(ref AbnormalityRuntimeData __instance)
     {
         AchievementRuntime.ClearAbnormalityRuntimeData(ref __instance);
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(GameAbnormalityData_0925), "IsAbnormalTriggerred")]
+    [HarmonyPatch(typeof(GameAbnormalityData_0925), nameof(GameAbnormalityData_0925.IsAbnormalTriggerred))]
     private static bool IsAbnormalTriggerred(ref bool __result)
     {
         if (AchievementRuntime.AllowAbnormalityCheck())
@@ -76,9 +76,9 @@ internal static class AchievementRuntimePatches
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(MilkyWayWebClient), "SendUploadLoginRequest")]
-    [HarmonyPatch(typeof(MilkyWayWebClient), "SendUploadRecordRequest")]
-    [HarmonyPatch(typeof(STEAMX), "UploadScoreToLeaderboard")]
+    [HarmonyPatch(typeof(MilkyWayWebClient), nameof(MilkyWayWebClient.SendUploadLoginRequest))]
+    [HarmonyPatch(typeof(MilkyWayWebClient), nameof(MilkyWayWebClient.SendUploadRecordRequest))]
+    [HarmonyPatch(typeof(STEAMX), nameof(STEAMX.UploadScoreToLeaderboard))]
     private static bool MilkyWayUpload()
     {
         return AchievementRuntime.AllowLeaderboardUpload();
@@ -127,22 +127,22 @@ internal static class AchievementRuntimePatches
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(STEAMX), "UnlockAchievement")]
-    [HarmonyPatch(typeof(STEAMX), "SetAchievementProgress")]
-    [HarmonyPatch(typeof(SteamAchievementManager), "UnlockAchievement")]
-    [HarmonyPatch(typeof(SteamAchievementManager), "SetAchievementProgress")]
+    [HarmonyPatch(typeof(STEAMX), nameof(STEAMX.UnlockAchievement))]
+    [HarmonyPatch(typeof(STEAMX), nameof(STEAMX.SetAchievementProgress))]
+    [HarmonyPatch(typeof(SteamAchievementManager), nameof(SteamAchievementManager.UnlockAchievement))]
+    [HarmonyPatch(typeof(SteamAchievementManager), nameof(SteamAchievementManager.SetAchievementProgress))]
     [HarmonyPatch(typeof(SteamAchievementManager), "Update")]
     [HarmonyPatch(typeof(SteamAchievementManager), "Start")]
-    [HarmonyPatch(typeof(RAILX), "UnlockAchievement")]
-    [HarmonyPatch(typeof(RAILX), "SetAchievementProgress")]
-    [HarmonyPatch(typeof(RailAchievementManager), "UnlockAchievement")]
-    [HarmonyPatch(typeof(RailAchievementManager), "SetAchievementProgress")]
+    [HarmonyPatch(typeof(RAILX), nameof(RAILX.UnlockAchievement))]
+    [HarmonyPatch(typeof(RAILX), nameof(RAILX.SetAchievementProgress))]
+    [HarmonyPatch(typeof(RailAchievementManager), nameof(RailAchievementManager.UnlockAchievement))]
+    [HarmonyPatch(typeof(RailAchievementManager), nameof(RailAchievementManager.SetAchievementProgress))]
     [HarmonyPatch(typeof(RailAchievementManager), "Update")]
     [HarmonyPatch(typeof(RailAchievementManager), "Start")]
-    [HarmonyPatch(typeof(XGPX), "AddTask")]
-    [HarmonyPatch(typeof(XGPX), "BeginStoreStats")]
-    [HarmonyPatch(typeof(XGPX), "UnlockAchievement")]
-    [HarmonyPatch(typeof(XGPX), "SetAchievementProgress")]
+    [HarmonyPatch(typeof(XGPX), nameof(XGPX.AddTask))]
+    [HarmonyPatch(typeof(XGPX), nameof(XGPX.BeginStoreStats))]
+    [HarmonyPatch(typeof(XGPX), nameof(XGPX.UnlockAchievement))]
+    [HarmonyPatch(typeof(XGPX), nameof(XGPX.SetAchievementProgress))]
     private static bool PlatformAchievement()
     {
         return AchievementRuntime.AllowPlatformMetadata();

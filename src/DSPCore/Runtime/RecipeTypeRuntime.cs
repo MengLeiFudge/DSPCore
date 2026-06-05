@@ -60,7 +60,7 @@ internal static class RecipeTypeRuntime
 internal static class RecipeTypeRuntimePatches
 {
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(AssemblerComponent), "SetRecipe")]
+    [HarmonyPatch(typeof(AssemblerComponent), nameof(AssemblerComponent.SetRecipe))]
     private static bool SetRecipe(ref AssemblerComponent __instance, int recpId)
     {
         if (recpId <= 0)

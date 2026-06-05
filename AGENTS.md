@@ -103,6 +103,14 @@ Build succeeded.
 - Do not push unless the user explicitly approves push.
 - 未经用户明确批准，不要 push。
 
+## Patch Rules / 补丁规则
+
+- Harmony patches must use `typeof(TargetType)` plus `nameof(TargetType.Method)` whenever the target method is accessible to the compiler.
+- Harmony 补丁在目标方法可被编译器访问时，必须使用 `typeof(TargetType)` + `nameof(TargetType.Method)`。
+
+- Use a string method name only when `nameof` cannot compile, such as private game methods or underscore lifecycle hooks.
+- 只有 `nameof` 无法编译时才使用字符串方法名，例如游戏私有方法或下划线生命周期钩子。
+
 ## Directory Map / 目录说明
 
 ```text
