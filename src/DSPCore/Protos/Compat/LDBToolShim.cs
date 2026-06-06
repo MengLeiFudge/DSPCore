@@ -3,8 +3,8 @@ using System;
 namespace xiaoye97;
 
 /// <summary>
-/// 旧 LDBTool 兼容入口；请迁移到 DSPCore.Protos。
-/// Legacy LDBTool compatibility entry point; migrate to DSPCore.Protos.
+/// 旧 LDBTool 兼容入口；Proto 入口归 Protos/Compat，建造栏入口转交 BuildBar/Compat。
+/// Legacy LDBTool compatibility entry point; Proto entries live in Protos/Compat and build bar entries delegate to BuildBar/Compat.
 /// </summary>
 [Obsolete("Use DSPCore.Protos instead. This namespace is kept only for source/binary migration.")]
 public static class LDBTool
@@ -32,15 +32,15 @@ public static class LDBTool
     }
 
     /// <summary>
-    /// 旧 SetBuildBar API；请迁移到 ItemProto.SetBuildBar 或 DSPCore.BuildBar.SetBuildBar。
-    /// Legacy SetBuildBar API; migrate to ItemProto.SetBuildBar or DSPCore.BuildBar.SetBuildBar.
+    /// 旧 SetBuildBar API；请迁移到 ItemProto.SetBuildBar 或 DSPCore.BuildBar.BindQuickBar。
+    /// Legacy SetBuildBar API; migrate to ItemProto.SetBuildBar or DSPCore.BuildBar.BindQuickBar.
     /// </summary>
     /// <param name="category">建造分类。Build category.</param>
     /// <param name="index">按钮索引。Button index.</param>
     /// <param name="itemId">物品 ID。Item id.</param>
-    [Obsolete("Use ItemProto.SetBuildBar(tab, row, index) or DSPCore.BuildBar.SetBuildBar(tab, row, index, itemId) instead.")]
+    [Obsolete("Use ItemProto.SetBuildBar(tab, row, index) or DSPCore.BuildBar.BindQuickBar(tab, row, index, itemId) instead.")]
     public static void SetBuildBar(int category, int index, int itemId)
     {
-        DSPCore.BuildBar.BindQuickBar(category, 1, index, itemId);
+        DSPCore.LegacyBuildBarCompatibility.SetBuildBar(category, index, itemId);
     }
 }

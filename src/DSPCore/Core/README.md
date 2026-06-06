@@ -21,6 +21,11 @@
 - `Api/PatchDescriptor.cs`
 - `Api/CompatibilityPatchDescriptor.cs`
 
+## 兼容入口
+
+- `Compat/CommonApiShim.cs`：旧命名空间 `CommonAPI` 的模块查询和子模块依赖属性外壳。
+- `Compat/IsExternalInit.cs`：net472 下支持 record/init-only 语法所需的编译期 polyfill。
+
 ## 示例
 
 - `Examples/CompatibilityPatchExample.cs`

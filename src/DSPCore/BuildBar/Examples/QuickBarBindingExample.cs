@@ -17,7 +17,7 @@ namespace ExampleMod;
 //
 // Usage:
 // - Call ItemProto.SetBuildBar after the item proto is created.
-// - Use BuildBar.SetBuildBar only when you only have an item id.
+// - Use BuildBar.BindQuickBar only when you only have an item id.
 public static class QuickBarBindingExample
 {
     public static void Register(ItemProto myItemProto)

@@ -30,6 +30,9 @@ DSPCore 是戴森球计划模组的新通用底层标准。它不是个人命名
 - Legacy namespaces are compatibility shims only and must be marked `[Obsolete]`.
 - 旧命名空间只作为兼容 shim，必须标记 `[Obsolete]`。
 
+- Compatibility code belongs to the owning feature block under `DSPCore/<Feature>/Compat/`; do not create a top-level `Legacy/` or centralized legacy compatibility directory. Old namespaces may be declared from feature `Compat/` files when required by source compatibility.
+- 兼容代码必须放在所属功能块的 `DSPCore/<Feature>/Compat/` 下；禁止创建顶层 `Legacy/` 或集中式旧兼容目录。为了源码兼容需要保留旧命名空间时，也应在对应功能块的 `Compat/` 文件中声明。
+
 - First-version compatibility target: existing mods should be able to reference DSPCore without changing source code where the old API surface is covered.
 - 初版兼容目标：已覆盖旧 API 面的已有模组，应能在不改源码的情况下引用 DSPCore。
 
@@ -95,8 +98,8 @@ Build succeeded.
 - User-visible behavior or public API changes require README/docs review in the same task.
 - 用户可见行为或公开 API 变更，必须在同一任务检查 README/docs。
 
-- Feature blocks are internally split into `Api/`, `Runtime/`, `Compat/`, and `Examples/` when they contain those responsibilities. `Api/` owns author-facing entry points, descriptors, registries, extension methods, and public models. `Runtime/` owns BepInEx/Harmony/DSP lifecycle bridges, Unity UI projection, data-phase executors, and other implementation that applies registered intent to the game. `Compat/` owns legacy or third-party compatibility adapters for that feature block. `Examples/` owns author-facing scenario documentation and demo code.
-- 功能块内部按职责拆成 `Api/`、`Runtime/`、`Compat/`、`Examples/`，只有实际存在对应职责时才创建目录。`Api/` 负责作者侧入口、descriptor、registry、扩展方法和公开模型。`Runtime/` 负责 BepInEx/Harmony/DSP 生命周期桥接、Unity UI 投射、数据阶段执行器，以及把注册意图应用到游戏里的实现。`Compat/` 负责该功能块的旧 API 或第三方兼容适配。`Examples/` 负责作者侧场景说明和 demo 代码。
+- Feature blocks are internally split into `Api/`, `Runtime/`, `Compat/`, and `Examples/` when they contain those responsibilities. `Api/` owns author-facing entry points, descriptors, registries, extension methods, and public models. `Runtime/` owns BepInEx/Harmony/DSP lifecycle bridges, Unity UI projection, data-phase executors, and other implementation that applies registered intent to the game. `Compat/` owns all legacy or third-party compatibility adapters for that feature block, including files that declare old namespaces or old type names. `Examples/` owns author-facing scenario documentation and demo code.
+- 功能块内部按职责拆成 `Api/`、`Runtime/`、`Compat/`、`Examples/`，只有实际存在对应职责时才创建目录。`Api/` 负责作者侧入口、descriptor、registry、扩展方法和公开模型。`Runtime/` 负责 BepInEx/Harmony/DSP 生命周期桥接、Unity UI 投射、数据阶段执行器，以及把注册意图应用到游戏里的实现。`Compat/` 负责该功能块的全部旧 API 或第三方兼容适配，包括声明旧命名空间或旧类型名的文件。`Examples/` 负责作者侧场景说明和 demo 代码。
 
 ## Git Rules / Git 规则
 
@@ -124,20 +127,18 @@ Build succeeded.
 
 ```text
 src/DSPCore/
-├── Core/                    # Api/Examples: framework entry point, feature/module registries, patch and compatibility declarations
+├── Core/                    # Api/Compat/Examples: framework entry point, feature/module registries, CommonAPI compatibility
 ├── Achievements/            # Api/Runtime/Examples: achievement policy aggregation
-├── BuildBar/                # Api/Runtime/Examples: build bar slot binding
-├── CompatibilityPolyfills/  # Compat/: target-framework compatibility helpers
+├── BuildBar/                # Api/Runtime/Compat/Examples: build bar slot binding and BuildBarTool compatibility
 ├── Errors/                  # Api/Runtime: error report model and fatal-window runtime bridge
 ├── Icons/                   # Api/Runtime/Examples: icon registration and icon runtime bridge
 ├── Input/                   # Api/Runtime/Examples: key bind declarations and polling bridge
-├── Legacy/                  # Compat/: obsolete legacy API shims
 ├── Pickers/                 # Api/Runtime/Examples: picker requests and popup bridge
-├── Protos/                  # Api/Runtime/Examples: Proto registration facade and data-phase bridge
+├── Protos/                  # Api/Runtime/Compat/Examples: Proto registration facade, data-phase bridge, LDBTool compatibility
 ├── Recipes/                 # Api/Runtime/Examples: custom recipe types and recipe guard bridge
 ├── Resources/               # Api/Runtime: resource and localization declarations plus localization bridge
 ├── Runtime/                 # Runtime/: BepInEx plugin entry and cross-feature runtime assembly only
-├── Saves/                   # Api/Runtime/Examples: save abstraction and sidecar save bridge
+├── Saves/                   # Api/Runtime/Compat/Examples: save abstraction, sidecar save bridge, DSPModSave compatibility
 ├── Tabs/                    # Api/Runtime/Examples: tab declarations and UI projection bridge
 └── UI/                      # Api/: UI abstraction descriptors
 ```

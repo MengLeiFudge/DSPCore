@@ -13,6 +13,10 @@
 - `Api/ProtoKind.cs`
 - `Api/VanillaDataView.cs`
 
+## 兼容入口
+
+- `Compat/LDBToolShim.cs`：旧命名空间 `xiaoye97.LDBTool` 外壳；Proto 入口归本功能块，建造栏入口委托给 BuildBar 兼容桥。
+
 ## 示例
 
 - `Examples/ProtoPhasesExample.cs`

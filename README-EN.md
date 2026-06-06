@@ -18,7 +18,7 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods.
 ## First Version Scope
 
 - P0/P1 author-facing feature blocks: feature lifecycle, data phases, item/recipe/tech/tutorial registration, build bar placement, resources, icons, localization, tabs, pickers, recipe types, key binds, saves, achievements, and error reports.
-- Legacy compatibility shims for `xiaoye97.LDBTool`, `crecheng.DSPModSave`, `CommonAPI`, and `BuildBarTool`.
+- Legacy compatibility shims for `xiaoye97.LDBTool`, `crecheng.DSPModSave`, `CommonAPI`, and `BuildBarTool`; compatibility code lives under the owning feature block's `Compat/` directory instead of a centralized `Legacy/` directory.
 - Bilingual XML summaries for public APIs.
 
 The current version includes P0/P1 runtime bridges: BepInEx/Harmony startup, proto insertion, multi-row build bar binding, resource/icon loading, tabs for item/recipe/replicator surfaces, picker popups, custom recipe type guards, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error reporting, fatal-window copy/close buttons, and localization entries.

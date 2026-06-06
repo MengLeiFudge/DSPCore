@@ -13,6 +13,10 @@ This block declares proto registrations and the DSPCore data phases.
 - `Api/ProtoKind.cs`
 - `Api/VanillaDataView.cs`
 
+## Compatibility API
+
+- `Compat/LDBToolShim.cs`: old namespace shell for `xiaoye97.LDBTool`; Proto entries belong to this block, while build bar entries delegate to the BuildBar compatibility bridge.
+
 ## Example
 
 - `Examples/ProtoPhasesExample.cs`

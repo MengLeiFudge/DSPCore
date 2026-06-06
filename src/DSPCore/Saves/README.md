@@ -14,6 +14,10 @@
 - `Api/SaveBlock.cs`
 - `Api/SaveBlockFormat.cs`
 
+## 兼容入口
+
+- `Compat/DSPModSaveShim.cs`：旧命名空间 `crecheng.DSPModSave` 的存档接口、加载顺序和手动注册外壳。
+
 ## 示例
 
 - `Examples/SaveHandlerExample.cs`

@@ -159,7 +159,7 @@ public static class DspCore
         RegisterFeature("core.saves", "Save sidecar bridge / 存档桥接", 40);
         RegisterFeature("core.achievements", "Achievement policy / 成就策略", 50);
         RegisterFeature("core.errors", "Error diagnostics / 错误诊断", 60);
-        RegisterFeature("core.legacy", "Legacy API shims / 旧 API 兼容", 100);
+        RegisterFeature("core.compat", "Feature compatibility shims / 功能块兼容", 100);
     }
 
     private static void RegisterFeature(string id, string displayName, int priority)

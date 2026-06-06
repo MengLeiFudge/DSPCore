@@ -18,7 +18,7 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 ## 初版范围
 
 - 提供 P0/P1 的作者可见功能块：功能生命周期、数据阶段、物品/配方/科技/指引注册、建造栏位置、资源、图标、本地化、分页、选择器、配方类型、按键、存档、成就和错误报告。
-- 提供 `xiaoye97.LDBTool`、`crecheng.DSPModSave`、`CommonAPI` 和 `BuildBarTool` 的旧 API 兼容层。
+- 提供 `xiaoye97.LDBTool`、`crecheng.DSPModSave`、`CommonAPI` 和 `BuildBarTool` 的旧 API 兼容层；兼容代码按所属功能块放入 `Compat/`，不再使用集中式 `Legacy/` 目录。
 - 公开 API 提供中英文 XML summary。
 
 当前版本已接入 P0/P1 运行时桥接：BepInEx/Harmony 启动、Proto 写入、多行建造栏绑定、资源/图标加载、物品/配方/制造器分页、选择器弹窗、自定义配方类型限制、按键回调、DSPCore 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误报告、错误窗口复制/关闭按钮和本地化条目。

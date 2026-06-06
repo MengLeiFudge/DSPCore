@@ -21,6 +21,11 @@ Compatibility patch declarations belong to Core as a framework-level patch suppo
 - `Api/PatchDescriptor.cs`
 - `Api/CompatibilityPatchDescriptor.cs`
 
+## Compatibility API
+
+- `Compat/CommonApiShim.cs`: old namespace shell for `CommonAPI` module queries and submodule dependency attributes.
+- `Compat/IsExternalInit.cs`: compile-time polyfill required for record/init-only syntax on net472.
+
 ## Examples
 
 - `Examples/CompatibilityPatchExample.cs`

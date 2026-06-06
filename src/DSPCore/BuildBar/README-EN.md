@@ -14,7 +14,12 @@ The new standard slot is `tab`, `row`, and `index`.
 - `Api/BuildBar.cs`: short entry point when you only have an item id.
 - `Api/BuildBarRegistry.cs`: slot binding registry.
 - `Api/BuildBarSlot.cs`
-- `Api/BuildBarTier.cs`: obsolete compatibility calls.
+
+## Compatibility API
+
+- `Compat/BuildBarTier.cs`: legacy BuildBarTool tier semantics.
+- `Compat/LegacyBuildBarCompatibility.cs`: bridge from legacy `SetBuildBar(category,index,itemId,layer/tier)` to `tab/row/index`.
+- `Compat/BuildBarToolShim.cs`: old namespace shell for `BuildBarTool.BuildBarTool`.
 
 ## Example
 
@@ -27,4 +32,4 @@ The new standard slot is `tab`, `row`, and `index`.
 
 ## Boundaries
 
-Item creation belongs to proto/item features. Those features may call `ItemProto.BindQuickBar(...)` after creating or modifying an item. Legacy `SetBuildBar` is kept only for BuildBarTool and LDBTool compatibility.
+Item creation belongs to proto/item features. Those features may call `ItemProto.BindQuickBar(...)` after creating or modifying an item. Legacy `SetBuildBar` may only live under `Compat/` for BuildBarTool and LDBTool compatibility.

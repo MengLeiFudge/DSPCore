@@ -14,7 +14,12 @@
 - `Api/BuildBar.cs`：只有物品 ID 时使用的短入口。
 - `Api/BuildBarRegistry.cs`：槽位绑定注册表。
 - `Api/BuildBarSlot.cs`
-- `Api/BuildBarTier.cs`：obsolete 兼容调用使用。
+
+## 兼容入口
+
+- `Compat/BuildBarTier.cs`：旧 BuildBarTool 层级语义。
+- `Compat/LegacyBuildBarCompatibility.cs`：旧 `SetBuildBar(category,index,itemId,layer/tier)` 到 `tab/row/index` 的桥接。
+- `Compat/BuildBarToolShim.cs`：旧命名空间 `BuildBarTool.BuildBarTool` 外壳。
 
 ## 示例
 
@@ -27,4 +32,4 @@
 
 ## 边界
 
-物品创建属于原型/物品功能。那些功能可以在创建或修改物品后调用 `ItemProto.BindQuickBar(...)`。旧 `SetBuildBar` 只用于兼容 BuildBarTool 和 LDBTool 旧入口。
+物品创建属于原型/物品功能。那些功能可以在创建或修改物品后调用 `ItemProto.BindQuickBar(...)`。旧 `SetBuildBar` 只允许放在 `Compat/`，用于兼容 BuildBarTool 和 LDBTool 旧入口。

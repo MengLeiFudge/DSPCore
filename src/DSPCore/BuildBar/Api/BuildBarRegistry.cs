@@ -43,36 +43,6 @@ public sealed class BuildBarRegistry
     }
 
     /// <summary>
-    /// 旧 SetBuildBar 兼容入口，将 category/index/layer 映射到 tab/row/index。
-    /// Legacy SetBuildBar bridge that maps category/index/layer to tab/row/index.
-    /// </summary>
-    /// <param name="category">旧建造分类；映射为 tab。Legacy build category; mapped to tab.</param>
-    /// <param name="index">旧按钮索引；映射为 index。Legacy button index; mapped to index.</param>
-    /// <param name="itemId">物品 ID。Item id.</param>
-    /// <param name="layer">旧建造栏层级；映射为 row。Legacy build bar layer; mapped to row.</param>
-    /// <returns>绑定被接受时返回 true。Returns true when the binding is accepted.</returns>
-    [System.Obsolete("Use SetBuildBar(tab, row, index, itemId) instead.")]
-    public bool SetBuildBar(int category, int index, int itemId, int layer = 1)
-    {
-        return BindQuickBar(category, layer, index, itemId);
-    }
-
-    /// <summary>
-    /// 使用旧 BuildBarTool 层级语义设置一个建造栏按钮绑定。
-    /// Sets a build bar button binding using legacy BuildBarTool tier semantics.
-    /// </summary>
-    /// <param name="category">建造分类，从 1 开始。Build category, starting from 1.</param>
-    /// <param name="index">按钮索引，从 1 开始。Button index, starting from 1.</param>
-    /// <param name="itemId">物品 ID。Item id.</param>
-    /// <param name="tier">旧建造栏层级。Legacy build bar tier.</param>
-    /// <returns>绑定被接受时返回 true。Returns true when the binding is accepted.</returns>
-    [System.Obsolete("Use SetBuildBar(tab, row, index, itemId) instead.")]
-    public bool SetBuildBar(int category, int index, int itemId, BuildBarTier tier)
-    {
-        return SetBuildBar(category, index, itemId, (int)tier);
-    }
-
-    /// <summary>
     /// 获取所有建造栏绑定。
     /// Gets all build bar bindings.
     /// </summary>

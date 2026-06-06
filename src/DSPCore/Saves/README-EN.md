@@ -14,6 +14,10 @@ This block declares mod save handlers and tagged block save helpers.
 - `Api/SaveBlock.cs`
 - `Api/SaveBlockFormat.cs`
 
+## Compatibility API
+
+- `Compat/DSPModSaveShim.cs`: old namespace shell for `crecheng.DSPModSave` save interfaces, load order, and manual registration.
+
 ## Examples
 
 - `Examples/SaveHandlerExample.cs`
