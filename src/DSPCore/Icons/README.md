@@ -6,17 +6,18 @@
 
 ## 公开入口
 
-- `Icons`：作者侧短入口。
-- `IconDescriptor`
-- `IconSetRegistry`
+- `Api/Icons.cs`：作者侧短入口。
+- `Api/IconDescriptor.cs`
+- `Api/IconSetRegistry.cs`
 
 ## 示例
 
-- `Examples/IconSetExample.cs`
+- `Examples/IconSetRegistration.md`
+- `Examples/IconSetRegistrationExample.cs`
 
 ## 运行时
 
-`IconRuntime.cs` 会加载 Unity `Resources` sprite 或本地 PNG 文件，缓存 sprite，解析 fallback，并把图标写入目标 Proto。
+`Runtime/IconRuntime.cs` 会加载 Unity `Resources` sprite 或本地 PNG 文件，缓存 sprite，解析 fallback，并把图标写入目标 Proto。
 
 ## 边界
 

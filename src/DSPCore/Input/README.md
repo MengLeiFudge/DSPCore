@@ -6,18 +6,19 @@
 
 ## 公开入口
 
-- `KeyBinds`：作者侧短入口。
-- `KeyBindDescriptor`
-- `KeyBindRegistry`
-- `CoreKeyAction`
+- `Api/KeyBinds.cs`：作者侧短入口。
+- `Api/KeyBindDescriptor.cs`
+- `Api/KeyBindRegistry.cs`
+- `Api/CoreKeyAction.cs`
 
 ## 示例
 
-- `Examples/KeyBindExample.cs`
+- `Examples/KeyBindRegistration.md`
+- `Examples/KeyBindRegistrationExample.cs`
 
 ## 运行时
 
-`KeyBindRuntime.cs` 会轮询已注册按键，并在按下、按住或释放时调用回调。
+`Runtime/KeyBindRuntime.cs` 会轮询已注册按键，并在按下、按住或释放时调用回调。
 
 ## 边界
 

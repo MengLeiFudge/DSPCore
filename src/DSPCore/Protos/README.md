@@ -6,20 +6,21 @@
 
 ## 公开入口
 
-- `Protos`：作者侧短入口。
-- `ProtoRegistryFacade`
-- `ProtoRegistration`
-- `CoreDataPhase`
-- `ProtoKind`
-- `VanillaDataView`
+- `Api/Protos.cs`：作者侧短入口。
+- `Api/ProtoRegistryFacade.cs`
+- `Api/ProtoRegistration.cs`
+- `Api/CoreDataPhase.cs`
+- `Api/ProtoKind.cs`
+- `Api/VanillaDataView.cs`
 
 ## 示例
 
 - `Examples/ProtoPhasesExample.cs`
+- `Examples/ProtoPhases.md`
 
 ## 运行时
 
-`ProtoRuntime.cs` 会在 `VFPreload.InvokeOnLoadWorkEnded` 前后应用 Proto 注册，并重建关键派生缓存。
+`Runtime/ProtoRuntime.cs` 会在 `VFPreload.InvokeOnLoadWorkEnded` 前后应用 Proto 注册，并重建关键派生缓存。
 
 ## 边界
 

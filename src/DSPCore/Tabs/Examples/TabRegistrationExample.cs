@@ -13,7 +13,7 @@ namespace ExampleMod;
 // Usage:
 // - Register once during startup.
 // - Use a stable Id so saved UI state and compatibility reports can identify this tab.
-public static class TabsExample
+public static class TabRegistrationExample
 {
     public static void Register()
     {

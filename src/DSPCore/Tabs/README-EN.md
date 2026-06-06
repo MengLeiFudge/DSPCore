@@ -6,17 +6,18 @@ This block declares custom UI tabs for item, recipe, and replicator surfaces.
 
 ## Public API
 
-- `Tabs`: author-facing short entry point.
-- `CoreTabDescriptor`
-- `TabRegistry`
+- `Api/Tabs.cs`: author-facing short entry point.
+- `Api/CoreTabDescriptor.cs`
+- `Api/TabRegistry.cs`
 
 ## Example
 
-- `Examples/TabsExample.cs`
+- `Examples/TabRegistration.md`
+- `Examples/TabRegistrationExample.cs`
 
 ## Runtime
 
-`TabRuntime.cs` clones existing type buttons and routes custom tab clicks through the vanilla GridIndex category flow.
+`Runtime/TabRuntime.cs` clones existing type buttons and routes custom tab clicks through the vanilla GridIndex category flow.
 
 ## Boundaries
 

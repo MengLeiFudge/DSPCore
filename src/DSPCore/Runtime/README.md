@@ -6,7 +6,7 @@
 
 ## 公开入口
 
-`DSPCorePlugin` 是 BepInEx 插件入口。
+`Runtime/DSPCorePlugin.cs` 是 BepInEx 插件入口。
 
 ## 运行时
 
@@ -14,4 +14,4 @@
 
 ## 边界
 
-Runtime 不定义公开功能语义，也不承载具体功能运行时实现。具体桥接代码放在对应功能块目录，例如 `BuildBar/BuildBarRuntime.cs`、`Protos/ProtoRuntime.cs` 和 `Saves/SaveRuntime.cs`。
+Runtime 不定义公开功能语义，也不承载具体功能运行时实现。具体桥接代码放在对应功能块目录，例如 `../BuildBar/Runtime/BuildBarRuntime.cs`、`../Protos/Runtime/ProtoRuntime.cs` 和 `../Saves/Runtime/SaveRuntime.cs`。

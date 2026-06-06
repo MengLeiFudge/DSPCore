@@ -86,11 +86,17 @@ Build succeeded.
 - Every public capability should have a concrete `.cs` example under its feature block's `Examples/` directory. Cross-feature walkthroughs may use `docs/examples/`. All example `.cs` files are documentation artifacts and must be excluded from compilation.
 - 每一项公开能力都应在所属功能块的 `Examples/` 目录下有具体 `.cs` 示例。跨功能完整流程可以放在 `docs/examples/`。所有示例 `.cs` 文件都属于文档产物，必须排除编译。
 
+- Feature-specific examples should use paired scenario files when practical: `Examples/<Scenario>.md` explains when to use the API, key parameters, runtime prerequisites, and common mistakes; `Examples/<Scenario>Example.cs` provides the small demo code. The `.md` explanation does not replace the feature block README, and the `.cs` demo remains excluded from compilation.
+- 功能专属示例在可行时应使用成对场景文件：`Examples/<Scenario>.md` 说明适用时机、关键参数、运行时前提和常见误用；`Examples/<Scenario>Example.cs` 提供小型 demo 代码。`.md` 说明不替代功能块 README，`.cs` demo 仍必须排除编译。
+
 - Every feature block directory under `src/DSPCore/` must have `README.md` for Chinese documentation and `README-EN.md` for English documentation, excluding build/metadata directories such as `bin/`, `obj/`, and `Properties/`.
 - `src/DSPCore/` 下每个功能块目录都必须有中文 `README.md` 和英文 `README-EN.md`，但 `bin/`、`obj/`、`Properties/` 等构建/元数据目录除外。
 
 - User-visible behavior or public API changes require README/docs review in the same task.
 - 用户可见行为或公开 API 变更，必须在同一任务检查 README/docs。
+
+- Feature blocks are internally split into `Api/`, `Runtime/`, `Compat/`, and `Examples/` when they contain those responsibilities. `Api/` owns author-facing entry points, descriptors, registries, extension methods, and public models. `Runtime/` owns BepInEx/Harmony/DSP lifecycle bridges, Unity UI projection, data-phase executors, and other implementation that applies registered intent to the game. `Compat/` owns legacy or third-party compatibility adapters for that feature block. `Examples/` owns author-facing scenario documentation and demo code.
+- 功能块内部按职责拆成 `Api/`、`Runtime/`、`Compat/`、`Examples/`，只有实际存在对应职责时才创建目录。`Api/` 负责作者侧入口、descriptor、registry、扩展方法和公开模型。`Runtime/` 负责 BepInEx/Harmony/DSP 生命周期桥接、Unity UI 投射、数据阶段执行器，以及把注册意图应用到游戏里的实现。`Compat/` 负责该功能块的旧 API 或第三方兼容适配。`Examples/` 负责作者侧场景说明和 demo 代码。
 
 ## Git Rules / Git 规则
 
@@ -118,23 +124,23 @@ Build succeeded.
 
 ```text
 src/DSPCore/
-├── Core/                    # framework entry point plus feature/module registries
-├── Achievements/            # achievement policy aggregation
-├── BuildBar/                # build bar registration model and runtime bridge
-├── Compatibility/           # compatibility patch declarations
-├── CompatibilityPolyfills/  # target-framework compatibility helpers
-├── Errors/                  # error report model and fatal-window runtime bridge
-├── Icons/                   # icon registration model and icon runtime bridge
-├── Input/                   # key bind declarations and polling bridge
-├── Legacy/                  # obsolete legacy API shims
-├── Pickers/                 # picker request declarations and popup bridge
-├── Protos/                  # Proto registration facade and data-phase bridge
-├── Recipes/                 # custom recipe type declarations and recipe guard bridge
-├── Resources/               # resource and localization declarations plus localization bridge
-├── Runtime/                 # BepInEx plugin entry and cross-feature runtime assembly only
-├── Saves/                   # save handler abstraction and sidecar save bridge
-├── Tabs/                    # tab declarations and UI projection bridge
-└── UI/                      # UI abstraction descriptors
+├── Core/                    # Api/: framework entry point plus feature/module registries
+├── Achievements/            # Api/Runtime/Examples: achievement policy aggregation
+├── BuildBar/                # Api/Runtime/Examples: build bar slot binding
+├── Compatibility/           # Api/Examples: compatibility patch declarations
+├── CompatibilityPolyfills/  # Compat/: target-framework compatibility helpers
+├── Errors/                  # Api/Runtime: error report model and fatal-window runtime bridge
+├── Icons/                   # Api/Runtime/Examples: icon registration and icon runtime bridge
+├── Input/                   # Api/Runtime/Examples: key bind declarations and polling bridge
+├── Legacy/                  # Compat/: obsolete legacy API shims
+├── Pickers/                 # Api/Runtime/Examples: picker requests and popup bridge
+├── Protos/                  # Api/Runtime/Examples: Proto registration facade and data-phase bridge
+├── Recipes/                 # Api/Runtime/Examples: custom recipe types and recipe guard bridge
+├── Resources/               # Api/Runtime: resource and localization declarations plus localization bridge
+├── Runtime/                 # Runtime/: BepInEx plugin entry and cross-feature runtime assembly only
+├── Saves/                   # Api/Runtime/Examples: save abstraction and sidecar save bridge
+├── Tabs/                    # Api/Runtime/Examples: tab declarations and UI projection bridge
+└── UI/                      # Api/: UI abstraction descriptors
 ```
 
 ## Current Limitations / 当前限制

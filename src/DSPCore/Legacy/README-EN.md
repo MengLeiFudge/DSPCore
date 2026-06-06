@@ -11,6 +11,8 @@ This block keeps obsolete legacy namespaces and maps covered calls to DSPCore's 
 - `CommonAPI`
 - `BuildBarTool`
 
+Compatibility shim files live under `Compat/`.
+
 ## Runtime
 
 Legacy calls delegate to new registries where possible. Runtime behavior is still owned by the new feature blocks.

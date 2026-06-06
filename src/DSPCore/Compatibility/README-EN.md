@@ -6,13 +6,14 @@ This block records compatibility patch declarations as feature-level metadata.
 
 ## Public API
 
-- `Compatibility`: author-facing short entry point.
-- `CompatibilityPatchDescriptor`
-- `CompatibilityPatchRegistry`
+- `Api/Compatibility.cs`: author-facing short entry point.
+- `Api/CompatibilityPatchDescriptor.cs`
+- `Api/CompatibilityPatchRegistry.cs`
 
 ## Example
 
 - `Examples/CompatibilityPatchExample.cs`
+- `Examples/CompatibilityPatch.md`
 
 ## Runtime
 

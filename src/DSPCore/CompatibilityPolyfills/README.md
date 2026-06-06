@@ -14,4 +14,4 @@
 
 ## 边界
 
-本目录只应放置小型编译器/运行时兼容辅助，例如 `IsExternalInit`。
+本目录只应放置小型编译器/运行时兼容辅助，例如 `Compat/IsExternalInit.cs`。

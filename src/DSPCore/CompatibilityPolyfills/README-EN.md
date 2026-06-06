@@ -14,4 +14,4 @@ These files should not add runtime behavior.
 
 ## Boundaries
 
-Keep this directory limited to small compiler/runtime compatibility helpers such as `IsExternalInit`.
+Keep this directory limited to small compiler/runtime compatibility helpers such as `Compat/IsExternalInit.cs`.

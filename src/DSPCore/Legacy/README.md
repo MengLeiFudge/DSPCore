@@ -11,6 +11,8 @@
 - `CommonAPI`
 - `BuildBarTool`
 
+兼容 shim 文件放在 `Compat/`。
+
 ## 运行时
 
 旧调用会尽量委托给新注册表。运行时行为仍由新功能块负责。

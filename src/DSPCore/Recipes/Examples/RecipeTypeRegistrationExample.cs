@@ -13,7 +13,7 @@ namespace ExampleMod;
 // Usage:
 // - Register after recipe ids and machine item ids are known.
 // - Keep RecipeIds and AssemblerItemIds stable across versions when possible.
-public static class RecipeTypeExample
+public static class RecipeTypeRegistrationExample
 {
     public static void Register()
     {

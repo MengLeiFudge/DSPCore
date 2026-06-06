@@ -10,20 +10,20 @@
 
 ## 公开入口
 
-- `ItemProto.BindQuickBar(tab, row, index)`：首选作者写法。
-- `ItemProto.BindQuickBar(buildIndex, row)`：迁移 BuildIndex 风格代码时使用。
-- `BuildBar.BindQuickBar(tab, row, index, itemId)`：只有物品 ID 时使用。
-- `BuildBarRegistry.BindQuickBar(tab, row, index, itemId)`
-- `BuildBarSlot`
-- `BuildBarTier` 用于 obsolete 兼容调用。
+- `Api/ItemProtoQuickBarExtensions.cs`：`ItemProto.BindQuickBar(...)` 首选作者写法。
+- `Api/BuildBar.cs`：只有物品 ID 时使用的短入口。
+- `Api/BuildBarRegistry.cs`：槽位绑定注册表。
+- `Api/BuildBarSlot.cs`
+- `Api/BuildBarTier.cs`：obsolete 兼容调用使用。
 
 ## 示例
 
-- `Examples/BuildBarExample.cs`
+- `Examples/QuickBarBinding.md`
+- `Examples/QuickBarBindingExample.cs`
 
 ## 运行时
 
-`BuildBarRuntime.cs` 会把第 1 行写入原版 `UIBuildMenu.protos`，并为第 2 行及以后创建 DSPCore 扩展按钮。
+`Runtime/BuildBarRuntime.cs` 会把第 1 行写入原版 `UIBuildMenu.protos`，并为第 2 行及以后创建 DSPCore 扩展按钮。
 
 ## 边界
 

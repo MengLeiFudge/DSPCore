@@ -6,13 +6,13 @@
 
 ## 公开入口
 
-- `Errors`：作者侧短入口。
-- `ErrorReport`
-- `ErrorReporter`
+- `Api/Errors.cs`：作者侧短入口。
+- `Api/ErrorReport.cs`
+- `Api/ErrorReporter.cs`
 
 ## 运行时
 
-`ErrorRuntime.cs` 捕获 Unity 日志，并给致命错误窗口添加关闭/复制能力。
+`Runtime/ErrorRuntime.cs` 捕获 Unity 日志，并给致命错误窗口添加关闭/复制能力。
 
 ## 边界
 

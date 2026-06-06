@@ -13,7 +13,7 @@ namespace ExampleMod;
 // Usage:
 // - Call OpenItemPicker from your UI button callback.
 // - OnReturn receives the selected object; always null-check and type-check.
-public static class PickerExample
+public static class PickerRequestExample
 {
     public static void OpenItemPicker()
     {

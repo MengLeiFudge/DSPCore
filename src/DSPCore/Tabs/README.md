@@ -6,17 +6,18 @@
 
 ## 公开入口
 
-- `Tabs`：作者侧短入口。
-- `CoreTabDescriptor`
-- `TabRegistry`
+- `Api/Tabs.cs`：作者侧短入口。
+- `Api/CoreTabDescriptor.cs`
+- `Api/TabRegistry.cs`
 
 ## 示例
 
-- `Examples/TabsExample.cs`
+- `Examples/TabRegistration.md`
+- `Examples/TabRegistrationExample.cs`
 
 ## 运行时
 
-`TabRuntime.cs` 会克隆现有分类按钮，并通过原版 GridIndex 分类流程处理自定义分页点击。
+`Runtime/TabRuntime.cs` 会克隆现有分类按钮，并通过原版 GridIndex 分类流程处理自定义分页点击。
 
 ## 边界
 

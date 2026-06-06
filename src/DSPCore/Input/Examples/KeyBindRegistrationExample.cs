@@ -13,7 +13,7 @@ namespace ExampleMod;
 // Usage:
 // - Register once during plugin startup.
 // - Keep callbacks short; expensive work should be deferred to your own update logic.
-public static class KeyBindExample
+public static class KeyBindRegistrationExample
 {
     public static void Register()
     {

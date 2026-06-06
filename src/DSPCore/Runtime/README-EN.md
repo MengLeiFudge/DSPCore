@@ -6,7 +6,7 @@ This directory only keeps the BepInEx plugin entry point and cross-feature runti
 
 ## Public API
 
-`DSPCorePlugin` is the BepInEx plugin entry point.
+`Runtime/DSPCorePlugin.cs` is the BepInEx plugin entry point.
 
 ## Runtime
 
@@ -14,4 +14,4 @@ This directory only keeps the BepInEx plugin entry point and cross-feature runti
 
 ## Boundaries
 
-Runtime does not define public feature semantics and does not own concrete feature runtime implementations. Concrete bridge code lives in the matching feature block directory, such as `BuildBar/BuildBarRuntime.cs`, `Protos/ProtoRuntime.cs`, and `Saves/SaveRuntime.cs`.
+Runtime does not define public feature semantics and does not own concrete feature runtime implementations. Concrete bridge code lives in the matching feature block directory, such as `../BuildBar/Runtime/BuildBarRuntime.cs`, `../Protos/Runtime/ProtoRuntime.cs`, and `../Saves/Runtime/SaveRuntime.cs`.

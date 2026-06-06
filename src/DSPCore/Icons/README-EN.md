@@ -6,17 +6,18 @@ This block registers icon descriptors and resolves shared icon resources.
 
 ## Public API
 
-- `Icons`: author-facing short entry point.
-- `IconDescriptor`
-- `IconSetRegistry`
+- `Api/Icons.cs`: author-facing short entry point.
+- `Api/IconDescriptor.cs`
+- `Api/IconSetRegistry.cs`
 
 ## Example
 
-- `Examples/IconSetExample.cs`
+- `Examples/IconSetRegistration.md`
+- `Examples/IconSetRegistrationExample.cs`
 
 ## Runtime
 
-`IconRuntime.cs` loads Unity `Resources` sprites or local PNG files, caches sprites, resolves fallbacks, and applies icons to target protos.
+`Runtime/IconRuntime.cs` loads Unity `Resources` sprites or local PNG files, caches sprites, resolves fallbacks, and applies icons to target protos.
 
 ## Boundaries
 

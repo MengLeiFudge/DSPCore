@@ -6,8 +6,8 @@ This block stores lightweight UI descriptors and creation helpers for feature bl
 
 ## Public API
 
-- `UiButtonDescriptor`
-- `UiNodeFactory`
+- `Api/UiButtonDescriptor.cs`
+- `Api/UiNodeFactory.cs`
 
 ## Runtime
 

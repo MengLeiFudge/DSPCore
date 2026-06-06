@@ -6,13 +6,13 @@ This block collects structured error reports and exposes them to diagnostics UI/
 
 ## Public API
 
-- `Errors`: author-facing short entry point.
-- `ErrorReport`
-- `ErrorReporter`
+- `Api/Errors.cs`: author-facing short entry point.
+- `Api/ErrorReport.cs`
+- `Api/ErrorReporter.cs`
 
 ## Runtime
 
-`ErrorRuntime.cs` captures Unity logs and enhances the fatal error window with close/copy actions.
+`Runtime/ErrorRuntime.cs` captures Unity logs and enhances the fatal error window with close/copy actions.
 
 ## Boundaries
 

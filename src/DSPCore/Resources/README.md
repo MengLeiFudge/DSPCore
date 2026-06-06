@@ -6,13 +6,13 @@
 
 ## 公开入口
 
-- `ResourceDescriptor`
-- `ResourceRegistry`
-- `LocalizationEntry`
+- `Api/ResourceDescriptor.cs`
+- `Api/ResourceRegistry.cs`
+- `Api/LocalizationEntry.cs`
 
 ## 运行时
 
-`LocalizationRuntime.cs` 会写入本地化条目。图标 sprite 加载由 `Icons/IconRuntime.cs` 负责。
+`Runtime/LocalizationRuntime.cs` 会写入本地化条目。图标 sprite 加载由 `../Icons/Runtime/IconRuntime.cs` 负责。
 
 ## 边界
 

@@ -6,22 +6,24 @@
 
 ## 公开入口
 
-- `Saves`：作者侧短入口。
-- `ICoreSaveHandler`
-- `SaveRegistry`
-- `SaveRegistration`
-- `CoreLoadOrder`
-- `SaveBlock`
-- `SaveBlockFormat`
+- `Api/Saves.cs`：作者侧短入口。
+- `Api/ICoreSaveHandler.cs`
+- `Api/SaveRegistry.cs`
+- `Api/SaveRegistration.cs`
+- `Api/CoreLoadOrder.cs`
+- `Api/SaveBlock.cs`
+- `Api/SaveBlockFormat.cs`
 
 ## 示例
 
 - `Examples/SaveHandlerExample.cs`
+- `Examples/SaveHandler.md`
 - `Examples/SaveBlocksExample.cs`
+- `Examples/SaveBlocks.md`
 
 ## 运行时
 
-`SaveRuntime.cs` 会读写 `.dspcore` 独立存档，按加载顺序调用处理器，并桥接已覆盖的旧 DSPModSave 处理器。
+`Runtime/SaveRuntime.cs` 会读写 `.dspcore` 独立存档，按加载顺序调用处理器，并桥接已覆盖的旧 DSPModSave 处理器。
 
 ## 边界
 

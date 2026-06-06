@@ -6,19 +6,20 @@ This block declares requests to open vanilla item, recipe, or signal picker popu
 
 ## Public API
 
-- `Pickers`: author-facing short entry point.
-- `Pickers.Open(request)`: request one picker popup.
-- `PickerRequest`
-- `PickerRegistry`
-- `PickerKind`
+- `Api/Pickers.cs`: author-facing short entry point.
+- `Api/Pickers.cs#Open(request)`: request one picker popup.
+- `Api/PickerRequest.cs`
+- `Api/PickerRegistry.cs`
+- `Api/PickerKind.cs`
 
 ## Example
 
-- `Examples/PickerExample.cs`
+- `Examples/PickerRequest.md`
+- `Examples/PickerRequestExample.cs`
 
 ## Runtime
 
-`PickerRuntime.cs` consumes queued requests, opens the picker, applies return-time filters, and calls `OnReturn`.
+`Runtime/PickerRuntime.cs` consumes queued requests, opens the picker, applies return-time filters, and calls `OnReturn`.
 
 ## Boundaries
 

@@ -10,20 +10,20 @@ The new standard slot is `tab`, `row`, and `index`.
 
 ## Public API
 
-- `ItemProto.BindQuickBar(tab, row, index)`: preferred author-facing style.
-- `ItemProto.BindQuickBar(buildIndex, row)`: for migrating BuildIndex-style code.
-- `BuildBar.BindQuickBar(tab, row, index, itemId)`: use this when you only have an item id.
-- `BuildBarRegistry.BindQuickBar(tab, row, index, itemId)`
-- `BuildBarSlot`
-- `BuildBarTier` for obsolete compatibility calls.
+- `Api/ItemProtoQuickBarExtensions.cs`: preferred `ItemProto.BindQuickBar(...)` author-facing style.
+- `Api/BuildBar.cs`: short entry point when you only have an item id.
+- `Api/BuildBarRegistry.cs`: slot binding registry.
+- `Api/BuildBarSlot.cs`
+- `Api/BuildBarTier.cs`: obsolete compatibility calls.
 
 ## Example
 
-- `Examples/BuildBarExample.cs`
+- `Examples/QuickBarBinding.md`
+- `Examples/QuickBarBindingExample.cs`
 
 ## Runtime
 
-`BuildBarRuntime.cs` writes row 1 into vanilla `UIBuildMenu.protos` and creates DSPCore extended buttons for row 2 and later.
+`Runtime/BuildBarRuntime.cs` writes row 1 into vanilla `UIBuildMenu.protos` and creates DSPCore extended buttons for row 2 and later.
 
 ## Boundaries
 

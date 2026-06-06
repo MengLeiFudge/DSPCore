@@ -6,17 +6,18 @@
 
 ## 公开入口
 
-- `RecipeTypes`：作者侧短入口。
-- `RecipeTypeDescriptor`
-- `RecipeTypeRegistry`
+- `Api/RecipeTypes.cs`：作者侧短入口。
+- `Api/RecipeTypeDescriptor.cs`
+- `Api/RecipeTypeRegistry.cs`
 
 ## 示例
 
-- `Examples/RecipeTypeExample.cs`
+- `Examples/RecipeTypeRegistration.md`
+- `Examples/RecipeTypeRegistrationExample.cs`
 
 ## 运行时
 
-`RecipeTypeRuntime.cs` 会把声明配方标记为自定义类型，并阻止不支持的制作器选择这些配方。
+`Runtime/RecipeTypeRuntime.cs` 会把声明配方标记为自定义类型，并阻止不支持的制作器选择这些配方。
 
 ## 边界
 

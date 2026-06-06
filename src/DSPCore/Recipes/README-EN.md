@@ -6,17 +6,18 @@ This block declares custom recipe types and the machines allowed to use them.
 
 ## Public API
 
-- `RecipeTypes`: author-facing short entry point.
-- `RecipeTypeDescriptor`
-- `RecipeTypeRegistry`
+- `Api/RecipeTypes.cs`: author-facing short entry point.
+- `Api/RecipeTypeDescriptor.cs`
+- `Api/RecipeTypeRegistry.cs`
 
 ## Example
 
-- `Examples/RecipeTypeExample.cs`
+- `Examples/RecipeTypeRegistration.md`
+- `Examples/RecipeTypeRegistrationExample.cs`
 
 ## Runtime
 
-`RecipeTypeRuntime.cs` marks declared recipes as custom and blocks unsupported assembler recipe selection.
+`Runtime/RecipeTypeRuntime.cs` marks declared recipes as custom and blocks unsupported assembler recipe selection.
 
 ## Boundaries
 

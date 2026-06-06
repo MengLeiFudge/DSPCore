@@ -6,8 +6,8 @@
 
 ## 公开入口
 
-- `UiButtonDescriptor`
-- `UiNodeFactory`
+- `Api/UiButtonDescriptor.cs`
+- `Api/UiNodeFactory.cs`
 
 ## 运行时
 

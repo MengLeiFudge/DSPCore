@@ -6,18 +6,19 @@ This block declares key bindings and their trigger behavior.
 
 ## Public API
 
-- `KeyBinds`: author-facing short entry point.
-- `KeyBindDescriptor`
-- `KeyBindRegistry`
-- `CoreKeyAction`
+- `Api/KeyBinds.cs`: author-facing short entry point.
+- `Api/KeyBindDescriptor.cs`
+- `Api/KeyBindRegistry.cs`
+- `Api/CoreKeyAction.cs`
 
 ## Example
 
-- `Examples/KeyBindExample.cs`
+- `Examples/KeyBindRegistration.md`
+- `Examples/KeyBindRegistrationExample.cs`
 
 ## Runtime
 
-`KeyBindRuntime.cs` polls registered key bindings and invokes callbacks for press, hold, or release.
+`Runtime/KeyBindRuntime.cs` polls registered key bindings and invokes callbacks for press, hold, or release.
 
 ## Boundaries
 

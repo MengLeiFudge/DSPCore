@@ -6,13 +6,13 @@ This block registers shared resources and localization entries.
 
 ## Public API
 
-- `ResourceDescriptor`
-- `ResourceRegistry`
-- `LocalizationEntry`
+- `Api/ResourceDescriptor.cs`
+- `Api/ResourceRegistry.cs`
+- `Api/LocalizationEntry.cs`
 
 ## Runtime
 
-`LocalizationRuntime.cs` applies localization entries. Icon sprite loading is owned by `Icons/IconRuntime.cs`.
+`Runtime/LocalizationRuntime.cs` applies localization entries. Icon sprite loading is owned by `../Icons/Runtime/IconRuntime.cs`.
 
 ## Boundaries
 

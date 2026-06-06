@@ -6,13 +6,14 @@
 
 ## 公开入口
 
-- `Compatibility`：作者侧短入口。
-- `CompatibilityPatchDescriptor`
-- `CompatibilityPatchRegistry`
+- `Api/Compatibility.cs`：作者侧短入口。
+- `Api/CompatibilityPatchDescriptor.cs`
+- `Api/CompatibilityPatchRegistry.cs`
 
 ## 示例
 
 - `Examples/CompatibilityPatchExample.cs`
+- `Examples/CompatibilityPatch.md`
 
 ## 运行时
 

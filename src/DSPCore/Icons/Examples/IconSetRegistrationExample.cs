@@ -13,7 +13,7 @@ namespace ExampleMod;
 // Usage:
 // - Register icons before the proto/icon runtime bridge applies resources.
 // - Keep icon ids stable so other features can reference them as fallback icons.
-public static class IconSetExample
+public static class IconSetRegistrationExample
 {
     public static void Register()
     {

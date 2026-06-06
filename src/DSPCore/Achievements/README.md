@@ -6,17 +6,18 @@
 
 ## 公开入口
 
-- `Achievements`：作者侧短入口。
-- `AchievementPolicyDeclaration`：单个模组的 `ModGuid` + `DisableAchievements` 声明。
-- `AchievementPolicyRegistry`：全局策略注册表。
+- `Api/Achievements.cs`：作者侧短入口。
+- `Api/AchievementPolicyDeclaration.cs`：单个模组的 `ModGuid` + `DisableAchievements` 声明。
+- `Api/AchievementPolicyRegistry.cs`：全局策略注册表。
 
 ## 示例
 
+- `Examples/AchievementPolicy.md`
 - `Examples/AchievementPolicyExample.cs`
 
 ## 运行时
 
-`AchievementRuntime.cs` 会 patch 异常检查、本地成就变更、Milky Way 上传、排行榜上传和平台成就/元数据调用。
+`Runtime/AchievementRuntime.cs` 会 patch 异常检查、本地成就变更、Milky Way 上传、排行榜上传和平台成就/元数据调用。
 
 规则只有一个：任意模组声明 `DisableAchievements = true` 时禁用成就相关能力；否则屏蔽游戏异常报错，并允许获取成就、上传排行榜和获取平台元数据。
 

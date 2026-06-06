@@ -6,20 +6,21 @@ This block declares proto registrations and the DSPCore data phases.
 
 ## Public API
 
-- `Protos`: author-facing short entry point.
-- `ProtoRegistryFacade`
-- `ProtoRegistration`
-- `CoreDataPhase`
-- `ProtoKind`
-- `VanillaDataView`
+- `Api/Protos.cs`: author-facing short entry point.
+- `Api/ProtoRegistryFacade.cs`
+- `Api/ProtoRegistration.cs`
+- `Api/CoreDataPhase.cs`
+- `Api/ProtoKind.cs`
+- `Api/VanillaDataView.cs`
 
 ## Example
 
 - `Examples/ProtoPhasesExample.cs`
+- `Examples/ProtoPhases.md`
 
 ## Runtime
 
-`ProtoRuntime.cs` applies proto registrations around `VFPreload.InvokeOnLoadWorkEnded` and rebuilds key derived caches.
+`Runtime/ProtoRuntime.cs` applies proto registrations around `VFPreload.InvokeOnLoadWorkEnded` and rebuilds key derived caches.
 
 ## Boundaries
 
