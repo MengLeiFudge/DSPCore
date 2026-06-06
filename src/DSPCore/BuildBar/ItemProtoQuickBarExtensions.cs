@@ -15,7 +15,7 @@ public static class ItemProtoQuickBarExtensions
     /// <param name="row">建造栏行号，从 1 开始。Build bar row, starting from 1.</param>
     /// <param name="index">按钮索引，从 1 开始。Button index, starting from 1.</param>
     /// <returns>绑定被接受时返回 true。Returns true when the binding is accepted.</returns>
-    public static bool BindQuickBar(this ItemProto item, int tab, int row, int index)
+    public static bool SetBuildBar(this ItemProto item, int tab, int row, int index)
     {
         return item != null && BuildBar.BindQuickBar(tab, row, index, item.ID);
     }
@@ -28,8 +28,8 @@ public static class ItemProtoQuickBarExtensions
     /// <param name="buildIndex">BuildIndex 风格位置，category * 100 + index。BuildIndex-style position, category * 100 + index.</param>
     /// <param name="row">建造栏行号，从 1 开始；row = 2 对应旧 BuildBarTool 上层行。Build bar row, starting from 1; row = 2 maps to the legacy BuildBarTool top row.</param>
     /// <returns>绑定被接受时返回 true。Returns true when the binding is accepted.</returns>
-    public static bool BindQuickBar(this ItemProto item, int buildIndex, int row)
+    public static bool SetBuildBar(this ItemProto item, int buildIndex, int row)
     {
-        return item.BindQuickBar(buildIndex / 100, row, buildIndex % 100);
+        return item.SetBuildBar(buildIndex / 100, row, buildIndex % 100);
     }
 }

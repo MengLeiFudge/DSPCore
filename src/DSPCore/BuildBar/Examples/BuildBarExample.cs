@@ -16,15 +16,15 @@ namespace ExampleMod;
 // - index：按钮位置，从 1 开始。
 //
 // Usage:
-// - Call ItemProto.BindQuickBar after the item proto is created.
-// - Use BuildBar.BindQuickBar only when you only have an item id.
+// - Call ItemProto.SetBuildBar after the item proto is created.
+// - Use BuildBar.SetBuildBar only when you only have an item id.
 public static class BuildBarExample
 {
     public static void Register(ItemProto myItemProto)
     {
         // 首选写法：刚创建 ItemProto 后，直接把它绑定到快捷建造栏。
         // Preferred style: bind the item proto directly after creating it.
-        myItemProto.BindQuickBar(tab: 3, row: 2, index: 5);
+        myItemProto.SetBuildBar(tab: 3, row: 2, index: 5);
 
         // 只有手上只有 item id 时，才使用静态入口。
         // Use the static entry only when you only have an item id.
@@ -32,7 +32,7 @@ public static class BuildBarExample
 
         // 需要沿用 BuildIndex 风格时，可从 BuildIndex 拆出 category/index。
         // Use the BuildIndex-style overload when migrating BuildIndex-based code.
-        myItemProto.BindQuickBar(buildIndex: myItemProto.BuildIndex, row: 2);
+        myItemProto.SetBuildBar(buildIndex: myItemProto.BuildIndex, row: 2);
     }
 
     public static void RegisterLegacy()

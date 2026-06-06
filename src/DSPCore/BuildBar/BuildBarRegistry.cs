@@ -51,7 +51,7 @@ public sealed class BuildBarRegistry
     /// <param name="itemId">物品 ID。Item id.</param>
     /// <param name="layer">旧建造栏层级；映射为 row。Legacy build bar layer; mapped to row.</param>
     /// <returns>绑定被接受时返回 true。Returns true when the binding is accepted.</returns>
-    [System.Obsolete("Use BindQuickBar(tab, row, index, itemId) instead.")]
+    [System.Obsolete("Use SetBuildBar(tab, row, index, itemId) instead.")]
     public bool SetBuildBar(int category, int index, int itemId, int layer = 1)
     {
         return BindQuickBar(category, layer, index, itemId);
@@ -66,7 +66,7 @@ public sealed class BuildBarRegistry
     /// <param name="itemId">物品 ID。Item id.</param>
     /// <param name="tier">旧建造栏层级。Legacy build bar tier.</param>
     /// <returns>绑定被接受时返回 true。Returns true when the binding is accepted.</returns>
-    [System.Obsolete("Use BindQuickBar(tab, row, index, itemId) instead.")]
+    [System.Obsolete("Use SetBuildBar(tab, row, index, itemId) instead.")]
     public bool SetBuildBar(int category, int index, int itemId, BuildBarTier tier)
     {
         return SetBuildBar(category, index, itemId, (int)tier);

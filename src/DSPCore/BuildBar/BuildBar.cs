@@ -30,7 +30,7 @@ public static class BuildBar
     /// 旧 SetBuildBar 兼容入口，将 category/index/layer 映射到 tab/row/index。
     /// Legacy SetBuildBar bridge that maps category/index/layer to tab/row/index.
     /// </summary>
-    [System.Obsolete("Use BindQuickBar(tab, row, index, itemId) instead.")]
+    [System.Obsolete("Use SetBuildBar(tab, row, index, itemId) instead.")]
     public static bool SetBuildBar(int category, int index, int itemId, int layer = 1)
     {
         return DspCore.BuildBar.SetBuildBar(category, index, itemId, layer);
@@ -40,7 +40,7 @@ public static class BuildBar
     /// 使用旧 BuildBarTool 层级语义设置一个建造栏按钮绑定。
     /// Sets a build bar button binding using legacy BuildBarTool tier semantics.
     /// </summary>
-    [System.Obsolete("Use BindQuickBar(tab, row, index, itemId) instead.")]
+    [System.Obsolete("Use SetBuildBar(tab, row, index, itemId) instead.")]
     public static bool SetBuildBar(int category, int index, int itemId, BuildBarTier tier)
     {
         return DspCore.BuildBar.SetBuildBar(category, index, itemId, tier);
