@@ -36,7 +36,7 @@ P0/P1 是当前实现目标。
 - 功能生命周期：声明功能块、依赖、优先级和初始化。
 - 数据阶段：`Data`、`DataUpdates` 和 `DataFinalFixes`。
 - 原型功能：物品、配方、科技、指引、模型/建筑绑定和原版数据查询描述。
-- 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位，并负责两层或更多层建造栏、玩家自定义/动态覆盖格子、相关 UI 投射和刷新，以及 RebindBuildBar / BuildBarTool 兼容。其他功能块，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.BindQuickBar(...)`；BuildBar 不承担 Proto 创建职责。
+- 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位；第 1 行写入原版建造栏，第 2 行及以后使用 DSPCore 扩展按钮，并保留 BuildBarTool 兼容入口。其他功能块，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.SetBuildBar(...)`；BuildBar 不承担 Proto 创建职责。
 - 资源、图标和本地化：资源根、图标描述和翻译条目。
 - 分页和选择器：作者可以为物品、配方和制造器界面声明自定义分页，也可以打开物品、配方和信号选择器请求。
 - 存档：原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
@@ -86,7 +86,7 @@ bool disabled = Achievements.ShouldDisableAchievements();
 ```csharp
 using DSPCore;
 
-myItemProto.BindQuickBar(tab: 3, row: 2, index: 5);
+myItemProto.SetBuildBar(tab: 3, row: 2, index: 5);
 BuildBar.BindQuickBar(tab: 3, row: 2, index: 4, itemId: 9554);
 ```
 
@@ -111,7 +111,7 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 #pragma warning restore CS0618
 ```
 
-旧调用会被接受，但会标记为 obsolete。新模组应首选使用 `ItemProto.BindQuickBar(...)`，只有手上只有物品 ID 时再使用 `DSPCore.BuildBar.BindQuickBar(...)`。
+旧调用会被接受，但会标记为 obsolete。新模组应首选使用 `ItemProto.SetBuildBar(...)`，只有手上只有物品 ID 时再使用 `DSPCore.BuildBar.BindQuickBar(...)`。
 
 ## 文档
 

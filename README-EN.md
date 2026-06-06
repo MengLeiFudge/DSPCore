@@ -36,7 +36,7 @@ P0/P1 blocks are the current implementation target.
 - Feature lifecycle: declare feature blocks, dependencies, priority, and initialization.
 - Data phases: `Data`, `DataUpdates`, and `DataFinalFixes`.
 - Proto features: item, recipe, tech, tutorial, model/building binding, and vanilla data query descriptors.
-- Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot, and own two or more build bar rows, player-defined or dynamically overridden slots, related UI projection and refresh handling, RebindBuildBar compatibility, and BuildBarTool compatibility. Other feature blocks, such as item registration, should prefer `ItemProto.BindQuickBar(...)` after they have the item proto; BuildBar does not own proto creation.
+- Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot; row 1 writes to the vanilla build bar, row 2+ uses DSPCore extended buttons, and BuildBarTool compatibility entries remain available. Other feature blocks, such as item registration, should prefer `ItemProto.SetBuildBar(...)` after they have the item proto; BuildBar does not own proto creation.
 - Resources, icons, and localization: resource roots, icon descriptors, and translation entries.
 - Tabs and pickers: authors can declare custom tabs for item, recipe, and replicator surfaces, and can open item/recipe/signal picker requests.
 - Saves: raw `BinaryReader`/`BinaryWriter` handlers and tagged block helpers.
@@ -86,7 +86,7 @@ Not calling the API, or declaring `disableAchievements: false`, means that mod d
 ```csharp
 using DSPCore;
 
-myItemProto.BindQuickBar(tab: 3, row: 2, index: 5);
+myItemProto.SetBuildBar(tab: 3, row: 2, index: 5);
 BuildBar.BindQuickBar(tab: 3, row: 2, index: 4, itemId: 9554);
 ```
 
@@ -111,7 +111,7 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 #pragma warning restore CS0618
 ```
 
-The old call is accepted, but it is marked obsolete. New mods should prefer `ItemProto.BindQuickBar(...)`, and use `DSPCore.BuildBar.BindQuickBar(...)` only when they only have an item id.
+The old call is accepted, but it is marked obsolete. New mods should prefer `ItemProto.SetBuildBar(...)`, and use `DSPCore.BuildBar.BindQuickBar(...)` only when they only have an item id.
 
 ## Documentation
 

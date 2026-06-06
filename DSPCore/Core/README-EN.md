@@ -1,30 +1,67 @@
 # Core
 
-## Responsibility
+The Core block provides the DSPCore global entry point, built-in feature registration, module/feature declaration registries, runtime startup assembly, and a CommonAPI legacy module-query shim. It coordinates other feature blocks; it does not own concrete behavior such as build bar, saves, icons, or achievements.
 
-This block owns the `DspCore` entry point, framework-level registries, and BepInEx startup assembly.
+## What This Block Gives You
 
-## Public API
+- You can use short entries through `using DSPCore;`, or use `DspCore` to access all global registries.
+- DSPCore initializes built-in features and module declarations from BepInEx `Awake`, then assembles Harmony patches for feature blocks.
+- `Features` and `Modules` let mods declare feature/module metadata that other mods can query.
+- Legacy CommonAPI `CommonAPIPlugin.IsSubmoduleLoaded(...)` bridges to `Modules.TryGet(...)` for migration.
 
-- `Api/DspCore.cs`
-- `Api/Features.cs`: author-facing feature block short entry point.
-- `Api/Modules.cs`: author-facing module short entry point.
-- `Api/FeatureRegistry.cs`
-- `Api/ModuleRegistry.cs`
-- `Api/PatchRegistry.cs`
-- `Api/FeatureDescriptor.cs`
-- `Api/ModuleDescriptor.cs`
-- `Api/PatchDescriptor.cs`
+## Capability: Access Global Registries
 
-## Compatibility API
+`DspCore` is the aggregate entry point and contains:
 
-- `Compat/CommonApiShim.cs`: old namespace shell for `CommonAPI` module queries and submodule dependency attributes.
-- `Compat/IsExternalInit.cs`: compile-time polyfill required for record/init-only syntax on net472.
+- `DspCore.Protos`
+- `DspCore.BuildBar`
+- `DspCore.Saves`
+- `DspCore.Resources`
+- `DspCore.Icons`
+- `DspCore.Tabs`
+- `DspCore.Pickers`
+- `DspCore.RecipeTypes`
+- `DspCore.KeyBinds`
+- `DspCore.Achievements`
+- `DspCore.Errors`
 
-## Runtime
+Examples should usually use short entries such as `Protos.RegisterItem(...)`, `Saves.Register(...)`, and `BuildBar.BindQuickBar(...)`. Use `DspCore` when you need registry snapshots or aggregate services.
 
-`Runtime/DSPCorePlugin.cs` initializes this block from BepInEx and applies Harmony patches.
+## Capability: Declare Features And Modules
 
-## Boundaries
+```csharp
+Modules.Register(new ModuleDescriptor(
+    Id: "example.module",
+    DisplayName: "Example Module",
+    Initialize: InitializeModule,
+    Dependencies: null));
+```
 
-Core coordinates feature blocks and startup assembly, but should not own feature-specific behavior such as saves, icons, build bar, or achievements. Legacy API shims and third-party compatibility adapters must live in the owning feature block's `Compat/`.
+`Features.Register(...)` is for feature-block-level capabilities. `Modules.Register(...)` is for internal or cross-mod module metadata. If the same ID is registered more than once, the later registration replaces the earlier one.
+
+During initialization, DSPCore initializes features by priority and ID. Modules currently initialize in registry enumeration order and do not use dependency topological sorting.
+
+## Capability: Declare Patch Metadata
+
+`DspCore.Patches.Register(new PatchDescriptor(...))` currently stores patch metadata only. It does not automatically apply Harmony patches for you. Concrete patches still belong in the owning feature block or your mod runtime code.
+
+## Capability: CommonAPI Compatibility Query
+
+Legacy code calling:
+
+```csharp
+CommonAPI.CommonAPIPlugin.IsSubmoduleLoaded("example.module")
+```
+
+is redirected to `DSPCore.Modules.TryGet(...)`. `CommonAPISubmoduleDependencyAttribute` remains as an obsolete compatibility type, but it does not reproduce CommonAPI's full submodule scanning, version constraint, or loader behavior.
+
+## What This Block Does Not Own
+
+- It does not contain concrete feature behavior; saves, icons, build bar, achievements, and similar logic must stay in the owning feature block.
+- It does not automatically resolve a module dependency graph; `Dependencies` is currently descriptor data.
+- It does not automatically apply patch descriptors registered in `PatchRegistry`.
+- It should not grow a centralized legacy compatibility directory; old API shims must live in the owning feature block's `Compat/`.
+
+## Runtime Startup
+
+`DSPCorePlugin.Awake()` initializes DSPCore, registers legacy DSPModSave handlers, creates Harmony, and assembles the currently implemented Proto, BuildBar, Saves, Achievements, Errors, Localization, Tabs, and RecipeTypes patches. `Update()` polls KeyBinds and Pickers.

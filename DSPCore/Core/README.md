@@ -1,30 +1,67 @@
 # 核心入口
 
-## 职责
+Core 模块提供 DSPCore 的全局入口、内置功能块注册、模块/功能声明表、运行时启动装配，以及 CommonAPI 旧模块查询的兼容外壳。它是其他功能块的协调层，不承载具体建造栏、存档、图标、成就等业务行为。
 
-本功能块负责 `DspCore` 入口、框架级注册表和 BepInEx 启动装配。
+## 这个模块带来什么便利
 
-## 公开入口
+- 你可以通过 `using DSPCore;` 使用短入口，也可以通过 `DspCore` 访问所有全局 registry。
+- DSPCore 会在 BepInEx `Awake` 中统一初始化内置功能块和模块声明，再装配各功能块 Harmony patch。
+- `Features` 和 `Modules` 能让模组声明自己的功能/模块元数据，便于其他模组查询是否存在。
+- 旧 CommonAPI 的 `CommonAPIPlugin.IsSubmoduleLoaded(...)` 会桥接到 `Modules.TryGet(...)`，方便迁移旧依赖查询。
 
-- `Api/DspCore.cs`
-- `Api/Features.cs`：作者侧功能块短入口。
-- `Api/Modules.cs`：作者侧模块短入口。
-- `Api/FeatureRegistry.cs`
-- `Api/ModuleRegistry.cs`
-- `Api/PatchRegistry.cs`
-- `Api/FeatureDescriptor.cs`
-- `Api/ModuleDescriptor.cs`
-- `Api/PatchDescriptor.cs`
+## 功能：访问全局 registry
 
-## 兼容入口
+`DspCore` 是聚合入口，包含：
 
-- `Compat/CommonApiShim.cs`：旧命名空间 `CommonAPI` 的模块查询和子模块依赖属性外壳。
-- `Compat/IsExternalInit.cs`：net472 下支持 record/init-only 语法所需的编译期 polyfill。
+- `DspCore.Protos`
+- `DspCore.BuildBar`
+- `DspCore.Saves`
+- `DspCore.Resources`
+- `DspCore.Icons`
+- `DspCore.Tabs`
+- `DspCore.Pickers`
+- `DspCore.RecipeTypes`
+- `DspCore.KeyBinds`
+- `DspCore.Achievements`
+- `DspCore.Errors`
 
-## 运行时
+日常示例优先使用短入口，例如 `Protos.RegisterItem(...)`、`Saves.Register(...)`、`BuildBar.BindQuickBar(...)`。需要访问 registry 快照或聚合服务时再使用 `DspCore`。
 
-`Runtime/DSPCorePlugin.cs` 会从 BepInEx 初始化本功能块并应用 Harmony 补丁。
+## 功能：声明功能块和模块
 
-## 边界
+```csharp
+Modules.Register(new ModuleDescriptor(
+    Id: "example.module",
+    DisplayName: "Example Module",
+    Initialize: InitializeModule,
+    Dependencies: null));
+```
 
-Core 只协调功能块和启动装配，不应持有存档、图标、建造栏、成就等具体功能行为。旧 API shim 和第三方兼容适配必须放回所属功能块的 `Compat/`。
+`Features.Register(...)` 适合声明功能块级能力；`Modules.Register(...)` 适合声明模组内部或跨模组可查询模块。同一个 ID 后一次注册会覆盖前一次。
+
+初始化时，DSPCore 会按 priority 和 ID 顺序初始化 feature；module 当前按注册表枚举顺序初始化，不做依赖拓扑排序。
+
+## 功能：声明补丁元数据
+
+`DspCore.Patches.Register(new PatchDescriptor(...))` 当前只保存补丁描述，不会自动替你应用 Harmony patch。具体补丁仍由所属功能块或模组自己的运行时代码执行。
+
+## 功能：CommonAPI 兼容查询
+
+旧代码调用：
+
+```csharp
+CommonAPI.CommonAPIPlugin.IsSubmoduleLoaded("example.module")
+```
+
+会转到 `DSPCore.Modules.TryGet(...)`。`CommonAPISubmoduleDependencyAttribute` 也保留为 obsolete 兼容类型，但不会复刻 CommonAPI 的完整子模块扫描、版本约束和加载器行为。
+
+## 这个模块不负责什么
+
+- 不放具体功能行为；存档、图标、建造栏、成就等逻辑必须留在所属功能块。
+- 不替模组自动解析模块依赖图；`Dependencies` 目前是描述数据。
+- 不自动应用 `PatchRegistry` 里的补丁描述。
+- 不应新增集中式旧兼容目录；旧 API shim 必须放回所属功能块 `Compat/`。
+
+## 运行时启动
+
+`DSPCorePlugin.Awake()` 会初始化 DSPCore、注册旧 DSPModSave 处理器、创建 Harmony，并装配当前已实现的 Proto、BuildBar、Saves、Achievements、Errors、Localization、Tabs、RecipeTypes patch。`Update()` 会轮询 KeyBinds 和 Pickers。
