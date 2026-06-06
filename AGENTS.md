@@ -151,8 +151,8 @@ src/DSPCore/
 - Implemented runtime bridges: BepInEx/Harmony startup, proto insertion near `VFPreload.InvokeOnLoadWorkEnded`, multi-row build bar binding, resource/icon loading, item/recipe/replicator tab projection, item/recipe/signal picker popups, custom recipe type guards, key callbacks, `.dspcore` sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error logging/fatal-window buttons, and localization entries.
 - 已实现运行时桥接：BepInEx/Harmony 启动、`VFPreload.InvokeOnLoadWorkEnded` 附近的 Proto 写入、多行建造栏绑定、资源/图标加载、物品/配方/制造器分页投射、物品/配方/信号选择器弹窗、自定义配方类型限制、按键回调、`.dspcore` 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误日志/错误窗口按钮和本地化条目。
 
-- BuildBar owns only item-to-slot binding: item id or `ItemProto` -> tab/row/index. New author-facing examples should prefer `ItemProto.BindQuickBar(...)`; use `BuildBar.BindQuickBar(...)` only when the caller only has an item id. Do not move proto creation responsibilities into BuildBar.
-- BuildBar 只负责物品到槽位的绑定：物品 ID 或 `ItemProto` -> tab/row/index。新的作者侧示例应首选 `ItemProto.BindQuickBar(...)`；只有调用方手上只有物品 ID 时才使用 `BuildBar.BindQuickBar(...)`。不要把 Proto 创建职责移入 BuildBar。
+- BuildBar owns the build bar placement feature block: item id or `ItemProto` -> tab/row/index bindings, two or more build bar rows, player-defined or dynamically overridden slots, related UI projection and refresh handling, RebindBuildBar compatibility, and BuildBarTool compatibility shims. New author-facing examples should prefer `ItemProto.BindQuickBar(...)`; use `BuildBar.BindQuickBar(...)` only when the caller only has an item id. Do not move proto creation responsibilities into BuildBar.
+- BuildBar 负责建造栏位置功能块：物品 ID 或 `ItemProto` -> tab/row/index 绑定、两层或更多层建造栏、玩家自定义或动态覆盖格子、相关 UI 投射和刷新处理、RebindBuildBar 兼容，以及 BuildBarTool 兼容 shim。新的作者侧示例应首选 `ItemProto.BindQuickBar(...)`；只有调用方手上只有物品 ID 时才使用 `BuildBar.BindQuickBar(...)`。不要把 Proto 创建职责移入 BuildBar。
 
 - Runtime host owns only BepInEx startup and cross-feature patch assembly. Concrete runtime bridges belong in their feature block directories.
 - Runtime 宿主只负责 BepInEx 启动和跨功能 patch 装配。具体运行时桥接必须放在对应功能块目录。

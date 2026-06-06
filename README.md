@@ -30,7 +30,7 @@ P0/P1 是当前实现目标。
 - 功能生命周期：声明功能块、依赖、优先级和初始化。
 - 数据阶段：`Data`、`DataUpdates` 和 `DataFinalFixes`。
 - 原型功能：物品、配方、科技、指引、模型/建筑绑定和原版数据查询描述。
-- 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位。其他功能块，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.BindQuickBar(...)`。
+- 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位，并负责两层或更多层建造栏、玩家自定义/动态覆盖格子、相关 UI 投射和刷新，以及 RebindBuildBar / BuildBarTool 兼容。其他功能块，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.BindQuickBar(...)`；BuildBar 不承担 Proto 创建职责。
 - 资源、图标和本地化：资源根、图标描述和翻译条目。
 - 分页和选择器：作者可以为物品、配方和制造器界面声明自定义分页，也可以打开物品、配方和信号选择器请求。
 - 存档：原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
@@ -42,7 +42,7 @@ P0/P1 是当前实现目标。
 
 - `DSPCorePlugin` 通过 BepInEx 启动并应用 Harmony 补丁。
 - Proto 注册会在 `VFPreload.InvokeOnLoadWorkEnded` 前后执行；DSPCore 在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
-- `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。
+- `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。玩家自定义/动态覆盖格子和 RebindBuildBar 适配属于同一 BuildBar 功能块，但尚未实现。
 - `IconSetRegistry` 可以加载 Unity `Resources` sprite 或本地 PNG 文件，缓存后写入目标 Proto。
 - `TabRegistry` 会通过现有 GridIndex 分类流程把自定义分页投射到物品选择器、配方选择器和制造器界面。
 - `Pickers.Open` 会请求打开物品、配方和信号选择器弹窗，并调用请求回调。

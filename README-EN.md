@@ -30,7 +30,7 @@ P0/P1 blocks are the current implementation target.
 - Feature lifecycle: declare feature blocks, dependencies, priority, and initialization.
 - Data phases: `Data`, `DataUpdates`, and `DataFinalFixes`.
 - Proto features: item, recipe, tech, tutorial, model/building binding, and vanilla data query descriptors.
-- Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot. Other feature blocks, such as item registration, should prefer `ItemProto.BindQuickBar(...)` after they have the item proto.
+- Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot, and own two or more build bar rows, player-defined or dynamically overridden slots, related UI projection and refresh handling, RebindBuildBar compatibility, and BuildBarTool compatibility. Other feature blocks, such as item registration, should prefer `ItemProto.BindQuickBar(...)` after they have the item proto; BuildBar does not own proto creation.
 - Resources, icons, and localization: resource roots, icon descriptors, and translation entries.
 - Tabs and pickers: authors can declare custom tabs for item, recipe, and replicator surfaces, and can open item/recipe/signal picker requests.
 - Saves: raw `BinaryReader`/`BinaryWriter` handlers and tagged block helpers.
@@ -42,7 +42,7 @@ Implemented runtime bridges:
 
 - `DSPCorePlugin` starts from BepInEx and applies Harmony patches.
 - Proto registrations are applied around `VFPreload.InvokeOnLoadWorkEnded`; DSPCore rebuilds `ProtoSet` indices and key derived caches after final fixes.
-- `BuildBarRegistry.BindQuickBar` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons.
+- `BuildBarRegistry.BindQuickBar` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons. Player-defined or dynamically overridden slots and RebindBuildBar integration belong to the same BuildBar feature block, but are not implemented yet.
 - `IconSetRegistry` can load Unity `Resources` sprites or local PNG files, cache them, and apply them to target protos.
 - `TabRegistry` projects custom tabs to item picker, recipe picker, and replicator surfaces through the existing GridIndex category flow.
 - `Pickers.Open` requests item, recipe, and signal picker popups and invokes the request callback.
