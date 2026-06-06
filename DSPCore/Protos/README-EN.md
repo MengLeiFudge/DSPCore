@@ -26,6 +26,31 @@ Use the generic entry when you need to specify the type or record a purpose:
 Protos.Register(typeof(ItemProto), itemProto, "com.example.my-mod", CoreDataPhase.Data, ProtoKind.Item, "new building item");
 ```
 
+## Capability: Set Item Or Recipe Cells
+
+`GridIndex` is the native game field on `ItemProto` and `RecipeProto`. It decides the cell where an item or recipe appears inside its page.
+
+If the item or recipe should appear on a DSPCore custom page, register the page through Tabs first, then generate the `GridIndex` from the returned `TabSlot`:
+
+```csharp
+TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
+    Id: "example-machines",
+    OwnerModGuid: "com.example.my-mod",
+    Title: "ExampleMachines",
+    IconId: "example-machines-icon"));
+
+itemProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+recipeProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+```
+
+If the item or recipe should stay on a vanilla page, use the vanilla tab category value directly:
+
+```csharp
+itemProto.GridIndex = Protos.GetGridIndex(tab: 1, row: 2, index: 3);
+```
+
+`TabSlot` is the page slot. `GridIndex` is the item or recipe cell field. Do not treat them as the same concept.
+
 ## Capability: Choose A Data Phase
 
 - `CoreDataPhase.Data`: initial declarations, suitable for new protos and base fields.
@@ -51,6 +76,7 @@ Do not put everything into `DataFinalFixes`. Use it only for work that truly dep
 - It does not own build bar placement; call BuildBar after creating items.
 - It does not own icon resource loading; call Icons when you need icon binding.
 - It does not own localization strings; call Resources for text.
+- It does not allocate page slots; call Tabs when you need a new page, then use the returned `TabSlot` to generate item or recipe `GridIndex` values.
 - It does not own custom recipe type restrictions; call RecipeTypes when you need machine-use guards.
 - The current proto phase hook is a conservative first bridge, not the final VFPreload mid-stage lifecycle.
 

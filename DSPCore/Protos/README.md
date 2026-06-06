@@ -26,6 +26,31 @@ Protos.RegisterTutorial(tutorialProto, "com.example.my-mod");
 Protos.Register(typeof(ItemProto), itemProto, "com.example.my-mod", CoreDataPhase.Data, ProtoKind.Item, "new building item");
 ```
 
+## 功能：设置物品或配方格子
+
+`GridIndex` 是游戏原生字段，属于 `ItemProto` 和 `RecipeProto` 自身。它决定物品或配方在对应页面里的格子位置。
+
+如果物品或配方要放到 DSPCore 自定义页面，先用 Tabs 注册页面并取得 `TabSlot`，再生成 `GridIndex`：
+
+```csharp
+TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
+    Id: "example-machines",
+    OwnerModGuid: "com.example.my-mod",
+    Title: "ExampleMachines",
+    IconId: "example-machines-icon"));
+
+itemProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+recipeProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+```
+
+如果仍放在游戏原本页面，可以直接使用原版 tab 分类编号：
+
+```csharp
+itemProto.GridIndex = Protos.GetGridIndex(tab: 1, row: 2, index: 3);
+```
+
+`TabSlot` 是页面槽位；`GridIndex` 是物品/配方格子字段。不要把两者当成同一个概念。
+
 ## 功能：选择数据阶段
 
 - `CoreDataPhase.Data`：初始数据声明，适合新增 Proto 和基础字段。
@@ -51,6 +76,7 @@ Protos.Register(typeof(ItemProto), itemProto, "com.example.my-mod", CoreDataPhas
 - 不负责建造栏位置；创建物品后需要调用 BuildBar。
 - 不负责图标资源加载；需要图标时调用 Icons。
 - 不负责本地化字符串；需要文本时调用 Resources。
+- 不负责分配页面槽位；需要新页面时调用 Tabs，并用返回的 `TabSlot` 生成物品/配方 `GridIndex`。
 - 不负责自定义配方类型限制；需要机器可用性保护时调用 RecipeTypes。
 - 当前 Proto 阶段挂点是保守的第一版桥接，不是最终 VFPreload 中段生命周期。
 

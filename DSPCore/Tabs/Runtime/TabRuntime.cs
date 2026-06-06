@@ -48,13 +48,15 @@ internal static class TabRuntime
         }
 
         var bindings = new List<TabButtonBinding>();
-        var tabType = 3;
-        foreach (var tab in DspCore.Tabs.GetAll())
+        var displayIndex = 3;
+        foreach (var registration in DspCore.Tabs.GetRegistrations())
         {
-            var type = tabType++;
+            var tab = registration.Descriptor;
+            var type = registration.Slot.Value;
             var buttonObject = UnityEngine.Object.Instantiate(template.gameObject, parent, false);
             buttonObject.name = "dspcore-tab-" + tab.Id;
-            buttonObject.transform.localPosition = new Vector3(baseX + 70f * (type - 1), y, 0f);
+            buttonObject.transform.localPosition = new Vector3(baseX + 70f * (displayIndex - 1), y, 0f);
+            displayIndex++;
             var uiButton = buttonObject.GetComponent<UIButton>();
             if (uiButton == null)
             {

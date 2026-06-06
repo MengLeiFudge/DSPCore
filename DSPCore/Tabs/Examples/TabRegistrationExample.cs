@@ -6,18 +6,20 @@ namespace ExampleMod;
 // This file is a documentation example and is excluded from DSPCore compilation.
 //
 // 用途：
-// - Tabs 只声明一个作者可见分页。
-// - DSPCore 运行时负责把该分页投射到支持的界面，例如物品选择器、配方选择器和制造器页面。
+// - Tabs 声明一个作者可见页面，并返回该页面的 TabSlot。
+// - GridIndex 是 ItemProto / RecipeProto 自己的格子字段。
+// - DSPCore 运行时负责把 TabSlot 和 GridIndex 投射到支持的界面，例如物品选择器、配方选择器和制造器页面。
 // - 全息信标、蓝图、信号选择器等界面需要更完整的分页内容模型后再支持。
 //
 // Usage:
 // - Register once during startup.
 // - Use a stable Id so saved UI state and compatibility reports can identify this tab.
+// - Use the returned TabSlot when assigning ItemProto.GridIndex or RecipeProto.GridIndex.
 public static class TabRegistrationExample
 {
-    public static void Register()
+    public static void Register(ItemProto itemProto, RecipeProto recipeProto)
     {
-        Tabs.AddTab(new CoreTabDescriptor(
+        TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
             // Id 建议包含 mod 前缀，避免不同模组冲突。
             // Prefix the id with your mod id to avoid cross-mod conflicts.
             Id: "example-machines",
@@ -29,7 +31,12 @@ public static class TabRegistrationExample
             IconId: "example-tab-icon",
 
             // Order 用于多个自定义分页之间排序。
-            // Order sorts this tab among other custom tabs.
+            // Order sorts this tab button among other custom tab buttons.
             Order: 100));
+
+        // GridIndex 是物品/配方自己的游戏原生格子字段。
+        // GridIndex is the native game cell field on items and recipes.
+        itemProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+        recipeProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
     }
 }

@@ -12,18 +12,29 @@ public static class Tabs
     /// 注册一个分页。
     /// Registers a tab.
     /// </summary>
-    public static void AddTab(CoreTabDescriptor descriptor)
+    /// <returns>分配给该分页的槽位。Slot assigned to this tab.</returns>
+    public static TabSlot AddTab(CoreTabDescriptor descriptor)
     {
-        DspCore.Tabs.AddTab(descriptor);
+        return DspCore.Tabs.AddTab(descriptor);
     }
 
     /// <summary>
     /// 注册一个分页。
     /// Registers a tab.
     /// </summary>
-    public static void Add(CoreTabDescriptor descriptor)
+    /// <returns>分配给该分页的槽位。Slot assigned to this tab.</returns>
+    public static TabSlot Add(CoreTabDescriptor descriptor)
     {
-        AddTab(descriptor);
+        return AddTab(descriptor);
+    }
+
+    /// <summary>
+    /// 尝试获取已注册分页的槽位。
+    /// Tries to get the slot assigned to a registered tab.
+    /// </summary>
+    public static bool TryGetSlot(string id, out TabSlot slot)
+    {
+        return DspCore.Tabs.TryGetSlot(id, out slot);
     }
 
     /// <summary>

@@ -9,6 +9,7 @@ namespace ExampleMod;
 // - Pickers 用于请求打开原版物品、配方或信号选择器。
 // - 请求会进入队列，由 DSPCore 运行时在合适的 UI update 时机打开弹窗。
 // - 当前过滤器在返回时兜底检查，尚未在实时网格里隐藏无效项。
+// - 这不是物品/配方注册位置模型；页面用 TabSlot，格子用 GridIndex。
 //
 // Usage:
 // - Call OpenItemPicker from your UI button callback.

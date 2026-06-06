@@ -38,7 +38,7 @@ P0/P1 blocks are the current implementation target.
 - Proto features: item, recipe, tech, tutorial, model/building binding, and vanilla data query descriptors.
 - Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot; row 1 writes to the vanilla build bar, row 2+ uses DSPCore extended buttons, and BuildBarTool compatibility entries remain available. Other feature blocks, such as item registration, should prefer `ItemProto.SetBuildBar(...)` after they have the item proto; BuildBar does not own proto creation.
 - Resources, icons, and localization: resource roots, icon descriptors, and translation entries.
-- Tabs and pickers: authors can declare custom tabs for item, recipe, and replicator surfaces, and can open item/recipe/signal picker requests.
+- Tabs and pickers: authors can declare custom pages, receive a `TabSlot`, and use that slot to generate item/recipe `GridIndex` values; they can also open item/recipe/signal picker requests from their own UI.
 - Saves: raw `BinaryReader`/`BinaryWriter` handlers and tagged block helpers.
 - Achievements and errors: achievement policy aggregation and structured error reports.
 
@@ -50,7 +50,7 @@ Implemented runtime bridges:
 - Proto registrations are applied around `VFPreload.InvokeOnLoadWorkEnded`; DSPCore rebuilds `ProtoSet` indices and key derived caches after final fixes.
 - `BuildBarRegistry.BindQuickBar` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons. Player-defined or dynamically overridden slots and RebindBuildBar integration belong to the same BuildBar feature block, but are not implemented yet.
 - `IconSetRegistry` can load Unity `Resources` sprites or local PNG files, cache them, and apply them to target protos.
-- `TabRegistry` projects custom tabs to item picker, recipe picker, and replicator surfaces through the existing GridIndex category flow.
+- `TabRegistry` assigns a `TabSlot` for each stable page id and projects custom pages to item picker, recipe picker, and replicator surfaces through the existing GridIndex category flow.
 - `Pickers.Open` requests item, recipe, and signal picker popups and invokes the request callback.
 - `RecipeTypeRegistry` marks declared recipes as custom recipe types and blocks unsupported assembler machines from selecting them.
 - `KeyBindRegistry` polls registered key bindings and invokes callbacks, including simple `Ctrl`/`Alt`/`Shift` modifier combinations.
@@ -90,17 +90,20 @@ myItemProto.SetBuildBar(tab: 3, row: 2, index: 5);
 BuildBar.BindQuickBar(tab: 3, row: 2, index: 4, itemId: 9554);
 ```
 
-## Example: Tabs
+## Example: Tabs And GridIndex
 
 ```csharp
 using DSPCore;
 
-Tabs.AddTab(new CoreTabDescriptor(
+TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
     Id: "example-machines",
     OwnerModGuid: "com.example.my-mod",
     Title: "Example Machines",
     IconId: "example-machine-tab",
     Order: 100));
+
+itemProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+recipeProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
 ```
 
 ## Example: Legacy BuildBarTool Compatibility

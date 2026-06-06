@@ -10,6 +10,24 @@ namespace DSPCore;
 public static class Protos
 {
     /// <summary>
+    /// 从分页槽位、行和格子编号生成物品或配方 GridIndex。
+    /// Creates an item or recipe GridIndex from a tab slot, row, and index.
+    /// </summary>
+    public static int GetGridIndex(TabSlot tab, int row, int index)
+    {
+        return GridIndexes.From(tab, row, index);
+    }
+
+    /// <summary>
+    /// 从游戏分类编号、行和格子编号生成物品或配方 GridIndex。
+    /// Creates an item or recipe GridIndex from a game category value, row, and index.
+    /// </summary>
+    public static int GetGridIndex(int tab, int row, int index)
+    {
+        return GridIndexes.From(tab, row, index);
+    }
+
+    /// <summary>
     /// 注册一个原型对象。
     /// Registers a proto object.
     /// </summary>

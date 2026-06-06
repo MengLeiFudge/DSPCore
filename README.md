@@ -38,7 +38,7 @@ P0/P1 是当前实现目标。
 - 原型功能：物品、配方、科技、指引、模型/建筑绑定和原版数据查询描述。
 - 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位；第 1 行写入原版建造栏，第 2 行及以后使用 DSPCore 扩展按钮，并保留 BuildBarTool 兼容入口。其他功能块，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.SetBuildBar(...)`；BuildBar 不承担 Proto 创建职责。
 - 资源、图标和本地化：资源根、图标描述和翻译条目。
-- 分页和选择器：作者可以为物品、配方和制造器界面声明自定义分页，也可以打开物品、配方和信号选择器请求。
+- 分页和选择器：作者可以声明自定义页面并取得 `TabSlot`，再用 `TabSlot` 生成物品/配方 `GridIndex`；也可以从自己的 UI 打开物品、配方和信号选择器请求。
 - 存档：原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
 - 成就和错误：成就策略聚合和结构化错误报告。
 
@@ -50,7 +50,7 @@ P0/P1 是当前实现目标。
 - Proto 注册会在 `VFPreload.InvokeOnLoadWorkEnded` 前后执行；DSPCore 在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
 - `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。玩家自定义/动态覆盖格子和 RebindBuildBar 适配属于同一 BuildBar 功能块，但尚未实现。
 - `IconSetRegistry` 可以加载 Unity `Resources` sprite 或本地 PNG 文件，缓存后写入目标 Proto。
-- `TabRegistry` 会通过现有 GridIndex 分类流程把自定义分页投射到物品选择器、配方选择器和制造器界面。
+- `TabRegistry` 会为稳定页面 ID 分配 `TabSlot`，并通过现有 GridIndex 分类流程把自定义页面投射到物品选择器、配方选择器和制造器界面。
 - `Pickers.Open` 会请求打开物品、配方和信号选择器弹窗，并调用请求回调。
 - `RecipeTypeRegistry` 会把声明的配方标记为自定义配方类型，并阻止不支持的制作器选择这些配方。
 - `KeyBindRegistry` 会轮询已注册按键并调用回调，支持简单的 `Ctrl`/`Alt`/`Shift` 修饰键组合。
@@ -90,17 +90,20 @@ myItemProto.SetBuildBar(tab: 3, row: 2, index: 5);
 BuildBar.BindQuickBar(tab: 3, row: 2, index: 4, itemId: 9554);
 ```
 
-## 示例：分页
+## 示例：分页和 GridIndex
 
 ```csharp
 using DSPCore;
 
-Tabs.AddTab(new CoreTabDescriptor(
+TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
     Id: "example-machines",
     OwnerModGuid: "com.example.my-mod",
     Title: "Example Machines",
     IconId: "example-machine-tab",
     Order: 100));
+
+itemProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+recipeProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
 ```
 
 ## 示例：旧 BuildBarTool 兼容

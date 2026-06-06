@@ -1,6 +1,8 @@
-# Pickers
+# Picker Requests
 
 The Pickers block lets a mod request a vanilla item, recipe, or signal picker from its own UI or flow, then receive the player's selection through a callback.
+
+It does not own the item or recipe registration-position model. Authors still set `GridIndex` when registering items or recipes; when they need a new page, they get a `TabSlot` from Tabs first.
 
 ## What This Block Gives You
 
@@ -8,6 +10,7 @@ The Pickers block lets a mod request a vanilla item, recipe, or signal picker fr
 - Picker requests enter a DSPCore queue and are consumed during UI update, reducing the risk of opening pickers at the wrong UI timing.
 - DSPCore centralizes result filtering, exception reporting, and `null` callbacks on failure.
 - One `PickerRequest` model covers item, recipe, and signal selection.
+- Future picker-surface work such as live filtering, duplicate `GridIndex` fallbacks, and signal/icon surface adaptation belongs to runtime handling and should not change the author-facing `TabSlot` / `GridIndex` registration model.
 
 ## Capability: Open One Picker
 
@@ -33,6 +36,8 @@ Pickers.Open(new PickerRequest(
 
 ## What This Block Does Not Own
 
+- It does not allocate `TabSlot` values; page registration belongs to Tabs.
+- It does not set `GridIndex`; item and recipe cells belong to Protos and the proto objects themselves.
 - Current filters validate only the returned value; they do not hide invalid entries inside the live picker grid.
 - `OnReturn` is not guaranteed to be non-null. Cancel, filter failure, or exceptions all return null.
 - It does not provide a custom picker UI; current runtime uses vanilla picker popups.
