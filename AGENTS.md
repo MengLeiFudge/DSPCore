@@ -124,10 +124,9 @@ Build succeeded.
 
 ```text
 src/DSPCore/
-├── Core/                    # Api/: framework entry point plus feature/module registries
+├── Core/                    # Api/Examples: framework entry point, feature/module registries, patch and compatibility declarations
 ├── Achievements/            # Api/Runtime/Examples: achievement policy aggregation
 ├── BuildBar/                # Api/Runtime/Examples: build bar slot binding
-├── Compatibility/           # Api/Examples: compatibility patch declarations
 ├── CompatibilityPolyfills/  # Compat/: target-framework compatibility helpers
 ├── Errors/                  # Api/Runtime: error report model and fatal-window runtime bridge
 ├── Icons/                   # Api/Runtime/Examples: icon registration and icon runtime bridge

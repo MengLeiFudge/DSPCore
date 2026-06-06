@@ -6,7 +6,7 @@ namespace ExampleMod;
 // This file is a documentation example and is excluded from DSPCore compilation.
 //
 // 用途：
-// - Compatibility 用于声明跨模组、跨版本或游戏版本相关的兼容补丁。
+// - Compatibility 是 Core 下的补丁声明入口，用于记录跨模组、跨版本或游戏版本相关的兼容补丁。
 // - 兼容补丁本身仍应归属于具体功能，例如 Tutorial、BuildBar、Save 或 UI。
 // - 不要把无关修复都塞进一个通用 fixer 名称里；声明 ID 应能看出目标和原因。
 //

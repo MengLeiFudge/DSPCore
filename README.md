@@ -131,5 +131,5 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 - `src/DSPCore/Protos/Examples/ProtoPhases.md`
 - `src/DSPCore/Input/Examples/KeyBindRegistrationExample.cs`
 - `src/DSPCore/Input/Examples/KeyBindRegistration.md`
-- `src/DSPCore/Compatibility/Examples/CompatibilityPatchExample.cs`
-- `src/DSPCore/Compatibility/Examples/CompatibilityPatch.md`
+- `src/DSPCore/Core/Examples/CompatibilityPatchExample.cs`
+- `src/DSPCore/Core/Examples/CompatibilityPatch.md`
