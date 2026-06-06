@@ -55,7 +55,7 @@ P0/P1 是当前实现目标。
 - `RecipeTypeRegistry` 会把声明的配方标记为自定义配方类型，并阻止不支持的制作器选择这些配方。
 - `KeyBindRegistry` 会轮询已注册按键并调用回调，支持简单的 `Ctrl`/`Alt`/`Shift` 修饰键组合。
 - `SaveRegistry` 会写入 `.dspcore` 独立存档，并按 `CoreLoadOrder` 导入处理器。
-- `AchievementPolicyRegistry` 只汇总每个模组的 GUID 和是否禁用成就；没有模组禁用成就时屏蔽原版异常检查，并允许获取成就、上传排行榜和获取平台元数据；任意模组禁用成就时阻断这些成就相关能力。
+- `AchievementPolicyRegistry` 汇总每个模组的成就禁用声明；不声明或声明 `disableAchievements: false` 不会请求禁用，任意模组声明 true 时全局阻断成就变更、Milky Way / 排行榜上传和平台成就/元数据调用。没有 true 声明时，DSPCore 会屏蔽原版异常检查并保持成就可用。
 - `ErrorReporter` 会接收 Unity fatal/error 日志和错误窗口事件。
 - `ResourceRegistry.RegisterLocalization` 会写入 DSP 本地化 key 和语言字符串。
 
@@ -78,6 +78,8 @@ Achievements.Declare("com.example.my-mod", disableAchievements: true);
 
 bool disabled = Achievements.ShouldDisableAchievements();
 ```
+
+不调用或声明 `disableAchievements: false` 表示该模组不要求禁用成就；多个模组同时声明时，任意 true 胜出。详细边界见 `DSPCore/Achievements/README.md`。
 
 ## 示例：建造栏
 
