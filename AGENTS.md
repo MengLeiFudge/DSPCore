@@ -101,6 +101,12 @@ Build succeeded.
 - User-visible behavior or public API changes require README/docs review in the same task.
 - 用户可见行为或公开 API 变更，必须在同一任务检查 README/docs。
 
+- Feature block README files target mod authors who understand DSP modding concepts but have not used DSPCore before. They must explain what the block does, what author-side work it removes, what repeated patching or compatibility problems it avoids, what happens after the author calls each public API, which runtime/game behaviors are affected, and the important defaults, conflicts, repeated calls, and unsupported boundaries.
+- 功能块 README 的目标读者是了解 DSP 模组语境、但第一次接触 DSPCore 的模组作者。文档必须说明该功能块能做什么、减少作者哪些重复劳动、避免哪些 patch 或兼容问题、作者调用公开 API 后 DSPCore 会怎么处理、会影响哪些运行时/游戏行为，以及重要的默认值、冲突处理、重复调用结果和不支持边界。
+
+- When one feature block contains multiple author-facing capabilities, its README must introduce them in separate sections instead of compressing them into one generic responsibility statement. Simple single-capability blocks may use a shorter structure, but still need author-facing behavior and boundary explanations.
+- 当一个功能块包含多个作者侧能力时，README 必须按功能分区块分别介绍，不能压缩成一句泛泛职责说明。简单的单功能块可以使用更短结构，但仍必须说明作者侧行为和边界。
+
 - Feature blocks are internally split into `Api/`, `Runtime/`, `Compat/`, and `Examples/` when they contain those responsibilities. `Api/` owns author-facing entry points, descriptors, registries, extension methods, and public models. `Runtime/` owns BepInEx/Harmony/DSP lifecycle bridges, Unity UI projection, data-phase executors, and other implementation that applies registered intent to the game. `Compat/` owns all legacy or third-party compatibility adapters for that feature block, including files that declare old namespaces or old type names. `Examples/` owns author-facing scenario documentation and demo code.
 - 功能块内部按职责拆成 `Api/`、`Runtime/`、`Compat/`、`Examples/`，只有实际存在对应职责时才创建目录。`Api/` 负责作者侧入口、descriptor、registry、扩展方法和公开模型。`Runtime/` 负责 BepInEx/Harmony/DSP 生命周期桥接、Unity UI 投射、数据阶段执行器，以及把注册意图应用到游戏里的实现。`Compat/` 负责该功能块的全部旧 API 或第三方兼容适配，包括声明旧命名空间或旧类型名的文件。`Examples/` 负责作者侧场景说明和 demo 代码。
 
