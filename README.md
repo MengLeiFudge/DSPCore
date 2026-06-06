@@ -27,7 +27,7 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 - 提供 `xiaoye97.LDBTool`、`crecheng.DSPModSave`、`CommonAPI` 和 `BuildBarTool` 的旧 API 兼容层；兼容代码按所属功能块放入 `Compat/`，不再使用集中式 `Legacy/` 目录。
 - 公开 API 提供中英文 XML summary。
 
-当前版本已接入 P0/P1 运行时桥接：BepInEx/Harmony 启动、Proto 写入、多行建造栏绑定、玩家覆盖、资源/图标加载、物品/配方/制造器/信号/标签图标分页、选择器弹窗和实时过滤、自定义配方类型选择前过滤、按键回调、DSPCore 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误报告、错误窗口复制/关闭按钮、本地化条目和通用 UI 窗口生命周期转发。
+当前版本已接入 P0/P1 运行时桥接：BepInEx/Harmony 启动、Proto 写入、多行建造栏绑定、玩家覆盖、RebindBuildBar 配置导入、资源/图标加载、物品/配方/制造器/信号/标签图标分页、选择器弹窗和实时过滤、自定义配方类型选择前过滤、按键回调、DSPCore 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误报告、错误窗口复制/关闭按钮、本地化条目和通用 UI 窗口生命周期转发。
 
 ## 功能块
 
@@ -49,7 +49,7 @@ P0/P1 是当前实现目标。
 
 - `DSPCorePlugin` 通过 BepInEx 启动并应用 Harmony 补丁。
 - 原型注册会在 `VFPreload.InvokeOnLoadWorkEnded` 前后执行；DSPCore 在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
-- `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。`BuildBar.SetPlayerOverride(...)` 会写入玩家覆盖层并保存到 `.dspcore`，运行时总是用作者默认绑定叠加玩家覆盖后的有效绑定。
+- `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。`BuildBar.SetPlayerOverride(...)` 会写入玩家覆盖层并保存到 `.dspcore`，运行时总是用作者默认绑定叠加玩家覆盖后的有效绑定。没有 DSPCore BuildBar 存档数据时，DSPCore 会从 RebindBuildBar 的 `CustomBarBind.cfg` 导入第 1 行玩家配置。
 - `IconSetRegistry` 可以加载 Unity `Resources` sprite 或本地 PNG 文件，缓存后写入目标 Proto。
 - `TabRegistry` 会为稳定页面 ID 分配 `TabSlot`，并通过现有 GridIndex 分类流程把自定义页面投射到物品选择器、配方选择器、制造器界面、信号选择器和标签图标选择器。
 - `Pickers.Open` 会请求打开物品、配方和信号选择器弹窗，实时网格会应用请求过滤和重复 `GridIndex` 兜底，返回时仍会再做一次过滤检查。
@@ -63,8 +63,8 @@ P0/P1 是当前实现目标。
 
 当前运行时限制：
 
-- RebindBuildBar 的外部玩家配置读取尚未接入；当前玩家覆盖层是 DSPCore 自有存档数据。
-- 分页投射当前覆盖原版 `UIItemPicker`、`UIRecipePicker`、`UIReplicatorWindow`、`UISignalPicker` 和 `UISignalTagPicker`。蓝图图标、蓝图说明图标、智能输入框图标等使用这些原版 picker 的界面会受益；GenesisBook、OrbitalRing、FE 这类接管 UI 的第三方界面仍需要单独适配。
+- RebindBuildBar 的 `BuildBarBinds` 配置会导入到 DSPCore 第 1 行玩家覆盖层；DSPCore 不接管 RebindBuildBar 自己的重绑 UI、快捷键或后续配置写回。
+- 分页投射当前覆盖原版 `UIItemPicker`、`UIRecipePicker`、`UIReplicatorWindow`、`UISignalPicker` 和 `UISignalTagPicker`。蓝图图标、蓝图说明图标、智能输入框图标等使用这些原版 picker 的界面会受益；检测到 GenesisBook、OrbitalRing 或 FE 接管 signal/tag picker 时，DSPCore 会跳过对应按钮注入，避免重复分页。真正自建且不复用原版 picker 的第三方界面仍需要专门 adapter。
 - UI 框架只提供通用架子，不注册具体页面、业务导航、解锁条件或存档状态。
 - 当前 Proto 阶段挂点是保守的第一版桥接，不是最终 VFPreload 中段生命周期。
 

@@ -41,7 +41,7 @@ Pickers.Open(new PickerRequest(
 - It does not set `GridIndex`; item and recipe cells belong to ProtoRegistration and the proto objects themselves.
 - `OnReturn` is not guaranteed to be non-null. Cancel, filter failure, or exceptions all return null.
 - It does not provide a custom picker UI; current runtime uses vanilla picker popups.
-- It does not directly adapt picker UIs rebuilt by GenesisBook, OrbitalRing, FE, or similar UI takeover mods; those third-party surfaces need dedicated runtime adapters.
+- It does not directly adapt picker UIs rebuilt by GenesisBook, OrbitalRing, FE, or similar UI takeover mods when they do not reuse vanilla pickers. DSPCore avoids duplicate tab-button injection for known signal/tag picker takeovers, but those rebuilt third-party surfaces still need dedicated runtime adapters.
 
 ## Examples
 

@@ -14,13 +14,13 @@
 - `index`：按钮位置，从 1 开始。
 - `itemId` 或 `ItemProto`：要绑定的物品。
 
-玩家覆盖接口使用同一套 `tab`、`row`、`index` 槽位模型。`itemId = 0` 或 `ClearPlayerOverride(...)` 会清除覆盖，让槽位回到作者默认绑定。
+玩家覆盖接口使用同一套 `tab`、`row`、`index` 槽位模型。`itemId = 0` 表示玩家显式清空该槽位；`ClearPlayerOverride(...)` 才会删除覆盖，让槽位回到作者默认绑定。
 
 ## 运行时前提
 
 物品 Proto 应先由 Proto 功能块注册。BuildBar 只负责槽位绑定，不创建物品、图标、配方或本地化。
 
-玩家覆盖层是 DSPCore 自有 `.dspcore` 存档数据；它不会读取 RebindBuildBar 的外部配置。
+玩家覆盖层是 DSPCore 自有 `.dspcore` 存档数据。当前存档没有 DSPCore BuildBar 数据时，DSPCore 会从 RebindBuildBar 的 `RebindBuildBar/CustomBarBind.cfg` 导入原版第 1 行配置；不会接管 RebindBuildBar 自己的重绑 UI、快捷键或后续配置写回。
 
 ## 常见误用
 

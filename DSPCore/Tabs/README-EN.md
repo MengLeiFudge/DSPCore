@@ -51,7 +51,7 @@ itemProto.GridIndex = ProtoRegistration.GetGridIndex(tab: 1, row: 2, index: 3);
 
 - It does not register items or recipes directly. Items and recipes still go through ProtoRegistration and use their own `GridIndex` to point at a cell inside a page.
 - It does not support every DSP UI surface. Current coverage is vanilla item picker, recipe picker, replicator window, signal picker, and tag-icon picker.
-- Blueprint icons, description icons, smart-input icons, and other vanilla surfaces that reuse signal/tag pickers benefit from this. Third-party UI takeover by GenesisBook, OrbitalRing, FE, and similar mods needs dedicated adapters.
+- Blueprint icons, description icons, smart-input icons, and other vanilla surfaces that reuse signal/tag pickers benefit from this. When GenesisBook, OrbitalRing, or FE takes over signal/tag pickers, DSPCore skips its own button injection to avoid duplicate tabs. Truly rebuilt third-party picker surfaces that do not reuse vanilla pickers still need dedicated adapters.
 - It does not create icons or localization; use Icons and Resources for those.
 
 ## Examples

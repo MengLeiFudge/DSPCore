@@ -1,4 +1,5 @@
 using HarmonyLib;
+using BepInEx;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +12,10 @@ namespace DSPCore;
 
 internal static class BuildBarRuntime
 {
+    private const int RebindBuildBarMaxCategory = 8;
+    private const int RebindBuildBarMaxIndex = 10;
+    private const string RebindBuildBarSection = "BuildBarBinds";
+    private const string RebindBuildBarConfigRelativePath = "RebindBuildBar/CustomBarBind.cfg";
     private static readonly System.Reflection.FieldInfo? ProtosField = AccessTools.Field(typeof(UIBuildMenu), "protos");
     private static readonly System.Reflection.FieldInfo? StaticLoadedField = AccessTools.Field(typeof(UIBuildMenu), "staticLoaded");
     private static readonly System.Reflection.FieldInfo? CurrentCategoryField = AccessTools.Field(typeof(UIBuildMenu), "currentCategory");
@@ -31,6 +36,18 @@ internal static class BuildBarRuntime
         {
             DspCore.Logger?.LogWarning("UIBuildMenu.protos is not accessible; build bar runtime bridge skipped.");
             return;
+        }
+
+        foreach (var pair in DspCore.BuildBar.GetPlayerOverrides())
+        {
+            var slot = pair.Key;
+            if (pair.Value != 0 || slot.Row != 1 || !IsInVanillaBounds(protos, slot.Tab, slot.Index))
+            {
+                continue;
+            }
+
+            protos[slot.Tab, slot.Index] = null!;
+            StaticLoadedField?.SetValue(null, true);
         }
 
         foreach (var binding in DspCore.BuildBar.GetEffectiveBindings())
@@ -313,7 +330,73 @@ internal static class BuildBarRuntime
         public void IntoOtherSave()
         {
             DspCore.BuildBar.ClearPlayerOverrides();
+            ImportRebindBuildBarConfig();
             Apply();
+        }
+
+        private static void ImportRebindBuildBarConfig()
+        {
+            var path = Path.Combine(Paths.ConfigPath, RebindBuildBarConfigRelativePath);
+            if (!File.Exists(path))
+            {
+                return;
+            }
+
+            var imported = 0;
+            var inBuildBarSection = false;
+            foreach (var rawLine in File.ReadLines(path))
+            {
+                var line = rawLine.Trim();
+                if (line.Length == 0 || line.StartsWith("#", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (line.StartsWith("[", StringComparison.Ordinal) && line.EndsWith("]", StringComparison.Ordinal))
+                {
+                    var section = line.Substring(1, line.Length - 2);
+                    inBuildBarSection = string.Equals(section, RebindBuildBarSection, StringComparison.Ordinal);
+                    continue;
+                }
+
+                if (!inBuildBarSection)
+                {
+                    continue;
+                }
+
+                var separator = line.IndexOf('=');
+                if (separator <= 0)
+                {
+                    continue;
+                }
+
+                if (!int.TryParse(line.Substring(0, separator).Trim(), out var buildIndex) ||
+                    !int.TryParse(line.Substring(separator + 1).Trim(), out var itemId))
+                {
+                    continue;
+                }
+
+                var category = buildIndex / 100;
+                var index = buildIndex % 100;
+                if (category < 1 ||
+                    category > RebindBuildBarMaxCategory ||
+                    index < 1 ||
+                    index > RebindBuildBarMaxIndex ||
+                    itemId < 0)
+                {
+                    continue;
+                }
+
+                if (DspCore.BuildBar.SetPlayerOverride(category, row: 1, index, itemId))
+                {
+                    imported++;
+                }
+            }
+
+            if (imported > 0)
+            {
+                DspCore.Logger?.LogInfo($"Imported {imported} RebindBuildBar build bar overrides from {path}.");
+            }
         }
     }
 }

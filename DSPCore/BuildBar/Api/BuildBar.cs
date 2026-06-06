@@ -36,8 +36,8 @@ public static class BuildBar
     }
 
     /// <summary>
-    /// 设置玩家自定义建造栏覆盖；覆盖优先于作者默认绑定。
-    /// Sets a player-defined build bar override; overrides take precedence over author defaults.
+    /// 设置玩家自定义建造栏覆盖；itemId 为 0 时表示玩家显式清空槽位。
+    /// Sets a player-defined build bar override; itemId 0 explicitly empties the slot.
     /// </summary>
     public static bool SetPlayerOverride(int tab, int row, int index, int itemId)
     {
@@ -45,8 +45,8 @@ public static class BuildBar
     }
 
     /// <summary>
-    /// 设置玩家自定义建造栏覆盖；覆盖优先于作者默认绑定。
-    /// Sets a player-defined build bar override; overrides take precedence over author defaults.
+    /// 设置玩家自定义建造栏覆盖；itemId 为 0 时表示玩家显式清空槽位。
+    /// Sets a player-defined build bar override; itemId 0 explicitly empties the slot.
     /// </summary>
     public static bool SetPlayerOverride(BuildBarSlot slot, int itemId)
     {

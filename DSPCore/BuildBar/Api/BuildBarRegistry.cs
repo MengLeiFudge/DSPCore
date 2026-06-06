@@ -58,7 +58,7 @@ public sealed class BuildBarRegistry
     /// Sets a player-defined build bar override; overrides take precedence over author defaults.
     /// </summary>
     /// <param name="slot">建造栏槽位。Build bar slot.</param>
-    /// <param name="itemId">物品 ID；传 0 表示清空该槽位覆盖。Item id; pass 0 to clear the override for this slot.</param>
+    /// <param name="itemId">物品 ID；传 0 表示玩家显式清空该槽位。Item id; pass 0 to explicitly empty this slot.</param>
     /// <returns>覆盖被接受时返回 true。Returns true when the override is accepted.</returns>
     public bool SetPlayerOverride(BuildBarSlot slot, int itemId)
     {
@@ -67,15 +67,7 @@ public sealed class BuildBarRegistry
             return false;
         }
 
-        if (itemId == 0)
-        {
-            playerOverrides.Remove(slot);
-        }
-        else
-        {
-            playerOverrides[slot] = itemId;
-        }
-
+        playerOverrides[slot] = itemId;
         return true;
     }
 
@@ -86,7 +78,7 @@ public sealed class BuildBarRegistry
     /// <param name="tab">建造栏分页/分类，从 1 开始。Build bar tab/category, starting from 1.</param>
     /// <param name="row">建造栏行号，从 1 开始。Build bar row, starting from 1.</param>
     /// <param name="index">按钮索引，从 1 开始。Button index, starting from 1.</param>
-    /// <param name="itemId">物品 ID；传 0 表示清空该槽位覆盖。Item id; pass 0 to clear the override for this slot.</param>
+    /// <param name="itemId">物品 ID；传 0 表示玩家显式清空该槽位。Item id; pass 0 to explicitly empty this slot.</param>
     /// <returns>覆盖被接受时返回 true。Returns true when the override is accepted.</returns>
     public bool SetPlayerOverride(int tab, int row, int index, int itemId)
     {

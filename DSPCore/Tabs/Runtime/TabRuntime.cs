@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using BepInEx.Bootstrap;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Events;
@@ -11,6 +12,9 @@ namespace DSPCore;
 internal static class TabRuntime
 {
     private const int SignalPickerCustomTypeOffset = 6;
+    private const string GenesisBookGuid = "org.LoShin.GenesisBook";
+    private const string OrbitalRingGuid = "org.ProfessorCat305.OrbitalRing";
+    private const string FractionateEverythingGuid = "com.menglei.dsp.fe";
     private static readonly Dictionary<object, List<TabButtonBinding>> Bindings = new();
 
     public static void AttachToItemPicker(UIItemPicker picker)
@@ -30,11 +34,21 @@ internal static class TabRuntime
 
     public static void AttachToSignalPicker(UISignalPicker picker)
     {
+        if (IsSignalPickerTakenOver())
+        {
+            return;
+        }
+
         Attach(picker, picker.pickerTrans, picker.typeButton2, type => InvokeTypeClick(picker, ToSignalPickerType(type)), 156f, -75f, ToSignalPickerType);
     }
 
     public static void AttachToSignalTagPicker(UISignalTagPicker picker)
     {
+        if (IsSignalTagPickerTakenOver())
+        {
+            return;
+        }
+
         Attach(picker, picker.pickerTrans, picker.upgradeTab2Btn, type => InvokeTypeClick(picker, ToSignalPickerType(type)), -150f, 303f, ToSignalPickerType, 48f);
     }
 
@@ -114,6 +128,21 @@ internal static class TabRuntime
     private static int ToSignalPickerType(int tabSlot)
     {
         return tabSlot + SignalPickerCustomTypeOffset;
+    }
+
+    private static bool IsSignalPickerTakenOver()
+    {
+        return IsPluginLoaded(GenesisBookGuid) || IsPluginLoaded(OrbitalRingGuid) || IsPluginLoaded(FractionateEverythingGuid);
+    }
+
+    private static bool IsSignalTagPickerTakenOver()
+    {
+        return IsPluginLoaded(GenesisBookGuid) || IsPluginLoaded(OrbitalRingGuid) || IsPluginLoaded(FractionateEverythingGuid);
+    }
+
+    private static bool IsPluginLoaded(string guid)
+    {
+        return Chainloader.PluginInfos.ContainsKey(guid);
     }
 
     private static void InvokeTypeClick(object owner, int type)

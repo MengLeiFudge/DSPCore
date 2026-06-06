@@ -35,7 +35,7 @@ BuildBar.SetPlayerOverride(tab: 3, row: 2, index: 5, itemId: 9555);
 BuildBar.ClearPlayerOverride(new BuildBarSlot(3, 2, 5));
 ```
 
-覆盖层优先于作者默认绑定，并通过 DSPCore 自有 `.dspcore` 存档保存。传入 `itemId = 0` 等同于清除该槽位覆盖。
+覆盖层优先于作者默认绑定，并通过 DSPCore 自有 `.dspcore` 存档保存。传入 `itemId = 0` 表示玩家显式清空该槽位；调用 `ClearPlayerOverride(...)` 才会删除覆盖并回到作者默认绑定。
 
 ## 调用后 DSPCore 会怎么处理
 
@@ -45,6 +45,7 @@ BuildBar.ClearPlayerOverride(new BuildBarSlot(3, 2, 5));
 - 建造栏打开和刷新时，`row > 1` 的绑定会创建或刷新 DSPCore 扩展按钮。
 - 扩展按钮点击时，DSPCore 会临时把目标物品放入当前分类的原版槽位，并调用原版建造栏点击逻辑。
 - 运行时读取作者默认绑定叠加玩家覆盖后的有效绑定；玩家覆盖会随 DSPCore 存档导入和导出。
+- 如果当前存档还没有 DSPCore BuildBar 数据，DSPCore 会读取 RebindBuildBar 的 `RebindBuildBar/CustomBarBind.cfg`，把 `[BuildBarBinds]` 中的原版第 1 行配置导入玩家覆盖层。
 
 ## 功能：兼容旧 BuildBarTool / LDBTool 入口
 
@@ -60,7 +61,7 @@ BuildBar.ClearPlayerOverride(new BuildBarSlot(3, 2, 5));
 
 - 不创建 `ItemProto`、配方、图标或本地化；这些属于 ProtoRegistration、Icons 和 Resources。
 - 不决定物品是否解锁；扩展按钮会按原版历史解锁状态和沙盒即时物品状态设置可点击性。
-- 不读取 RebindBuildBar 的外部玩家配置；当前玩家覆盖层是 DSPCore 自有数据。
+- 不接管 RebindBuildBar 的重绑 UI、快捷键或后续配置写回；DSPCore 只把已有 `CustomBarBind.cfg` 配置导入自己的玩家覆盖层。
 - `row = 1` 受原版 `UIBuildMenu.protos` 尺寸限制；当前运行时会跳过超出原版 tab/index 范围的第 1 行绑定。
 
 ## 示例

@@ -35,7 +35,7 @@ BuildBar.SetPlayerOverride(tab: 3, row: 2, index: 5, itemId: 9555);
 BuildBar.ClearPlayerOverride(new BuildBarSlot(3, 2, 5));
 ```
 
-Overrides take precedence over author defaults and are saved through DSPCore's `.dspcore` sidecar. Passing `itemId = 0` is equivalent to clearing that slot override.
+Overrides take precedence over author defaults and are saved through DSPCore's `.dspcore` sidecar. Passing `itemId = 0` explicitly empties the slot; call `ClearPlayerOverride(...)` to remove the override and return to the author default.
 
 ## What DSPCore Does After The Call
 
@@ -45,6 +45,7 @@ Overrides take precedence over author defaults and are saved through DSPCore's `
 - When the build menu opens and refreshes, `row > 1` bindings create or refresh DSPCore extended buttons.
 - When an extended button is clicked, DSPCore temporarily injects the item into the current category's vanilla slot and invokes the vanilla build bar click logic.
 - Runtime reads effective bindings after applying player overrides on top of author defaults; player overrides are imported and exported with DSPCore saves.
+- If the current save has no DSPCore BuildBar data yet, DSPCore reads RebindBuildBar's `RebindBuildBar/CustomBarBind.cfg` and imports `[BuildBarBinds]` entries as vanilla row-1 player overrides.
 
 ## Capability: Legacy BuildBarTool / LDBTool Compatibility
 
@@ -60,7 +61,7 @@ These entries map to `tab`, `row`, and `index`. New code should use `ItemProto.S
 
 - It does not create `ItemProto`, recipes, icons, or localization entries; those belong to ProtoRegistration, Icons, and Resources.
 - It does not decide whether an item is unlocked; extended buttons use vanilla history unlock state and sandbox instant-item state for interactivity.
-- It does not read external RebindBuildBar player configuration; the current player override layer is DSPCore-owned data.
+- It does not take over RebindBuildBar's rebinding UI, hotkeys, or later config writes; DSPCore only imports existing `CustomBarBind.cfg` entries into its own player override layer.
 - `row = 1` is limited by vanilla `UIBuildMenu.protos` dimensions; current runtime skips row-1 bindings outside vanilla tab/index bounds.
 
 ## Examples

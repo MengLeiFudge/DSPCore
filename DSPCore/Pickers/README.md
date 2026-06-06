@@ -41,7 +41,7 @@ Pickers.Open(new PickerRequest(
 - 不设置 `GridIndex`；物品/配方格子属于 ProtoRegistration 和对应 Proto 对象。
 - 不保证 `OnReturn` 一定非空；取消、过滤失败或异常都会返回 null。
 - 不提供自定义选择器 UI；当前使用原版 picker 弹窗。
-- 不直接适配 GenesisBook、OrbitalRing、FE 等接管 UI 后自建的 picker；这些第三方界面需要单独 runtime adapter。
+- 不直接适配 GenesisBook、OrbitalRing、FE 等接管 UI 后自建且不复用原版 picker 的界面；DSPCore 会避免在已知 signal/tag picker 接管者上重复注入分页按钮，但这些第三方自建界面仍需要单独 runtime adapter。
 
 ## 示例
 

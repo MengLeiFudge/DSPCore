@@ -9,7 +9,8 @@ namespace ExampleMod;
 // - Tabs 声明一个作者可见页面，并返回该页面的 TabSlot。
 // - GridIndex 是 ItemProto / RecipeProto 自己的格子字段。
 // - DSPCore 运行时负责把 TabSlot 和 GridIndex 投射到支持的界面，例如物品选择器、配方选择器、制造器页面、信号选择器和标签图标选择器。
-// - GenesisBook、OrbitalRing、FE 等接管 UI 的第三方界面需要专门适配。
+// - GenesisBook、OrbitalRing、FE 接管 signal/tag picker 时，DSPCore 会避免重复注入按钮；
+//   真正自建且不复用原版 picker 的第三方界面仍需要专门适配。
 //
 // Usage:
 // - Register once during startup.
