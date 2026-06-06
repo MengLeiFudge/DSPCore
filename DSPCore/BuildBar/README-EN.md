@@ -45,7 +45,7 @@ These entries map to `tab`, `row`, and `index`. New code should use `ItemProto.S
 
 ## What This Block Does Not Own
 
-- It does not create `ItemProto`, recipes, icons, or localization entries; those belong to Protos, Icons, and Resources.
+- It does not create `ItemProto`, recipes, icons, or localization entries; those belong to ProtoRegistration, Icons, and Resources.
 - It does not decide whether an item is unlocked; extended buttons use vanilla history unlock state and sandbox instant-item state for interactivity.
 - Player-defined build bar positions and RebindBuildBar compatibility are not implemented yet.
 - `row = 1` is limited by vanilla `UIBuildMenu.protos` dimensions; current runtime skips row-1 bindings outside vanilla tab/index bounds.

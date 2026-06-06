@@ -1,29 +1,30 @@
-# 原型阶段
+# 原型注册
 
-Protos 模块让模组把 `ItemProto`、`RecipeProto`、`TechProto`、`TutorialProto` 等 DSP 原型登记到 DSPCore 的数据阶段，由 DSPCore 在统一时机写入 LDB 并重建派生缓存。
+ProtoRegistration 模块让模组把 `ItemProto`、`RecipeProto`、`TechProto`、`TutorialProto` 等 DSP 原型登记到 DSPCore 的数据阶段，由 DSPCore 在统一时机写入 LDB 并重建派生缓存。
 
 ## 这个模块带来什么便利
 
 - 你不需要每个模组各自寻找 LDB 写入时机、手动插入 `ProtoSet` 或漏掉缓存重建。
 - 你可以用 `Data`、`DataUpdates`、`DataFinalFixes` 表达“先声明、再跨模组调整、最后修正”的顺序。
 - DSPCore 会在应用 Proto 后重建物品、模型、配方、信号、图标等关键派生缓存，减少“数据写进去了但 UI/索引没更新”的问题。
-- 旧 LDBTool 的 `PreAddProto` / `PostAddProto` 会桥接到 Protos，便于已有代码迁移。
+- 旧 LDBTool 的 `PreAddProto` / `PostAddProto` 会桥接到 ProtoRegistration，便于已有代码迁移。
+- `Protos` 仍保留为兼容/短别名；新文档和示例主推 `ProtoRegistration`。
 
 ## 功能：注册新 Proto
 
 常用类型化入口：
 
 ```csharp
-Protos.RegisterItem(itemProto, "com.example.my-mod");
-Protos.RegisterRecipe(recipeProto, "com.example.my-mod", CoreDataPhase.DataUpdates);
-Protos.RegisterTech(techProto, "com.example.my-mod");
-Protos.RegisterTutorial(tutorialProto, "com.example.my-mod");
+ProtoRegistration.RegisterItem(itemProto, "com.example.my-mod");
+ProtoRegistration.RegisterRecipe(recipeProto, "com.example.my-mod", CoreDataPhase.DataUpdates);
+ProtoRegistration.RegisterTech(techProto, "com.example.my-mod");
+ProtoRegistration.RegisterTutorial(tutorialProto, "com.example.my-mod");
 ```
 
 需要指定类型或记录用途时，可以使用通用入口：
 
 ```csharp
-Protos.Register(typeof(ItemProto), itemProto, "com.example.my-mod", CoreDataPhase.Data, ProtoKind.Item, "new building item");
+ProtoRegistration.Register(typeof(ItemProto), itemProto, "com.example.my-mod", CoreDataPhase.Data, ProtoKind.Item, "new building item");
 ```
 
 ## 功能：设置物品或配方格子
@@ -39,14 +40,14 @@ TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
     Title: "ExampleMachines",
     IconId: "example-machines-icon"));
 
-itemProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
-recipeProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+itemProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
+recipeProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
 ```
 
 如果仍放在游戏原本页面，可以直接使用原版 tab 分类编号：
 
 ```csharp
-itemProto.GridIndex = Protos.GetGridIndex(tab: 1, row: 2, index: 3);
+itemProto.GridIndex = ProtoRegistration.GetGridIndex(tab: 1, row: 2, index: 3);
 ```
 
 `TabSlot` 是页面槽位；`GridIndex` 是物品/配方格子字段。不要把两者当成同一个概念。

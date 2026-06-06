@@ -36,7 +36,7 @@ public static class TabRegistrationExample
 
         // GridIndex 是物品/配方自己的游戏原生格子字段。
         // GridIndex is the native game cell field on items and recipes.
-        itemProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
-        recipeProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+        itemProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
+        recipeProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
     }
 }

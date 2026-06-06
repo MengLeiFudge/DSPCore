@@ -144,8 +144,8 @@ DSPCore.sln
 │   ├── Icons/               # Api/Runtime/Examples: icon registration and icon runtime bridge
 │   ├── Input/               # Api/Runtime/Examples: key bind declarations and polling bridge
 │   ├── Pickers/             # Api/Runtime/Examples: picker requests and popup bridge
-│   ├── Protos/              # Api/Runtime/Compat/Examples: Proto registration facade, data-phase bridge, LDBTool compatibility
-│   ├── Recipes/             # Api/Runtime/Examples: custom recipe types and recipe guard bridge
+│   ├── ProtoRegistration/   # Api/Runtime/Compat/Examples: proto registration facade, data-phase bridge, LDBTool compatibility
+│   ├── RecipeTypes/         # Api/Runtime/Examples: custom recipe types and recipe guard bridge
 │   ├── Resources/           # Api/Runtime: resource and localization declarations plus localization bridge
 │   ├── Saves/               # Api/Runtime/Compat/Examples: save abstraction, sidecar save bridge, DSPModSave compatibility
 │   ├── Tabs/                # Api/Runtime/Examples: tab slot declarations and UI projection bridge
@@ -168,8 +168,8 @@ DSPCore.sln
 - Runtime host owns only BepInEx startup and cross-feature patch assembly. Concrete runtime bridges belong in their feature block directories.
 - Runtime 宿主只负责 BepInEx 启动和跨功能 patch 装配。具体运行时桥接必须放在对应功能块目录。
 
-- Tabs own page declaration and `TabSlot` allocation. `GridIndex` remains the native item/recipe cell field on `ItemProto` and `RecipeProto`; use Protos/GridIndexes helpers to build `GridIndex` values from `TabSlot`, row, and index.
-- Tabs 负责页面声明和 `TabSlot` 分配。`GridIndex` 仍是 `ItemProto` / `RecipeProto` 的游戏原生格子字段；用 Protos/GridIndexes 辅助方法从 `TabSlot`、行号和格子号生成 `GridIndex`。
+- Tabs own page declaration and `TabSlot` allocation. `GridIndex` remains the native item/recipe cell field on `ItemProto` and `RecipeProto`; use ProtoRegistration/GridIndexes helpers to build `GridIndex` values from `TabSlot`, row, and index.
+- Tabs 负责页面声明和 `TabSlot` 分配。`GridIndex` 仍是 `ItemProto` / `RecipeProto` 的游戏原生格子字段；用 ProtoRegistration/GridIndexes 辅助方法从 `TabSlot`、行号和格子号生成 `GridIndex`。
 
 - P2/P3 features such as custom machine components, planet/star systems, network helpers, and player convenience modules are not implemented.
 - 自定义机器组件、星球/恒星系统、网络工具和玩家便利模块等 P2/P3 功能尚未实现。

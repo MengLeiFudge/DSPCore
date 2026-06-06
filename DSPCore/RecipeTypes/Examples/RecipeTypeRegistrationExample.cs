@@ -7,7 +7,7 @@ namespace ExampleMod;
 //
 // 用途：
 // - RecipeTypes 用于声明一组配方属于自定义配方类型。
-// - 它不创建 RecipeProto；配方创建应先由 Protos 完成。
+// - 它不创建 RecipeProto；配方创建应先由 ProtoRegistration 完成。
 // - 它负责把已有配方和允许使用这些配方的机器关联起来。
 //
 // Usage:

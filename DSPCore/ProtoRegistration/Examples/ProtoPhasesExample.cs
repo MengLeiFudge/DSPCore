@@ -6,9 +6,9 @@ namespace ExampleMod;
 // This file is a documentation example and is excluded from DSPCore compilation.
 //
 // 用途：
-// - Protos 负责把 ItemProto、RecipeProto、TechProto、TutorialProto 等注册到 DSPCore 数据阶段。
+// - ProtoRegistration 负责把 ItemProto、RecipeProto、TechProto、TutorialProto 等注册到 DSPCore 数据阶段。
 // - DSPCore 当前使用三段：Data、DataUpdates、DataFinalFixes。
-// - 物品/配方/科技/指引各自仍可以拆成更细功能，但都通过 Protos 进入游戏 LDB。
+// - 物品/配方/科技/指引各自仍可以拆成更细功能，但都通过 ProtoRegistration 进入游戏 LDB。
 //
 // 阶段建议：
 // - Data：声明基础 Proto，例如新物品和基础模型。
@@ -24,15 +24,15 @@ public static class ProtoPhasesExample
     {
         // 基础物品通常放在 Data 阶段。
         // Base item declarations usually belong in Data.
-        Protos.RegisterItem(
+        ProtoRegistration.RegisterItem(
             proto: itemProto,
             ownerModGuid: "com.example.my-mod",
             phase: CoreDataPhase.Data,
             purpose: "Declare the base item");
 
         // 配方依赖物品 ID，因此放在 DataUpdates 更直观。
-        // Recipes depend on item ids, so DataUpdates is clearer.
-        Protos.RegisterRecipe(
+        // Recipe proto objects depend on item ids, so DataUpdates is clearer.
+        ProtoRegistration.RegisterRecipe(
             proto: recipeProto,
             ownerModGuid: "com.example.my-mod",
             phase: CoreDataPhase.DataUpdates,
@@ -40,7 +40,7 @@ public static class ProtoPhasesExample
 
         // Tutorial 或跨模组最终链路修正适合 DataFinalFixes。
         // Tutorial and final cross-mod chain fixes fit DataFinalFixes.
-        Protos.RegisterTutorial(
+        ProtoRegistration.RegisterTutorial(
             proto: tutorialProto,
             ownerModGuid: "com.example.my-mod",
             phase: CoreDataPhase.DataFinalFixes,

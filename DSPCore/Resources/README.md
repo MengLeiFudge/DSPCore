@@ -49,4 +49,4 @@ DspCore.Resources.RegisterLocalization(new LocalizationEntry(
 
 ## 示例
 
-当前 Resources 还没有独立 Examples；可参考 Icons、Tabs、Protos 示例中对图标 ID 和本地化 key 的使用。
+当前 Resources 还没有独立 Examples；可参考 Icons、Tabs、ProtoRegistration 示例中对图标 ID 和本地化 key 的使用。

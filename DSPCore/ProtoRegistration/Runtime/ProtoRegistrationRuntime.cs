@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace DSPCore;
 
-internal static class ProtoRuntime
+internal static class ProtoRegistrationRuntime
 {
     private static readonly HashSet<CoreDataPhase> AppliedPhases = new();
 
@@ -18,7 +18,7 @@ internal static class ProtoRuntime
             return;
         }
 
-        var registrations = DspCore.Protos.GetByPhase(phase);
+        var registrations = DspCore.ProtoRegistration.GetByPhase(phase);
         if (registrations.Count == 0)
         {
             return;
@@ -36,7 +36,7 @@ internal static class ProtoRuntime
             }
             catch (Exception ex)
             {
-                DspCore.Errors.ReportException("DSPCore.ProtoRuntime", ex);
+                DspCore.Errors.ReportException("DSPCore.ProtoRegistrationRuntime", ex);
                 DspCore.Logger?.LogError($"Failed to apply {phase} proto group {group.Key.FullName}: {ex}");
             }
         }
@@ -77,7 +77,7 @@ internal static class ProtoRuntime
         }
         catch (Exception ex)
         {
-            DspCore.Errors.ReportException("DSPCore.ProtoRuntime", ex);
+            DspCore.Errors.ReportException("DSPCore.ProtoRegistrationRuntime", ex);
             DspCore.Logger?.LogError($"Failed to rebuild DSP proto caches: {ex}");
         }
     }
@@ -99,7 +99,7 @@ internal static class ProtoRuntime
                 continue;
             }
 
-            var method = typeof(ProtoRuntime).GetMethod(nameof(RebuildDataIndices), BindingFlags.NonPublic | BindingFlags.Static);
+            var method = typeof(ProtoRegistrationRuntime).GetMethod(nameof(RebuildDataIndices), BindingFlags.NonPublic | BindingFlags.Static);
             method!.MakeGenericMethod(protoType).Invoke(null, new[] { protoSet });
         }
     }
@@ -125,7 +125,7 @@ internal static class ProtoRuntime
             return;
         }
 
-        var method = typeof(ProtoRuntime).GetMethod(nameof(AddToSet), BindingFlags.NonPublic | BindingFlags.Static);
+        var method = typeof(ProtoRegistrationRuntime).GetMethod(nameof(AddToSet), BindingFlags.NonPublic | BindingFlags.Static);
         method!.MakeGenericMethod(protoType).Invoke(null, new object[] { protoSet, protos, phase });
     }
 
@@ -258,18 +258,18 @@ internal static class ProtoRuntime
 }
 
 [HarmonyPatch(typeof(VFPreload), "InvokeOnLoadWorkEnded")]
-internal static class ProtoRuntimePatches
+internal static class ProtoRegistrationRuntimePatches
 {
     private static void Prefix()
     {
-        ProtoRuntime.ApplyPhase(CoreDataPhase.Data);
-        ProtoRuntime.ApplyPhase(CoreDataPhase.DataUpdates);
+        ProtoRegistrationRuntime.ApplyPhase(CoreDataPhase.Data);
+        ProtoRegistrationRuntime.ApplyPhase(CoreDataPhase.DataUpdates);
     }
 
     private static void Postfix()
     {
-        ProtoRuntime.ApplyPhase(CoreDataPhase.DataFinalFixes);
-        ProtoRuntime.RebuildDerivedCaches();
+        ProtoRegistrationRuntime.ApplyPhase(CoreDataPhase.DataFinalFixes);
+        ProtoRegistrationRuntime.RebuildDerivedCaches();
         BuildBarRuntime.Apply();
     }
 }

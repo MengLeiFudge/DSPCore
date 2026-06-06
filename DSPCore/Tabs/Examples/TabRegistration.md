@@ -15,7 +15,7 @@
 - `IconId`：图标 ID。
 - `Order`：按钮显示排序权重。
 - `TabSlot`：`Tabs.AddTab(...)` 返回的页面槽位。
-- `GridIndex`：`ItemProto` / `RecipeProto` 自己的格子字段，可用 `Protos.GetGridIndex(tabSlot, row, index)` 生成。
+- `GridIndex`：`ItemProto` / `RecipeProto` 自己的格子字段，可用 `ProtoRegistration.GetGridIndex(tabSlot, row, index)` 生成。
 
 ## 运行时前提
 

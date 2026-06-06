@@ -13,7 +13,7 @@ The Core block provides the DSPCore global entry point, built-in feature registr
 
 `DspCore` is the aggregate entry point and contains:
 
-- `DspCore.Protos`
+- `DspCore.ProtoRegistration`
 - `DspCore.BuildBar`
 - `DspCore.Saves`
 - `DspCore.Resources`
@@ -25,7 +25,7 @@ The Core block provides the DSPCore global entry point, built-in feature registr
 - `DspCore.Achievements`
 - `DspCore.Errors`
 
-Examples should usually use short entries such as `Protos.RegisterItem(...)`, `Saves.Register(...)`, and `BuildBar.BindQuickBar(...)`. Use `DspCore` when you need registry snapshots or aggregate services.
+Examples should usually use short entries such as `ProtoRegistration.RegisterItem(...)`, `Saves.Register(...)`, and `BuildBar.BindQuickBar(...)`. Use `DspCore` when you need registry snapshots or aggregate services.
 
 ## Capability: Declare Features And Modules
 

@@ -23,7 +23,7 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods.
 
 ## First Version Scope
 
-- P0/P1 author-facing feature blocks: feature lifecycle, data phases, item/recipe/tech/tutorial registration, build bar placement, resources, icons, localization, tabs, pickers, recipe types, key binds, saves, achievements, and error reports.
+- P0/P1 author-facing feature blocks: feature lifecycle, data phases, proto registration, build bar placement, resources, icons, localization, tabs, pickers, recipe types, key binds, saves, achievements, and error reports.
 - Legacy compatibility shims for `xiaoye97.LDBTool`, `crecheng.DSPModSave`, `CommonAPI`, and `BuildBarTool`; compatibility code lives under the owning feature block's `Compat/` directory instead of a centralized `Legacy/` directory.
 - Bilingual XML summaries for public APIs.
 
@@ -35,7 +35,7 @@ P0/P1 blocks are the current implementation target.
 
 - Feature lifecycle: declare feature blocks, dependencies, priority, and initialization.
 - Data phases: `Data`, `DataUpdates`, and `DataFinalFixes`.
-- Proto features: item, recipe, tech, tutorial, model/building binding, and vanilla data query descriptors.
+- Proto registration: item, recipe, tech, tutorial, model/building binding, and vanilla data query descriptors.
 - Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot; row 1 writes to the vanilla build bar, row 2+ uses DSPCore extended buttons, and BuildBarTool compatibility entries remain available. Other feature blocks, such as item registration, should prefer `ItemProto.SetBuildBar(...)` after they have the item proto; BuildBar does not own proto creation.
 - Resources, icons, and localization: resource roots, icon descriptors, and translation entries.
 - Tabs and pickers: authors can declare custom pages, receive a `TabSlot`, and use that slot to generate item/recipe `GridIndex` values; they can also open item/recipe/signal picker requests from their own UI.
@@ -102,8 +102,8 @@ TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
     IconId: "example-machine-tab",
     Order: 100));
 
-itemProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
-recipeProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+itemProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
+recipeProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
 ```
 
 ## Example: Legacy BuildBarTool Compatibility
@@ -134,9 +134,9 @@ The old call is accepted, but it is marked obsolete. New mods should prefer `Ite
 - `DSPCore/Tabs/Examples/TabRegistration.md`
 - `DSPCore/Pickers/Examples/PickerRequestExample.cs`
 - `DSPCore/Pickers/Examples/PickerRequest.md`
-- `DSPCore/Recipes/Examples/RecipeTypeRegistrationExample.cs`
-- `DSPCore/Recipes/Examples/RecipeTypeRegistration.md`
-- `DSPCore/Protos/Examples/ProtoPhasesExample.cs`
-- `DSPCore/Protos/Examples/ProtoPhases.md`
+- `DSPCore/RecipeTypes/Examples/RecipeTypeRegistrationExample.cs`
+- `DSPCore/RecipeTypes/Examples/RecipeTypeRegistration.md`
+- `DSPCore/ProtoRegistration/Examples/ProtoPhasesExample.cs`
+- `DSPCore/ProtoRegistration/Examples/ProtoPhases.md`
 - `DSPCore/Input/Examples/KeyBindRegistrationExample.cs`
 - `DSPCore/Input/Examples/KeyBindRegistration.md`

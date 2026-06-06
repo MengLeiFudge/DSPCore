@@ -37,7 +37,7 @@ Pickers.Open(new PickerRequest(
 ## 这个模块不负责什么
 
 - 不分配 `TabSlot`；页面注册属于 Tabs。
-- 不设置 `GridIndex`；物品/配方格子属于 Protos 和对应 Proto 对象。
+- 不设置 `GridIndex`；物品/配方格子属于 ProtoRegistration 和对应 Proto 对象。
 - 当前过滤器只在返回时兜底验证，不会在选择器实时网格里隐藏无效条目。
 - 不保证 `OnReturn` 一定非空；取消、过滤失败或异常都会返回 null。
 - 不提供自定义选择器 UI；当前使用原版 picker 弹窗。

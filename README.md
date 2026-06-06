@@ -23,7 +23,7 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 
 ## 初版范围
 
-- 提供 P0/P1 的作者可见功能块：功能生命周期、数据阶段、物品/配方/科技/指引注册、建造栏位置、资源、图标、本地化、分页、选择器、配方类型、按键、存档、成就和错误报告。
+- 提供 P0/P1 的作者可见功能块：功能生命周期、数据阶段、原型注册、建造栏位置、资源、图标、本地化、分页、选择器、配方类型、按键、存档、成就和错误报告。
 - 提供 `xiaoye97.LDBTool`、`crecheng.DSPModSave`、`CommonAPI` 和 `BuildBarTool` 的旧 API 兼容层；兼容代码按所属功能块放入 `Compat/`，不再使用集中式 `Legacy/` 目录。
 - 公开 API 提供中英文 XML summary。
 
@@ -35,7 +35,7 @@ P0/P1 是当前实现目标。
 
 - 功能生命周期：声明功能块、依赖、优先级和初始化。
 - 数据阶段：`Data`、`DataUpdates` 和 `DataFinalFixes`。
-- 原型功能：物品、配方、科技、指引、模型/建筑绑定和原版数据查询描述。
+- 原型注册：物品、配方、科技、指引、模型/建筑绑定和原版数据查询描述。
 - 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位；第 1 行写入原版建造栏，第 2 行及以后使用 DSPCore 扩展按钮，并保留 BuildBarTool 兼容入口。其他功能块，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.SetBuildBar(...)`；BuildBar 不承担 Proto 创建职责。
 - 资源、图标和本地化：资源根、图标描述和翻译条目。
 - 分页和选择器：作者可以声明自定义页面并取得 `TabSlot`，再用 `TabSlot` 生成物品/配方 `GridIndex`；也可以从自己的 UI 打开物品、配方和信号选择器请求。
@@ -47,7 +47,7 @@ P0/P1 是当前实现目标。
 已接入运行时桥接：
 
 - `DSPCorePlugin` 通过 BepInEx 启动并应用 Harmony 补丁。
-- Proto 注册会在 `VFPreload.InvokeOnLoadWorkEnded` 前后执行；DSPCore 在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
+- 原型注册会在 `VFPreload.InvokeOnLoadWorkEnded` 前后执行；DSPCore 在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
 - `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。玩家自定义/动态覆盖格子和 RebindBuildBar 适配属于同一 BuildBar 功能块，但尚未实现。
 - `IconSetRegistry` 可以加载 Unity `Resources` sprite 或本地 PNG 文件，缓存后写入目标 Proto。
 - `TabRegistry` 会为稳定页面 ID 分配 `TabSlot`，并通过现有 GridIndex 分类流程把自定义页面投射到物品选择器、配方选择器和制造器界面。
@@ -102,8 +102,8 @@ TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
     IconId: "example-machine-tab",
     Order: 100));
 
-itemProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
-recipeProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+itemProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
+recipeProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
 ```
 
 ## 示例：旧 BuildBarTool 兼容
@@ -134,9 +134,9 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 - `DSPCore/Tabs/Examples/TabRegistration.md`
 - `DSPCore/Pickers/Examples/PickerRequestExample.cs`
 - `DSPCore/Pickers/Examples/PickerRequest.md`
-- `DSPCore/Recipes/Examples/RecipeTypeRegistrationExample.cs`
-- `DSPCore/Recipes/Examples/RecipeTypeRegistration.md`
-- `DSPCore/Protos/Examples/ProtoPhasesExample.cs`
-- `DSPCore/Protos/Examples/ProtoPhases.md`
+- `DSPCore/RecipeTypes/Examples/RecipeTypeRegistrationExample.cs`
+- `DSPCore/RecipeTypes/Examples/RecipeTypeRegistration.md`
+- `DSPCore/ProtoRegistration/Examples/ProtoPhasesExample.cs`
+- `DSPCore/ProtoRegistration/Examples/ProtoPhases.md`
 - `DSPCore/Input/Examples/KeyBindRegistrationExample.cs`
 - `DSPCore/Input/Examples/KeyBindRegistration.md`

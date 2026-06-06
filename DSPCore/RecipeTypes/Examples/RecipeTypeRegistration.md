@@ -17,7 +17,7 @@
 
 ## 运行时前提
 
-配方 ID 和机器物品 ID 应先稳定存在。RecipeTypes 不创建配方；配方创建属于 Protos。
+配方 ID 和机器物品 ID 应先稳定存在。RecipeTypes 不创建配方；配方创建属于 ProtoRegistration。
 
 ## 常见误用
 

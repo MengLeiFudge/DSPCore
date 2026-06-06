@@ -1,4 +1,4 @@
-# Recipes
+# Recipe Types
 
 The RecipeTypes block lets a mod classify existing recipes as custom recipe types and declare which machines may use them. It is not a recipe creation tool; it is a classification and runtime guard layer after recipe creation.
 
@@ -32,7 +32,7 @@ RecipeTypes.Register(new RecipeTypeDescriptor(
 
 ## What This Block Does Not Own
 
-- It does not create `RecipeProto`; recipe creation belongs to Protos.
+- It does not create `RecipeProto`; recipe creation belongs to ProtoRegistration.
 - It does not hide invalid recipes before the recipe picker opens; current protection happens at `SetRecipe`.
 - It does not handle save migration for changed recipe ids; stable ids remain the mod author's responsibility.
 - It does not define a full UI category model; display and tab behavior should be handled with Tabs, Pickers, or concrete UI features.

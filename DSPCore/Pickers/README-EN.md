@@ -37,7 +37,7 @@ Pickers.Open(new PickerRequest(
 ## What This Block Does Not Own
 
 - It does not allocate `TabSlot` values; page registration belongs to Tabs.
-- It does not set `GridIndex`; item and recipe cells belong to Protos and the proto objects themselves.
+- It does not set `GridIndex`; item and recipe cells belong to ProtoRegistration and the proto objects themselves.
 - Current filters validate only the returned value; they do not hide invalid entries inside the live picker grid.
 - `OnReturn` is not guaranteed to be non-null. Cancel, filter failure, or exceptions all return null.
 - It does not provide a custom picker UI; current runtime uses vanilla picker popups.

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 namespace DSPCore;
 
 /// <summary>
-/// 作者侧 Proto 注册入口。
-/// Author-facing Proto registration entry point.
+/// 作者侧原型注册入口。
+/// Author-facing proto registration entry point.
 /// </summary>
-public static class Protos
+public static class ProtoRegistration
 {
     /// <summary>
     /// 从分页槽位、行和格子编号生成物品或配方 GridIndex。
@@ -33,7 +33,7 @@ public static class Protos
     /// </summary>
     public static void Register(Type protoType, object proto, string ownerModGuid, CoreDataPhase phase = CoreDataPhase.Data, ProtoKind kind = ProtoKind.Unknown, string? purpose = null)
     {
-        DspCore.Protos.Register(protoType, proto, ownerModGuid, phase, kind, purpose);
+        DspCore.ProtoRegistration.Register(protoType, proto, ownerModGuid, phase, kind, purpose);
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public static class Protos
     /// </summary>
     public static void RegisterItem(object proto, string ownerModGuid, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
     {
-        DspCore.Protos.RegisterItem(proto, ownerModGuid, phase, purpose);
+        DspCore.ProtoRegistration.RegisterItem(proto, ownerModGuid, phase, purpose);
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ public static class Protos
     /// </summary>
     public static void RegisterRecipe(object proto, string ownerModGuid, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
     {
-        DspCore.Protos.RegisterRecipe(proto, ownerModGuid, phase, purpose);
+        DspCore.ProtoRegistration.RegisterRecipe(proto, ownerModGuid, phase, purpose);
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public static class Protos
     /// </summary>
     public static void RegisterTech(object proto, string ownerModGuid, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
     {
-        DspCore.Protos.RegisterTech(proto, ownerModGuid, phase, purpose);
+        DspCore.ProtoRegistration.RegisterTech(proto, ownerModGuid, phase, purpose);
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ public static class Protos
     /// </summary>
     public static void RegisterTutorial(object proto, string ownerModGuid, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
     {
-        DspCore.Protos.RegisterTutorial(proto, ownerModGuid, phase, purpose);
+        DspCore.ProtoRegistration.RegisterTutorial(proto, ownerModGuid, phase, purpose);
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public static class Protos
     [Obsolete("Use Register(..., CoreDataPhase.Data, ...) or a typed RegisterItem/RegisterRecipe/RegisterTech method instead.")]
     public static void RegisterPreload(Type protoType, object proto, string ownerModGuid)
     {
-        DspCore.Protos.RegisterPreload(protoType, proto, ownerModGuid);
+        DspCore.ProtoRegistration.RegisterPreload(protoType, proto, ownerModGuid);
     }
 
     /// <summary>
@@ -89,24 +89,24 @@ public static class Protos
     [Obsolete("Use Register(..., CoreDataPhase.DataFinalFixes, ...) or a typed RegisterItem/RegisterRecipe/RegisterTech method instead.")]
     public static void RegisterPostload(Type protoType, object proto, string ownerModGuid)
     {
-        DspCore.Protos.RegisterPostload(protoType, proto, ownerModGuid);
+        DspCore.ProtoRegistration.RegisterPostload(protoType, proto, ownerModGuid);
     }
 
     /// <summary>
     /// 获取指定阶段的原型注册。
     /// Gets proto registrations for a phase.
     /// </summary>
-    public static IReadOnlyList<ProtoRegistration> GetByPhase(CoreDataPhase phase)
+    public static IReadOnlyList<ProtoRegistrationEntry> GetByPhase(CoreDataPhase phase)
     {
-        return DspCore.Protos.GetByPhase(phase);
+        return DspCore.ProtoRegistration.GetByPhase(phase);
     }
 
     /// <summary>
-    /// 获取所有已注册的 Proto。
-    /// Gets all registered Protos.
+    /// 获取所有已注册的原型注册项。
+    /// Gets all registered proto registration entries.
     /// </summary>
-    public static IReadOnlyList<ProtoRegistration> GetAll()
+    public static IReadOnlyList<ProtoRegistrationEntry> GetAll()
     {
-        return DspCore.Protos.GetAll();
+        return DspCore.ProtoRegistration.GetAll();
     }
 }

@@ -1,29 +1,30 @@
-# Protos
+# Proto Registration
 
-The Protos block lets a mod register DSP protos such as `ItemProto`, `RecipeProto`, `TechProto`, and `TutorialProto` into DSPCore data phases. DSPCore then writes them to LDB at a shared runtime point and rebuilds derived caches.
+The ProtoRegistration block lets a mod register DSP protos such as `ItemProto`, `RecipeProto`, `TechProto`, and `TutorialProto` into DSPCore data phases. DSPCore then writes them to LDB at a shared runtime point and rebuilds derived caches.
 
 ## What This Block Gives You
 
 - You do not need every mod to find its own LDB insertion timing, mutate `ProtoSet` manually, or remember every cache rebuild.
 - You can express ordering through `Data`, `DataUpdates`, and `DataFinalFixes`: declare first, adjust across mods, then apply final fixes.
 - After applying protos, DSPCore rebuilds key item, model, recipe, signal, icon, and index caches, reducing cases where data exists but UI or derived indices are stale.
-- Legacy LDBTool `PreAddProto` / `PostAddProto` calls bridge to Protos for migration.
+- Legacy LDBTool `PreAddProto` / `PostAddProto` calls bridge to ProtoRegistration for migration.
+- `Protos` remains as a compatibility/short alias; new documentation and examples prefer `ProtoRegistration`.
 
-## Capability: Register New Protos
+## Capability: Register New Proto Objects
 
 Common typed entries:
 
 ```csharp
-Protos.RegisterItem(itemProto, "com.example.my-mod");
-Protos.RegisterRecipe(recipeProto, "com.example.my-mod", CoreDataPhase.DataUpdates);
-Protos.RegisterTech(techProto, "com.example.my-mod");
-Protos.RegisterTutorial(tutorialProto, "com.example.my-mod");
+ProtoRegistration.RegisterItem(itemProto, "com.example.my-mod");
+ProtoRegistration.RegisterRecipe(recipeProto, "com.example.my-mod", CoreDataPhase.DataUpdates);
+ProtoRegistration.RegisterTech(techProto, "com.example.my-mod");
+ProtoRegistration.RegisterTutorial(tutorialProto, "com.example.my-mod");
 ```
 
 Use the generic entry when you need to specify the type or record a purpose:
 
 ```csharp
-Protos.Register(typeof(ItemProto), itemProto, "com.example.my-mod", CoreDataPhase.Data, ProtoKind.Item, "new building item");
+ProtoRegistration.Register(typeof(ItemProto), itemProto, "com.example.my-mod", CoreDataPhase.Data, ProtoKind.Item, "new building item");
 ```
 
 ## Capability: Set Item Or Recipe Cells
@@ -39,14 +40,14 @@ TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
     Title: "ExampleMachines",
     IconId: "example-machines-icon"));
 
-itemProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
-recipeProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+itemProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
+recipeProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
 ```
 
 If the item or recipe should stay on a vanilla page, use the vanilla tab category value directly:
 
 ```csharp
-itemProto.GridIndex = Protos.GetGridIndex(tab: 1, row: 2, index: 3);
+itemProto.GridIndex = ProtoRegistration.GetGridIndex(tab: 1, row: 2, index: 3);
 ```
 
 `TabSlot` is the page slot. `GridIndex` is the item or recipe cell field. Do not treat them as the same concept.

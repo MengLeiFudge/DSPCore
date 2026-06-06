@@ -21,6 +21,6 @@
 ## 常见误用
 
 - 不要把所有更新都塞进 `DataFinalFixes`。
-- 不要在 Protos 中承担 BuildBar 或 Icons 的职责。
+- 不要在 ProtoRegistration 中承担 BuildBar 或 Icons 的职责。
 
 代码示例见 `ProtoPhasesExample.cs`。

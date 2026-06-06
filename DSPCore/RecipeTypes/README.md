@@ -32,7 +32,7 @@ RecipeTypes.Register(new RecipeTypeDescriptor(
 
 ## 这个模块不负责什么
 
-- 不创建 `RecipeProto`；配方创建属于 Protos。
+- 不创建 `RecipeProto`；配方创建属于 ProtoRegistration。
 - 不在配方选择列表打开前隐藏无效配方；当前保护发生在 `SetRecipe` 阶段。
 - 不处理 recipe id 变更带来的存档迁移；稳定 ID 仍由模组作者负责。
 - 不定义完整 UI 分类；显示和分页应结合 Tabs、Pickers 或具体 UI 功能处理。

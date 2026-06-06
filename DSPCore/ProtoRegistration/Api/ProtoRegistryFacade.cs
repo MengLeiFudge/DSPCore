@@ -9,7 +9,7 @@ namespace DSPCore;
 /// </summary>
 public sealed class ProtoRegistryFacade
 {
-    private readonly List<ProtoRegistration> registrations = new();
+    private readonly List<ProtoRegistrationEntry> registrations = new();
 
     /// <summary>
     /// 注册一个原型对象。
@@ -23,7 +23,7 @@ public sealed class ProtoRegistryFacade
     /// <param name="purpose">注册目的说明。Registration purpose.</param>
     public void Register(Type protoType, object proto, string ownerModGuid, CoreDataPhase phase = CoreDataPhase.Data, ProtoKind kind = ProtoKind.Unknown, string? purpose = null)
     {
-        registrations.Add(new ProtoRegistration(protoType, proto, ownerModGuid, phase, kind, purpose));
+        registrations.Add(new ProtoRegistrationEntry(protoType, proto, ownerModGuid, phase, kind, purpose));
     }
 
     /// <summary>
@@ -110,17 +110,17 @@ public sealed class ProtoRegistryFacade
     /// </summary>
     /// <param name="phase">数据阶段。Data phase.</param>
     /// <returns>原型注册快照。Snapshot of proto registrations.</returns>
-    public IReadOnlyList<ProtoRegistration> GetByPhase(CoreDataPhase phase)
+    public IReadOnlyList<ProtoRegistrationEntry> GetByPhase(CoreDataPhase phase)
     {
         return registrations.FindAll(item => item.Phase == phase).ToArray();
     }
 
     /// <summary>
-    /// 获取所有已注册的 Proto。
-    /// Gets all registered Protos.
+    /// 获取所有已注册的原型注册项。
+    /// Gets all registered proto registration entries.
     /// </summary>
-    /// <returns>Proto 注册快照。Snapshot of Proto registrations.</returns>
-    public IReadOnlyList<ProtoRegistration> GetAll()
+    /// <returns>原型注册项快照。Snapshot of proto registration entries.</returns>
+    public IReadOnlyList<ProtoRegistrationEntry> GetAll()
     {
         return registrations.ToArray();
     }

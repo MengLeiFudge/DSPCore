@@ -45,7 +45,7 @@ BuildBar.BindQuickBar(tab: 3, row: 2, index: 5, itemId: 9554);
 
 ## 这个模块不负责什么
 
-- 不创建 `ItemProto`、配方、图标或本地化；这些属于 Protos、Icons 和 Resources。
+- 不创建 `ItemProto`、配方、图标或本地化；这些属于 ProtoRegistration、Icons 和 Resources。
 - 不决定物品是否解锁；扩展按钮会按原版历史解锁状态和沙盒即时物品状态设置可点击性。
 - 玩家自定义建造栏位置和 RebindBuildBar 兼容仍未实现。
 - `row = 1` 受原版 `UIBuildMenu.protos` 尺寸限制；当前运行时会跳过超出原版 tab/index 范围的第 1 行绑定。

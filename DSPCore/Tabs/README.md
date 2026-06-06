@@ -28,14 +28,14 @@ TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
 `GridIndex` 是 `ItemProto` / `RecipeProto` 自己的游戏原生格子字段。创建物品或配方时，用 `TabSlot`、行号和格子号生成 `GridIndex`：
 
 ```csharp
-itemProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
-recipeProto.GridIndex = Protos.GetGridIndex(machinesTab, row: 1, index: 5);
+itemProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
+recipeProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
 ```
 
 如果不注册新页面，也可以继续用游戏原本的 tab 分类编号生成 `GridIndex`：
 
 ```csharp
-itemProto.GridIndex = Protos.GetGridIndex(tab: 1, row: 2, index: 3);
+itemProto.GridIndex = ProtoRegistration.GetGridIndex(tab: 1, row: 2, index: 3);
 ```
 
 ## 调用后 DSPCore 会怎么处理
@@ -49,7 +49,7 @@ itemProto.GridIndex = Protos.GetGridIndex(tab: 1, row: 2, index: 3);
 
 ## 这个模块不负责什么
 
-- 不直接注册物品或配方；物品/配方仍通过 Protos 注册，并用自己的 `GridIndex` 指向页面里的格子。
+- 不直接注册物品或配方；物品/配方仍通过 ProtoRegistration 注册，并用自己的 `GridIndex` 指向页面里的格子。
 - 不支持所有 DSP UI 表面；当前覆盖物品选择器、配方选择器和制造器窗口。
 - 信号选择器、全息信标、蓝图等界面需要更完整的分页内容模型后再支持。
 - 不创建图标或本地化；需要图标和文本时分别使用 Icons 与 Resources。

@@ -39,10 +39,16 @@ public static class DspCore
     public static SaveRegistry Saves { get; } = new();
 
     /// <summary>
-    /// 全局 Proto 注册门面。
-    /// Global Proto registry facade.
+    /// 全局原型注册门面。
+    /// Global proto registration facade.
     /// </summary>
-    public static ProtoRegistryFacade Protos { get; } = new();
+    public static ProtoRegistryFacade ProtoRegistration { get; } = new();
+
+    /// <summary>
+    /// 全局原型注册门面的短别名。
+    /// Short alias for the global proto registration facade.
+    /// </summary>
+    public static ProtoRegistryFacade Protos => ProtoRegistration;
 
     /// <summary>
     /// 全局原版数据读取视图。
@@ -147,7 +153,7 @@ public static class DspCore
     private static void RegisterBuiltInFeatures()
     {
         RegisterFeature("core.lifecycle", "Module lifecycle / 模块生命周期", 0);
-        RegisterFeature("core.protos", "Proto runtime bridge / 原型运行时桥接", 10);
+        RegisterFeature("core.proto-registration", "Proto registration runtime bridge / 原型注册运行时桥接", 10);
         RegisterFeature("core.resources", "Resource registry / 资源注册", 20);
         RegisterFeature("core.build-bar", "Build bar placement / 建造栏位置", 30);
         RegisterFeature("core.saves", "Save sidecar bridge / 存档桥接", 40);

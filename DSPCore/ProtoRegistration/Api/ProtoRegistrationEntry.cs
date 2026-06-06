@@ -3,8 +3,8 @@ using System;
 namespace DSPCore;
 
 /// <summary>
-/// 描述一个 Proto 注册请求。
-/// Describes a Proto registration request.
+/// 描述一个原型注册请求。
+/// Describes a proto registration request.
 /// </summary>
 /// <param name="ProtoType">Proto 类型。Proto type.</param>
 /// <param name="Proto">Proto 对象。Proto object.</param>
@@ -12,7 +12,7 @@ namespace DSPCore;
 /// <param name="Phase">注册阶段。Registration phase.</param>
 /// <param name="Kind">原型功能类型。Proto feature kind.</param>
 /// <param name="Purpose">注册目的说明。Registration purpose.</param>
-public sealed record ProtoRegistration(
+public sealed record ProtoRegistrationEntry(
     Type ProtoType,
     object Proto,
     string OwnerModGuid,

@@ -19,7 +19,7 @@ Icons.Register(new IconDescriptor(
     FallbackIconId: null));
 ```
 
-`AssetPath` 可以是 Unity `Resources` sprite 路径，也可以是本地 PNG 文件路径。`Id` 应保持稳定，供 Tabs、Protos 或你的模块代码引用。
+`AssetPath` 可以是 Unity `Resources` sprite 路径，也可以是本地 PNG 文件路径。`Id` 应保持稳定，供 Tabs、ProtoRegistration 或你的模块代码引用。
 
 ## 功能：把图标应用到目标 Proto
 

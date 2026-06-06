@@ -36,7 +36,7 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
         ErrorRuntime.Initialize();
         SaveRuntime.RegisterLegacyHandlers();
         harmony = new Harmony(PluginGuid);
-        harmony.PatchAll(typeof(ProtoRuntimePatches));
+        harmony.PatchAll(typeof(ProtoRegistrationRuntimePatches));
         harmony.PatchAll(typeof(BuildBarRuntimePatches));
         harmony.PatchAll(typeof(SaveRuntimePatches));
         harmony.PatchAll(typeof(AchievementRuntimePatches));

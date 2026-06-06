@@ -19,9 +19,9 @@ Icons.Register(new IconDescriptor(
     FallbackIconId: null));
 ```
 
-`AssetPath` can be a Unity `Resources` sprite path or a local PNG file path. Keep `Id` stable so Tabs, Protos, or your own module code can reference it.
+`AssetPath` can be a Unity `Resources` sprite path or a local PNG file path. Keep `Id` stable so Tabs, ProtoRegistration, or your own module code can reference it.
 
-## Capability: Apply Icons To Target Protos
+## Capability: Apply Icons To Target Proto Objects
 
 If a descriptor specifies `TargetKind` and `TargetProtoId`, DSPCore tries to write the resolved sprite to that target Proto:
 
@@ -45,7 +45,7 @@ Icons.Register(new IconDescriptor(
 
 ## What This Block Does Not Own
 
-- It does not create Protos; target items, recipes, techs, and other protos must already exist.
+- It does not create protos; target items, recipes, techs, and other protos must already exist.
 - It does not own localization text; use Resources for text.
 - It does not make external PNG paths stable across machines; published mods should use deterministic resource paths.
 - It does not handle icon art quality, dimensions, or transparent edges for you.

@@ -43,10 +43,10 @@ DspCore.Resources.RegisterLocalization(new LocalizationEntry(
 ## What This Block Does Not Own
 
 - It does not load icon sprites; icon loading belongs to Icons.
-- It does not create Protos or UI; it only provides resource and text data.
+- It does not create protos or UI; it only provides resource and text data.
 - It does not automatically resolve same-key conflicts between mods; later writes for the same key and language decide the final text in the array.
 - It does not validate resource paths by itself; consuming feature blocks must handle load failures.
 
 ## Examples
 
-Resources does not yet have standalone examples. See Icons, Tabs, and Protos examples for icon id and localization key usage.
+Resources does not yet have standalone examples. See Icons, Tabs, and ProtoRegistration examples for icon id and localization key usage.
