@@ -51,7 +51,7 @@ itemProto.GridIndex = ProtoRegistration.GetGridIndex(tab: 1, row: 2, index: 3);
 
 - 不直接注册物品或配方；物品/配方仍通过 ProtoRegistration 注册，并用自己的 `GridIndex` 指向页面里的格子。
 - 不支持所有 DSP UI 表面；当前覆盖原版物品选择器、配方选择器、制造器窗口、信号选择器和标签图标选择器。
-- 蓝图图标、描述图标和智能输入框图标等复用原版 signal/tag picker 的界面会受益；检测到 GenesisBook、OrbitalRing 或 FE 接管 signal/tag picker 时，DSPCore 会跳过自己的按钮注入以避免重复 tab。真正自建且不复用原版 picker 的第三方界面仍需要专门适配。
+- 蓝图图标、描述图标和智能输入框图标等复用原版 signal/tag picker 的界面会受益。DSPCore 不按 GenesisBook、OrbitalRing、FE 等插件 GUID 跳过分页按钮注入；真正自建且不复用原版 picker 的第三方界面需要专门适配。
 - 不创建图标或本地化；需要图标和文本时分别使用 Icons 与 Resources。
 
 ## 示例

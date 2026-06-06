@@ -52,7 +52,7 @@ P0/P1 是当前实现目标。
 - `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。`BuildBar.SetPlayerOverride(...)` 会写入玩家覆盖层并保存到 `.dspcore`，运行时总是用作者默认绑定叠加玩家覆盖后的有效绑定。没有 DSPCore BuildBar 存档数据时，DSPCore 会从 RebindBuildBar 的 `CustomBarBind.cfg` 导入第 1 行玩家配置。
 - `IconSetRegistry` 可以加载 Unity `Resources` sprite 或本地 PNG 文件，缓存后写入目标 Proto。
 - `TabRegistry` 会为稳定页面 ID 分配 `TabSlot`，并通过现有 GridIndex 分类流程把自定义页面投射到物品选择器、配方选择器、制造器界面、信号选择器和标签图标选择器。
-- `Pickers.Open` 会请求打开物品、配方和信号选择器弹窗，实时网格会应用请求过滤和重复 `GridIndex` 兜底，返回时仍会再做一次过滤检查。
+- `Pickers.Open` 会请求打开物品、配方和信号选择器弹窗，实时网格会应用请求过滤、重复 `GridIndex` 兜底和动态行列扩容，返回时仍会再做一次过滤检查。
 - `RecipeTypeRegistry` 会把声明的配方标记为自定义配方类型，并在制作器配方列表打开前隐藏当前机器不能使用的配方；`AssemblerComponent.SetRecipe` 仍保留最终保护。
 - `KeyBindRegistry` 会轮询已注册按键并调用回调，支持简单的 `Ctrl`/`Alt`/`Shift` 修饰键组合。
 - `SaveRegistry` 会写入 `.dspcore` 独立存档，并按 `CoreLoadOrder` 导入处理器。
@@ -64,7 +64,8 @@ P0/P1 是当前实现目标。
 当前运行时限制：
 
 - RebindBuildBar 的 `BuildBarBinds` 配置会导入到 DSPCore 第 1 行玩家覆盖层；DSPCore 不接管 RebindBuildBar 自己的重绑 UI、快捷键或后续配置写回。
-- 分页投射当前覆盖原版 `UIItemPicker`、`UIRecipePicker`、`UIReplicatorWindow`、`UISignalPicker` 和 `UISignalTagPicker`。蓝图图标、蓝图说明图标、智能输入框图标等使用这些原版 picker 的界面会受益；检测到 GenesisBook、OrbitalRing 或 FE 接管 signal/tag picker 时，DSPCore 会跳过对应按钮注入，避免重复分页。真正自建且不复用原版 picker 的第三方界面仍需要专门 adapter。
+- 分页投射当前覆盖原版 `UIItemPicker`、`UIRecipePicker`、`UIReplicatorWindow`、`UISignalPicker` 和 `UISignalTagPicker`。蓝图图标、蓝图说明图标、智能输入框图标等使用这些原版 picker 的界面会受益；DSPCore 不按 GenesisBook、OrbitalRing、FE 等插件 GUID 跳过注入。真正自建且不复用原版 picker 的第三方界面需要专门 adapter。
+- 选择器行列数由运行时汇总 `GridIndex` 后计算；DSPCore 会以当前 UI surface 的实际尺寸为基准，统计所有相关物品、配方或信号格子需要的最大行列，并同步扩展数组、材质、鼠标命中和显示尺寸。模组不需要也不能单独声明 picker 长宽。
 - UI 框架只提供通用架子，不注册具体页面、业务导航、解锁条件或存档状态。
 - 当前 Proto 阶段挂点是保守的第一版桥接，不是最终 VFPreload 中段生命周期。
 

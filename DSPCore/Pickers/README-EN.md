@@ -11,6 +11,7 @@ It does not own the item or recipe registration-position model. Authors still se
 - DSPCore centralizes result filtering, exception reporting, and `null` callbacks on failure.
 - One `PickerRequest` model covers item, recipe, and signal selection.
 - Live grids for item, recipe, and signal pickers apply request filters and move duplicate `GridIndex` entries to later empty cells so later registrations do not overwrite earlier visible entries.
+- Picker row and column counts are derived from final `GridIndex` data; DSPCore expands arrays, materials, mouse hit testing, and visible content size together.
 
 ## Capability: Open One Picker
 
@@ -32,7 +33,7 @@ Pickers.Open(new PickerRequest(
 - Runtime update consumes the current queue and opens pickers one by one.
 - Item picker requests set `UIItemPicker.showAll` from `ShowAll` or `ShowLocked`.
 - Item, recipe, and signal picker grids apply `Filter` while refreshing. If the returned value still fails `Filter`, DSPCore calls `OnReturn(null)`.
-- Vanilla `UIItemPicker`, `UIRecipePicker`, `UISignalPicker`, and `UISignalTagPicker` receive duplicate `GridIndex` fallbacks. Blueprint icons, description icons, smart-input icons, and other vanilla surfaces that reuse signal/tag pickers benefit from this.
+- Vanilla `UIItemPicker`, `UIRecipePicker`, `UISignalPicker`, and `UISignalTagPicker` receive duplicate `GridIndex` fallbacks and dynamic row/column expansion. Blueprint icons, description icons, smart-input icons, and other vanilla surfaces that reuse signal/tag pickers benefit from this.
 - If opening or callback handling throws, DSPCore reports the exception to Errors and calls `OnReturn(null)`.
 
 ## What This Block Does Not Own
@@ -41,7 +42,9 @@ Pickers.Open(new PickerRequest(
 - It does not set `GridIndex`; item and recipe cells belong to ProtoRegistration and the proto objects themselves.
 - `OnReturn` is not guaranteed to be non-null. Cancel, filter failure, or exceptions all return null.
 - It does not provide a custom picker UI; current runtime uses vanilla picker popups.
-- It does not directly adapt picker UIs rebuilt by GenesisBook, OrbitalRing, FE, or similar UI takeover mods when they do not reuse vanilla pickers. DSPCore avoids duplicate tab-button injection for known signal/tag picker takeovers, but those rebuilt third-party surfaces still need dedicated runtime adapters.
+- It does not skip signal/tag picker injection based on GenesisBook, OrbitalRing, FE, or similar plugin GUIDs; DSPCore owns the vanilla picker surfaces uniformly.
+- It does not directly adapt rebuilt picker UIs that do not reuse vanilla pickers. Those third-party surfaces need dedicated runtime adapters.
+- It does not accept explicit picker row or column declarations from mods; runtime scans registered `GridIndex` data and computes the layout automatically.
 
 ## Examples
 
