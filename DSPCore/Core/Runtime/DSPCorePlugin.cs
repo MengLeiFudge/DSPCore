@@ -44,6 +44,7 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
         harmony.PatchAll(typeof(LocalizationRuntimePatches));
         harmony.PatchAll(typeof(TabRuntimePatches));
         harmony.PatchAll(typeof(RecipeTypeRuntimePatches));
+        harmony.PatchAll(typeof(UiWindowRuntimePatches));
         Logger.LogInfo("DSPCore runtime bridges are initialized.");
     }
 

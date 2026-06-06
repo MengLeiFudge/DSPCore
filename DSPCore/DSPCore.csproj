@@ -54,6 +54,10 @@
       <HintPath>$(DSPManagedDir)/UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(DSPManagedDir)/UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
   <Target Name="ValidateRuntimeReferences" BeforeTargets="ResolveReferences">
     <Error Condition="'$(BepInExCoreDir)' == '' or !Exists('$(BepInExCoreDir)/BepInEx.dll')" Text="未找到 BepInEx.dll；请复制 DefaultPath.props.example 为 DefaultPath.props 并设置 ProfileDir。" />
@@ -65,5 +69,6 @@
     <Error Condition="'$(DSPManagedDir)' == '' or !Exists('$(DSPManagedDir)/UnityEngine.IMGUIModule.dll')" Text="未找到 UnityEngine.IMGUIModule.dll；请检查 DSPGameDir 的 DSPGAME_Data/Managed。" />
     <Error Condition="'$(DSPManagedDir)' == '' or !Exists('$(DSPManagedDir)/UnityEngine.ImageConversionModule.dll')" Text="未找到 UnityEngine.ImageConversionModule.dll；请检查 DSPGameDir 的 DSPGAME_Data/Managed。" />
     <Error Condition="'$(DSPManagedDir)' == '' or !Exists('$(DSPManagedDir)/UnityEngine.InputLegacyModule.dll')" Text="未找到 UnityEngine.InputLegacyModule.dll；请检查 DSPGameDir 的 DSPGAME_Data/Managed。" />
+    <Error Condition="'$(DSPManagedDir)' == '' or !Exists('$(DSPManagedDir)/UnityEngine.TextRenderingModule.dll')" Text="未找到 UnityEngine.TextRenderingModule.dll；请检查 DSPGameDir 的 DSPGAME_Data/Managed。" />
   </Target>
 </Project>

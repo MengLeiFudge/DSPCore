@@ -149,7 +149,7 @@ DSPCore.sln
 │   ├── Resources/           # Api/Runtime: resource and localization declarations plus localization bridge
 │   ├── Saves/               # Api/Runtime/Compat/Examples: save abstraction, sidecar save bridge, DSPModSave compatibility
 │   ├── Tabs/                # Api/Runtime/Examples: tab slot declarations and UI projection bridge
-│   └── UI/                  # Api/: UI abstraction descriptors
+│   └── UI/                  # Api/Foundation/Controls/Layout/Theme: common UI descriptors, windows, controls, grid layout, and theme helpers
 ├── DSPCore.Preloader/       # BepInEx patchers project / BepInEx patchers 项目
 └── DSPCore.Packaging/       # Thunderstore packaging project / Thunderstore 打包项目
 ```
@@ -159,8 +159,11 @@ DSPCore.sln
 - The current implementation includes P0/P1 runtime bridges, not just author-facing API skeletons.
 - 当前实现已包含 P0/P1 运行时桥接，不再只是作者可见 API 骨架。
 
-- Implemented runtime bridges: BepInEx/Harmony startup, proto insertion near `VFPreload.InvokeOnLoadWorkEnded`, multi-row build bar binding, resource/icon loading, item/recipe/replicator tab projection, item/recipe/signal picker popups, custom recipe type guards, key callbacks, `.dspcore` sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error logging/fatal-window buttons, and localization entries.
-- 已实现运行时桥接：BepInEx/Harmony 启动、`VFPreload.InvokeOnLoadWorkEnded` 附近的 Proto 写入、多行建造栏绑定、资源/图标加载、物品/配方/制造器分页投射、物品/配方/信号选择器弹窗、自定义配方类型限制、按键回调、`.dspcore` 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误日志/错误窗口按钮和本地化条目。
+- Implemented runtime bridges: BepInEx/Harmony startup, proto insertion near `VFPreload.InvokeOnLoadWorkEnded`, multi-row build bar binding, resource/icon loading, item/recipe/replicator tab projection, item/recipe/signal picker popups, custom recipe type guards, key callbacks, `.dspcore` sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error logging/fatal-window buttons, localization entries, and common UI window lifecycle forwarding.
+- 已实现运行时桥接：BepInEx/Harmony 启动、`VFPreload.InvokeOnLoadWorkEnded` 附近的 Proto 写入、多行建造栏绑定、资源/图标加载、物品/配方/制造器分页投射、物品/配方/信号选择器弹窗、自定义配方类型限制、按键回调、`.dspcore` 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误日志/错误窗口按钮、本地化条目，以及通用 UI 窗口生命周期转发。
+
+- UI owns common framework pieces only: descriptors, Unity window lifecycle helpers, reusable controls, declarative grid layout, and theme/card helpers. Concrete feature pages, business navigation, unlock logic, save state, and mod-specific panels stay in the owning feature block or mod.
+- UI 只负责通用框架件：描述对象、Unity 窗口生命周期辅助、可复用控件、声明式网格布局和主题/卡片辅助。具体功能页面、业务导航、解锁逻辑、存档状态和模组专属面板留在所属功能块或业务模组中。
 
 - BuildBar owns the build bar placement feature block: item id or `ItemProto` -> tab/row/index bindings, two or more build bar rows, player-defined or dynamically overridden slots, related UI projection and refresh handling, RebindBuildBar compatibility, and BuildBarTool compatibility shims. New author-facing examples should prefer `ItemProto.SetBuildBar(...)`; use `BuildBar.BindQuickBar(...)` only when the caller only has an item id. Do not move proto creation responsibilities into BuildBar.
 - BuildBar 负责建造栏位置功能块：物品 ID 或 `ItemProto` -> tab/row/index 绑定、两层或更多层建造栏、玩家自定义或动态覆盖格子、相关 UI 投射和刷新处理、RebindBuildBar 兼容，以及 BuildBarTool 兼容 shim。新的作者侧示例应首选 `ItemProto.SetBuildBar(...)`；只有调用方手上只有物品 ID 时才使用 `BuildBar.BindQuickBar(...)`。不要把 Proto 创建职责移入 BuildBar。

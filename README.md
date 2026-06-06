@@ -23,11 +23,11 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 
 ## 初版范围
 
-- 提供 P0/P1 的作者可见功能块：功能生命周期、数据阶段、原型注册、建造栏位置、资源、图标、本地化、分页、选择器、配方类型、按键、存档、成就和错误报告。
+- 提供 P0/P1 的作者可见功能块：功能生命周期、数据阶段、原型注册、建造栏位置、资源、图标、本地化、分页、选择器、配方类型、按键、存档、成就、错误报告和通用 UI 框架。
 - 提供 `xiaoye97.LDBTool`、`crecheng.DSPModSave`、`CommonAPI` 和 `BuildBarTool` 的旧 API 兼容层；兼容代码按所属功能块放入 `Compat/`，不再使用集中式 `Legacy/` 目录。
 - 公开 API 提供中英文 XML summary。
 
-当前版本已接入 P0/P1 运行时桥接：BepInEx/Harmony 启动、Proto 写入、多行建造栏绑定、资源/图标加载、物品/配方/制造器分页、选择器弹窗、自定义配方类型限制、按键回调、DSPCore 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误报告、错误窗口复制/关闭按钮和本地化条目。
+当前版本已接入 P0/P1 运行时桥接：BepInEx/Harmony 启动、Proto 写入、多行建造栏绑定、资源/图标加载、物品/配方/制造器分页、选择器弹窗、自定义配方类型限制、按键回调、DSPCore 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误报告、错误窗口复制/关闭按钮、本地化条目和通用 UI 窗口生命周期转发。
 
 ## 功能块
 
@@ -41,6 +41,7 @@ P0/P1 是当前实现目标。
 - 分页和选择器：作者可以声明自定义页面并取得 `TabSlot`，再用 `TabSlot` 生成物品/配方 `GridIndex`；也可以从自己的 UI 打开物品、配方和信号选择器请求。
 - 存档：原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
 - 成就和错误：成就策略聚合和结构化错误报告。
+- UI 框架：窗口生命周期、标签页窗口、基础控件、声明式网格布局和主题卡片辅助；不包含具体业务页面。
 
 ## 运行时状态
 
@@ -58,6 +59,7 @@ P0/P1 是当前实现目标。
 - `AchievementPolicyRegistry` 汇总每个模组的成就禁用声明；不声明或声明 `disableAchievements: false` 不会请求禁用，任意模组声明 true 时全局阻断成就变更、Milky Way / 排行榜上传和平台成就/元数据调用。没有 true 声明时，DSPCore 会屏蔽原版异常检查并保持成就可用。
 - `ErrorReporter` 会接收 Unity fatal/error 日志和错误窗口事件。
 - `ResourceRegistry.RegisterLocalization` 会写入 DSP 本地化 key 和语言字符串。
+- `UiWindowManager` 会在 `UIRoot` 打开、更新和销毁时转发 DSPCore 窗口生命周期；具体窗口由模组自己创建和打开。
 
 当前运行时限制：
 
@@ -65,6 +67,7 @@ P0/P1 是当前实现目标。
 - 分页投射当前覆盖物品选择器、配方选择器和制造器界面。信号选择器、全息信标、蓝图等界面需要更完整的分页内容模型后才能正确支持。
 - 选择器过滤当前在返回时兜底检查，尚未在实时选择器网格内隐藏无效条目。
 - 自定义配方类型运行时会阻止不支持的制作器选择配方，但制作器配方选择列表尚未在选择前过滤。
+- UI 框架只提供通用架子，不注册具体页面、业务导航、解锁条件或存档状态。
 - 当前 Proto 阶段挂点是保守的第一版桥接，不是最终 VFPreload 中段生命周期。
 
 P2/P3 的自定义机器组件、星球/恒星系统、网络工具和玩家便利模块仍是 TODO，尚未实现。
@@ -140,3 +143,5 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 - `DSPCore/ProtoRegistration/Examples/ProtoPhases.md`
 - `DSPCore/Input/Examples/KeyBindRegistrationExample.cs`
 - `DSPCore/Input/Examples/KeyBindRegistration.md`
+- `DSPCore/UI/Examples/WindowScaffoldExample.cs`
+- `DSPCore/UI/Examples/WindowScaffold.md`

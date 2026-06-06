@@ -23,11 +23,11 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods.
 
 ## First Version Scope
 
-- P0/P1 author-facing feature blocks: feature lifecycle, data phases, proto registration, build bar placement, resources, icons, localization, tabs, pickers, recipe types, key binds, saves, achievements, and error reports.
+- P0/P1 author-facing feature blocks: feature lifecycle, data phases, proto registration, build bar placement, resources, icons, localization, tabs, pickers, recipe types, key binds, saves, achievements, error reports, and a common UI framework.
 - Legacy compatibility shims for `xiaoye97.LDBTool`, `crecheng.DSPModSave`, `CommonAPI`, and `BuildBarTool`; compatibility code lives under the owning feature block's `Compat/` directory instead of a centralized `Legacy/` directory.
 - Bilingual XML summaries for public APIs.
 
-The current version includes P0/P1 runtime bridges: BepInEx/Harmony startup, proto insertion, multi-row build bar binding, resource/icon loading, tabs for item/recipe/replicator surfaces, picker popups, custom recipe type guards, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error reporting, fatal-window copy/close buttons, and localization entries.
+The current version includes P0/P1 runtime bridges: BepInEx/Harmony startup, proto insertion, multi-row build bar binding, resource/icon loading, tabs for item/recipe/replicator surfaces, picker popups, custom recipe type guards, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error reporting, fatal-window copy/close buttons, localization entries, and common UI window lifecycle forwarding.
 
 ## Feature Blocks
 
@@ -41,6 +41,7 @@ P0/P1 blocks are the current implementation target.
 - Tabs and pickers: authors can declare custom pages, receive a `TabSlot`, and use that slot to generate item/recipe `GridIndex` values; they can also open item/recipe/signal picker requests from their own UI.
 - Saves: raw `BinaryReader`/`BinaryWriter` handlers and tagged block helpers.
 - Achievements and errors: achievement policy aggregation and structured error reports.
+- UI framework: window lifecycle helpers, tabbed windows, base controls, declarative grid layout, and theme/card helpers; concrete business pages are not included.
 
 ## Runtime Status
 
@@ -58,6 +59,7 @@ Implemented runtime bridges:
 - `AchievementPolicyRegistry` aggregates each mod's achievement-disable declaration. Not declaring, or declaring `disableAchievements: false`, does not request disabling. If any mod declares true, DSPCore globally blocks achievement mutation, Milky Way / leaderboard uploads, and platform achievement/metadata calls. If no declaration is true, DSPCore blocks vanilla abnormality checks and keeps achievements available.
 - `ErrorReporter` receives Unity fatal/error logs and fatal-window events.
 - `ResourceRegistry.RegisterLocalization` is applied to DSP localization keys and language strings.
+- `UiWindowManager` forwards DSPCore window lifecycle through `UIRoot` open, update, and destroy events; mods still create and open concrete windows themselves.
 
 Current runtime limits:
 
@@ -65,6 +67,7 @@ Current runtime limits:
 - Tab projection currently covers item picker, recipe picker, and replicator surfaces. Signal picker, beacon, blueprint, and other surfaces need a richer tab-content model before they can be supported correctly.
 - Picker filters are applied on return as a safety check; they do not yet hide invalid entries inside the live picker grid.
 - Recipe type runtime blocks unsupported assembler selection, but the assembler recipe picker list is not yet filtered before selection.
+- The UI framework provides common scaffolding only. It does not register concrete pages, business navigation, unlock conditions, or save state.
 - The proto phase hook is a conservative first bridge, not the final VFPreload mid-stage lifecycle.
 
 P2/P3 blocks such as custom machine components, planet/star systems, network helpers, and player convenience modules are TODO and not implemented yet.
@@ -140,3 +143,5 @@ The old call is accepted, but it is marked obsolete. New mods should prefer `Ite
 - `DSPCore/ProtoRegistration/Examples/ProtoPhases.md`
 - `DSPCore/Input/Examples/KeyBindRegistrationExample.cs`
 - `DSPCore/Input/Examples/KeyBindRegistration.md`
+- `DSPCore/UI/Examples/WindowScaffoldExample.cs`
+- `DSPCore/UI/Examples/WindowScaffold.md`
