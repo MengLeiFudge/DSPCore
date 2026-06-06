@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\DefaultPath.props" Condition="Exists('..\..\DefaultPath.props')" />
+  <Import Project="..\DefaultPath.props" Condition="Exists('..\DefaultPath.props')" />
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <AssemblyName>DSPCore</AssemblyName>

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>DSPCore.Packaging</AssemblyName>
+    <RootNamespace>DSPCore.Packaging</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Description>Packaging helper for DSPCore Thunderstore releases.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DSPCore\DSPCore.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+    <ProjectReference Include="..\DSPCore.Preloader\DSPCore.Preloader.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

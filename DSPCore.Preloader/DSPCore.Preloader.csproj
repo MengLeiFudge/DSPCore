@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\DefaultPath.props" Condition="Exists('..\DefaultPath.props')" />
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AssemblyName>DSPCore.Preloader</AssemblyName>
+    <RootNamespace>DSPCore.Preloader</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Description>Preloader patcher for DSPCore.</Description>
+    <ProfileDir Condition="'$(ProfileDir)' == '' and '$(OS)' == 'Windows_NT' and '$(USERPROFILE)' != ''">$(USERPROFILE)\AppData\Roaming\r2modmanPlus-local\DysonSphereProgram\profiles\Default</ProfileDir>
+    <ProfileDir Condition="'$(ProfileDir)' == '' and Exists('/mnt/c/Users/MLJ/AppData/Roaming/r2modmanPlus-local/DysonSphereProgram/profiles/Default')">/mnt/c/Users/MLJ/AppData/Roaming/r2modmanPlus-local/DysonSphereProgram/profiles/Default</ProfileDir>
+    <BepInExCoreDir Condition="'$(ProfileDir)' != ''">$(ProfileDir)/BepInEx/core</BepInExCoreDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <Reference Include="BepInEx">
+      <HintPath>$(BepInExCoreDir)/BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>$(BepInExCoreDir)/Mono.Cecil.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="ValidatePreloaderReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(BepInExCoreDir)' == '' or !Exists('$(BepInExCoreDir)/BepInEx.dll')" Text="未找到 BepInEx.dll；请复制 DefaultPath.props.example 为 DefaultPath.props 并设置 ProfileDir。" />
+    <Error Condition="'$(BepInExCoreDir)' == '' or !Exists('$(BepInExCoreDir)/Mono.Cecil.dll')" Text="未找到 Mono.Cecil.dll；请检查 ProfileDir 的 BepInEx/core。" />
+  </Target>
+</Project>

@@ -5,7 +5,7 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 ## 目标
 
 - 为常见模组基础设施提供统一 API。
-- 逐步替代分散的 LDBTool、DSPModSave、CommonAPI、BuildBarTool、ErrorAnalyzer 式诊断、成就策略聚合、图标注册和兼容补丁需求。
+- 逐步替代分散的 LDBTool、DSPModSave、CommonAPI、BuildBarTool、ErrorAnalyzer 式诊断、成就策略聚合、图标注册和旧 API 兼容需求。
 - 保留旧 API 命名空间作为 `[Obsolete]` 兼容层，让已有模组可以先运行，再逐步迁移。
 
 ## 包信息
@@ -14,6 +14,12 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 - DLL 名称：`DSPCore.dll`
 - 新命名空间：`DSPCore`
 - 英文说明：`README-EN.md`
+
+## 项目结构
+
+- `DSPCore/`：主 BepInEx 插件项目，包含 Core 和各功能块。
+- `DSPCore.Preloader/`：BepInEx patchers 项目，用于游戏程序集加载前 patch。
+- `DSPCore.Packaging/`：Thunderstore 打包项目。
 
 ## 初版范围
 
@@ -108,28 +114,24 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 ## 文档
 
 - `README-EN.md`
-- `docs/getting-started.md`
-- `docs/api-migration.md`
 - 功能块示例采用 `Examples/<Scenario>.md` + `Examples/<Scenario>Example.cs` 成对文件；`.cs` 示例只作为文档产物，不参与编译。
-- `src/DSPCore/Achievements/Examples/AchievementPolicyExample.cs`
-- `src/DSPCore/Achievements/Examples/AchievementPolicy.md`
-- `src/DSPCore/BuildBar/Examples/QuickBarBindingExample.cs`
-- `src/DSPCore/BuildBar/Examples/QuickBarBinding.md`
-- `src/DSPCore/Saves/Examples/SaveHandlerExample.cs`
-- `src/DSPCore/Saves/Examples/SaveHandler.md`
-- `src/DSPCore/Saves/Examples/SaveBlocksExample.cs`
-- `src/DSPCore/Saves/Examples/SaveBlocks.md`
-- `src/DSPCore/Icons/Examples/IconSetRegistrationExample.cs`
-- `src/DSPCore/Icons/Examples/IconSetRegistration.md`
-- `src/DSPCore/Tabs/Examples/TabRegistrationExample.cs`
-- `src/DSPCore/Tabs/Examples/TabRegistration.md`
-- `src/DSPCore/Pickers/Examples/PickerRequestExample.cs`
-- `src/DSPCore/Pickers/Examples/PickerRequest.md`
-- `src/DSPCore/Recipes/Examples/RecipeTypeRegistrationExample.cs`
-- `src/DSPCore/Recipes/Examples/RecipeTypeRegistration.md`
-- `src/DSPCore/Protos/Examples/ProtoPhasesExample.cs`
-- `src/DSPCore/Protos/Examples/ProtoPhases.md`
-- `src/DSPCore/Input/Examples/KeyBindRegistrationExample.cs`
-- `src/DSPCore/Input/Examples/KeyBindRegistration.md`
-- `src/DSPCore/Core/Examples/CompatibilityPatchExample.cs`
-- `src/DSPCore/Core/Examples/CompatibilityPatch.md`
+- `DSPCore/Achievements/Examples/AchievementPolicyExample.cs`
+- `DSPCore/Achievements/Examples/AchievementPolicy.md`
+- `DSPCore/BuildBar/Examples/QuickBarBindingExample.cs`
+- `DSPCore/BuildBar/Examples/QuickBarBinding.md`
+- `DSPCore/Saves/Examples/SaveHandlerExample.cs`
+- `DSPCore/Saves/Examples/SaveHandler.md`
+- `DSPCore/Saves/Examples/SaveBlocksExample.cs`
+- `DSPCore/Saves/Examples/SaveBlocks.md`
+- `DSPCore/Icons/Examples/IconSetRegistrationExample.cs`
+- `DSPCore/Icons/Examples/IconSetRegistration.md`
+- `DSPCore/Tabs/Examples/TabRegistrationExample.cs`
+- `DSPCore/Tabs/Examples/TabRegistration.md`
+- `DSPCore/Pickers/Examples/PickerRequestExample.cs`
+- `DSPCore/Pickers/Examples/PickerRequest.md`
+- `DSPCore/Recipes/Examples/RecipeTypeRegistrationExample.cs`
+- `DSPCore/Recipes/Examples/RecipeTypeRegistration.md`
+- `DSPCore/Protos/Examples/ProtoPhasesExample.cs`
+- `DSPCore/Protos/Examples/ProtoPhases.md`
+- `DSPCore/Input/Examples/KeyBindRegistrationExample.cs`
+- `DSPCore/Input/Examples/KeyBindRegistration.md`

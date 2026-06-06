@@ -105,12 +105,6 @@ public static class DspCore
     public static ErrorReporter Errors { get; } = new();
 
     /// <summary>
-    /// 全局兼容补丁注册表。
-    /// Global compatibility patch registry.
-    /// </summary>
-    public static CompatibilityPatchRegistry Compatibility { get; } = new();
-
-    /// <summary>
     /// 初始化 DSPCore 的功能块和模块注册表。
     /// Initializes DSPCore feature blocks and module registries.
     /// </summary>

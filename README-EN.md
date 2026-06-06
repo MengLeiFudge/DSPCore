@@ -5,7 +5,7 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods.
 ## Goals
 
 - Provide one shared API for common mod infrastructure.
-- Replace scattered requirements such as LDBTool, DSPModSave, CommonAPI, BuildBarTool, ErrorAnalyzer-style diagnostics, achievement policy aggregation, icon registration, and compatibility patches.
+- Replace scattered requirements such as LDBTool, DSPModSave, CommonAPI, BuildBarTool, ErrorAnalyzer-style diagnostics, achievement policy aggregation, icon registration, and legacy compatibility shims.
 - Keep legacy API namespaces available as `[Obsolete]` compatibility shims, so existing mods can run first and migrate later.
 
 ## Package
@@ -14,6 +14,12 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods.
 - DLL name: `DSPCore.dll`
 - New namespace: `DSPCore`
 - Chinese documentation: `README.md`
+
+## Project Layout
+
+- `DSPCore/`: main BepInEx plugin project, including Core and feature blocks.
+- `DSPCore.Preloader/`: BepInEx patchers project for pre-load game assembly patches.
+- `DSPCore.Packaging/`: Thunderstore packaging project.
 
 ## First Version Scope
 
@@ -108,28 +114,24 @@ The old call is accepted, but it is marked obsolete. New mods should prefer `Ite
 ## Documentation
 
 - `README.md`
-- `docs/getting-started.md`
-- `docs/api-migration.md`
 - Feature examples use paired `Examples/<Scenario>.md` + `Examples/<Scenario>Example.cs` files. `.cs` examples are documentation artifacts and are excluded from compilation.
-- `src/DSPCore/Achievements/Examples/AchievementPolicyExample.cs`
-- `src/DSPCore/Achievements/Examples/AchievementPolicy.md`
-- `src/DSPCore/BuildBar/Examples/QuickBarBindingExample.cs`
-- `src/DSPCore/BuildBar/Examples/QuickBarBinding.md`
-- `src/DSPCore/Saves/Examples/SaveHandlerExample.cs`
-- `src/DSPCore/Saves/Examples/SaveHandler.md`
-- `src/DSPCore/Saves/Examples/SaveBlocksExample.cs`
-- `src/DSPCore/Saves/Examples/SaveBlocks.md`
-- `src/DSPCore/Icons/Examples/IconSetRegistrationExample.cs`
-- `src/DSPCore/Icons/Examples/IconSetRegistration.md`
-- `src/DSPCore/Tabs/Examples/TabRegistrationExample.cs`
-- `src/DSPCore/Tabs/Examples/TabRegistration.md`
-- `src/DSPCore/Pickers/Examples/PickerRequestExample.cs`
-- `src/DSPCore/Pickers/Examples/PickerRequest.md`
-- `src/DSPCore/Recipes/Examples/RecipeTypeRegistrationExample.cs`
-- `src/DSPCore/Recipes/Examples/RecipeTypeRegistration.md`
-- `src/DSPCore/Protos/Examples/ProtoPhasesExample.cs`
-- `src/DSPCore/Protos/Examples/ProtoPhases.md`
-- `src/DSPCore/Input/Examples/KeyBindRegistrationExample.cs`
-- `src/DSPCore/Input/Examples/KeyBindRegistration.md`
-- `src/DSPCore/Core/Examples/CompatibilityPatchExample.cs`
-- `src/DSPCore/Core/Examples/CompatibilityPatch.md`
+- `DSPCore/Achievements/Examples/AchievementPolicyExample.cs`
+- `DSPCore/Achievements/Examples/AchievementPolicy.md`
+- `DSPCore/BuildBar/Examples/QuickBarBindingExample.cs`
+- `DSPCore/BuildBar/Examples/QuickBarBinding.md`
+- `DSPCore/Saves/Examples/SaveHandlerExample.cs`
+- `DSPCore/Saves/Examples/SaveHandler.md`
+- `DSPCore/Saves/Examples/SaveBlocksExample.cs`
+- `DSPCore/Saves/Examples/SaveBlocks.md`
+- `DSPCore/Icons/Examples/IconSetRegistrationExample.cs`
+- `DSPCore/Icons/Examples/IconSetRegistration.md`
+- `DSPCore/Tabs/Examples/TabRegistrationExample.cs`
+- `DSPCore/Tabs/Examples/TabRegistration.md`
+- `DSPCore/Pickers/Examples/PickerRequestExample.cs`
+- `DSPCore/Pickers/Examples/PickerRequest.md`
+- `DSPCore/Recipes/Examples/RecipeTypeRegistrationExample.cs`
+- `DSPCore/Recipes/Examples/RecipeTypeRegistration.md`
+- `DSPCore/Protos/Examples/ProtoPhasesExample.cs`
+- `DSPCore/Protos/Examples/ProtoPhases.md`
+- `DSPCore/Input/Examples/KeyBindRegistrationExample.cs`
+- `DSPCore/Input/Examples/KeyBindRegistration.md`

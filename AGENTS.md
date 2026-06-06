@@ -22,6 +22,9 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods. It is 
 
 DSPCore 是戴森球计划模组的新通用底层标准。它不是个人命名空间库，新公开命名空间不得使用 `MLJ`。
 
+- Code projects: `DSPCore`, `DSPCore.Preloader`, and `DSPCore.Packaging`.
+- 代码项目：`DSPCore`、`DSPCore.Preloader` 和 `DSPCore.Packaging`。
+
 ## Architecture Rules / 架构规则
 
 - New implementation code uses the `DSPCore` namespace.
@@ -83,17 +86,17 @@ Build succeeded.
 - AGENTS.md is for repository workflow, validation, and AI rules.
 - AGENTS.md 面向仓库工作流、验证要求和 AI 规则。
 
-- `docs/api-migration.md` tracks migration from legacy APIs to DSPCore APIs.
-- `docs/api-migration.md` 记录旧 API 到 DSPCore API 的迁移。
+- Legacy API migration notes belong in `README.md`, `README-EN.md`, or the owning feature block README until a real cross-feature documentation need appears.
+- 旧 API 迁移说明先放在 `README.md`、`README-EN.md` 或所属功能块 README；只有出现真实跨功能长文档需求时才恢复根 `docs/`。
 
-- Every public capability should have a concrete `.cs` example under its feature block's `Examples/` directory. Cross-feature walkthroughs may use `docs/examples/`. All example `.cs` files are documentation artifacts and must be excluded from compilation.
-- 每一项公开能力都应在所属功能块的 `Examples/` 目录下有具体 `.cs` 示例。跨功能完整流程可以放在 `docs/examples/`。所有示例 `.cs` 文件都属于文档产物，必须排除编译。
+- Every public capability should have a concrete `.cs` example under its feature block's `Examples/` directory. All example `.cs` files are documentation artifacts and must be excluded from compilation.
+- 每一项公开能力都应在所属功能块的 `Examples/` 目录下有具体 `.cs` 示例。所有示例 `.cs` 文件都属于文档产物，必须排除编译。
 
 - Feature-specific examples should use paired scenario files when practical: `Examples/<Scenario>.md` explains when to use the API, key parameters, runtime prerequisites, and common mistakes; `Examples/<Scenario>Example.cs` provides the small demo code. The `.md` explanation does not replace the feature block README, and the `.cs` demo remains excluded from compilation.
 - 功能专属示例在可行时应使用成对场景文件：`Examples/<Scenario>.md` 说明适用时机、关键参数、运行时前提和常见误用；`Examples/<Scenario>Example.cs` 提供小型 demo 代码。`.md` 说明不替代功能块 README，`.cs` demo 仍必须排除编译。
 
-- Every feature block directory under `src/DSPCore/` must have `README.md` for Chinese documentation and `README-EN.md` for English documentation, excluding build/metadata directories such as `bin/`, `obj/`, and `Properties/`.
-- `src/DSPCore/` 下每个功能块目录都必须有中文 `README.md` 和英文 `README-EN.md`，但 `bin/`、`obj/`、`Properties/` 等构建/元数据目录除外。
+- Every feature block directory under `DSPCore/` must have `README.md` for Chinese documentation and `README-EN.md` for English documentation, excluding build/metadata directories such as `bin/`, `obj/`, `Properties/`, `Core/`, and project-only directories.
+- `DSPCore/` 下每个功能块目录都必须有中文 `README.md` 和英文 `README-EN.md`，但 `bin/`、`obj/`、`Properties/`、`Core/` 和纯项目目录除外。
 
 - User-visible behavior or public API changes require README/docs review in the same task.
 - 用户可见行为或公开 API 变更，必须在同一任务检查 README/docs。
@@ -126,21 +129,23 @@ Build succeeded.
 ## Directory Map / 目录说明
 
 ```text
-src/DSPCore/
-├── Core/                    # Api/Compat/Examples: framework entry point, feature/module registries, CommonAPI compatibility
-├── Achievements/            # Api/Runtime/Examples: achievement policy aggregation
-├── BuildBar/                # Api/Runtime/Compat/Examples: build bar slot binding and BuildBarTool compatibility
-├── Errors/                  # Api/Runtime: error report model and fatal-window runtime bridge
-├── Icons/                   # Api/Runtime/Examples: icon registration and icon runtime bridge
-├── Input/                   # Api/Runtime/Examples: key bind declarations and polling bridge
-├── Pickers/                 # Api/Runtime/Examples: picker requests and popup bridge
-├── Protos/                  # Api/Runtime/Compat/Examples: Proto registration facade, data-phase bridge, LDBTool compatibility
-├── Recipes/                 # Api/Runtime/Examples: custom recipe types and recipe guard bridge
-├── Resources/               # Api/Runtime: resource and localization declarations plus localization bridge
-├── Runtime/                 # Runtime/: BepInEx plugin entry and cross-feature runtime assembly only
-├── Saves/                   # Api/Runtime/Compat/Examples: save abstraction, sidecar save bridge, DSPModSave compatibility
-├── Tabs/                    # Api/Runtime/Examples: tab declarations and UI projection bridge
-└── UI/                      # Api/: UI abstraction descriptors
+DSPCore.sln
+├── DSPCore/                 # main BepInEx plugin project / 主插件项目
+│   ├── Core/                # Api/Runtime/Compat: DspCore entry, startup assembly, feature/module registries, CommonAPI compatibility
+│   ├── Achievements/        # Api/Runtime/Examples: achievement policy aggregation
+│   ├── BuildBar/            # Api/Runtime/Compat/Examples: multi-row build bar placement and BuildBarTool compatibility
+│   ├── Errors/              # Api/Runtime: error report model and fatal-window runtime bridge
+│   ├── Icons/               # Api/Runtime/Examples: icon registration and icon runtime bridge
+│   ├── Input/               # Api/Runtime/Examples: key bind declarations and polling bridge
+│   ├── Pickers/             # Api/Runtime/Examples: picker requests and popup bridge
+│   ├── Protos/              # Api/Runtime/Compat/Examples: Proto registration facade, data-phase bridge, LDBTool compatibility
+│   ├── Recipes/             # Api/Runtime/Examples: custom recipe types and recipe guard bridge
+│   ├── Resources/           # Api/Runtime: resource and localization declarations plus localization bridge
+│   ├── Saves/               # Api/Runtime/Compat/Examples: save abstraction, sidecar save bridge, DSPModSave compatibility
+│   ├── Tabs/                # Api/Runtime/Examples: tab declarations and UI projection bridge
+│   └── UI/                  # Api/: UI abstraction descriptors
+├── DSPCore.Preloader/       # BepInEx patchers project / BepInEx patchers 项目
+└── DSPCore.Packaging/       # Thunderstore packaging project / Thunderstore 打包项目
 ```
 
 ## Current Limitations / 当前限制
