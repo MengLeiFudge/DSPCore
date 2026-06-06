@@ -10,7 +10,7 @@ It does not own the item or recipe registration-position model. Authors still se
 - Picker requests enter a DSPCore queue and are consumed during UI update, reducing the risk of opening pickers at the wrong UI timing.
 - DSPCore centralizes result filtering, exception reporting, and `null` callbacks on failure.
 - One `PickerRequest` model covers item, recipe, and signal selection.
-- Future picker-surface work such as live filtering, duplicate `GridIndex` fallbacks, and signal/icon surface adaptation belongs to runtime handling and should not change the author-facing `TabSlot` / `GridIndex` registration model.
+- Live grids for item, recipe, and signal pickers apply request filters and move duplicate `GridIndex` entries to later empty cells so later registrations do not overwrite earlier visible entries.
 
 ## Capability: Open One Picker
 
@@ -31,16 +31,17 @@ Pickers.Open(new PickerRequest(
 - `Pickers.Open(...)` enqueues the request instead of opening UI immediately.
 - Runtime update consumes the current queue and opens pickers one by one.
 - Item picker requests set `UIItemPicker.showAll` from `ShowAll` or `ShowLocked`.
-- If the returned value fails `Filter`, DSPCore calls `OnReturn(null)`.
+- Item, recipe, and signal picker grids apply `Filter` while refreshing. If the returned value still fails `Filter`, DSPCore calls `OnReturn(null)`.
+- Vanilla `UIItemPicker`, `UIRecipePicker`, `UISignalPicker`, and `UISignalTagPicker` receive duplicate `GridIndex` fallbacks. Blueprint icons, description icons, smart-input icons, and other vanilla surfaces that reuse signal/tag pickers benefit from this.
 - If opening or callback handling throws, DSPCore reports the exception to Errors and calls `OnReturn(null)`.
 
 ## What This Block Does Not Own
 
 - It does not allocate `TabSlot` values; page registration belongs to Tabs.
 - It does not set `GridIndex`; item and recipe cells belong to ProtoRegistration and the proto objects themselves.
-- Current filters validate only the returned value; they do not hide invalid entries inside the live picker grid.
 - `OnReturn` is not guaranteed to be non-null. Cancel, filter failure, or exceptions all return null.
 - It does not provide a custom picker UI; current runtime uses vanilla picker popups.
+- It does not directly adapt picker UIs rebuilt by GenesisBook, OrbitalRing, FE, or similar UI takeover mods; those third-party surfaces need dedicated runtime adapters.
 
 ## Examples
 

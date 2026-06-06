@@ -159,8 +159,8 @@ DSPCore.sln
 - The current implementation includes P0/P1 runtime bridges, not just author-facing API skeletons.
 - 当前实现已包含 P0/P1 运行时桥接，不再只是作者可见 API 骨架。
 
-- Implemented runtime bridges: BepInEx/Harmony startup, proto insertion near `VFPreload.InvokeOnLoadWorkEnded`, multi-row build bar binding, resource/icon loading, item/recipe/replicator tab projection, item/recipe/signal picker popups, custom recipe type guards, key callbacks, `.dspcore` sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error logging/fatal-window buttons, localization entries, and common UI window lifecycle forwarding.
-- 已实现运行时桥接：BepInEx/Harmony 启动、`VFPreload.InvokeOnLoadWorkEnded` 附近的 Proto 写入、多行建造栏绑定、资源/图标加载、物品/配方/制造器分页投射、物品/配方/信号选择器弹窗、自定义配方类型限制、按键回调、`.dspcore` 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误日志/错误窗口按钮、本地化条目，以及通用 UI 窗口生命周期转发。
+- Implemented runtime bridges: BepInEx/Harmony startup, proto insertion near `VFPreload.InvokeOnLoadWorkEnded`, multi-row build bar binding, DSPCore-owned player build-bar overrides, resource/icon loading, item/recipe/replicator/signal/tag-icon tab projection, item/recipe/signal picker popups and live filtering, custom recipe type guards and pre-selection assembler recipe filtering, key callbacks, `.dspcore` sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error logging/fatal-window buttons, localization entries, and common UI window lifecycle forwarding.
+- 已实现运行时桥接：BepInEx/Harmony 启动、`VFPreload.InvokeOnLoadWorkEnded` 附近的 Proto 写入、多行建造栏绑定、DSPCore 自有玩家建造栏覆盖、资源/图标加载、物品/配方/制造器/信号/标签图标分页投射、物品/配方/信号选择器弹窗和实时过滤、自定义配方类型限制与制作器配方选择前过滤、按键回调、`.dspcore` 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误日志/错误窗口按钮、本地化条目，以及通用 UI 窗口生命周期转发。
 
 - UI owns common framework pieces only: descriptors, Unity window lifecycle helpers, reusable controls, declarative grid layout, and theme/card helpers. Concrete feature pages, business navigation, unlock logic, save state, and mod-specific panels stay in the owning feature block or mod.
 - UI 只负责通用框架件：描述对象、Unity 窗口生命周期辅助、可复用控件、声明式网格布局和主题/卡片辅助。具体功能页面、业务导航、解锁逻辑、存档状态和模组专属面板留在所属功能块或业务模组中。
@@ -177,8 +177,8 @@ DSPCore.sln
 - P2/P3 features such as custom machine components, planet/star systems, network helpers, and player convenience modules are not implemented.
 - 自定义机器组件、星球/恒星系统、网络工具和玩家便利模块等 P2/P3 功能尚未实现。
 
-- Remaining P0/P1 runtime gaps: player-defined build bar positions, RebindBuildBar compatibility, signal/beacon/blueprint tab surfaces, live picker-grid filtering, and pre-selection assembler recipe list filtering.
-- 剩余 P0/P1 运行时缺口：玩家自定义建造栏位置、RebindBuildBar 兼容、信号/全息信标/蓝图分页界面、选择器实时网格过滤，以及制作器配方列表选择前过滤。
+- Remaining P0/P1 runtime gaps: importing external RebindBuildBar player configuration and dedicated adapters for third-party UI takeover surfaces such as GenesisBook, OrbitalRing, and FE. Vanilla picker surfaces are covered through `UIItemPicker`, `UIRecipePicker`, `UIReplicatorWindow`, `UISignalPicker`, and `UISignalTagPicker`.
+- 剩余 P0/P1 运行时缺口：导入 RebindBuildBar 外部玩家配置，以及为 GenesisBook、OrbitalRing、FE 等接管 UI 的第三方界面做专门适配。原版 picker surface 已通过 `UIItemPicker`、`UIRecipePicker`、`UIReplicatorWindow`、`UISignalPicker` 和 `UISignalTagPicker` 覆盖。
 
 - Legacy shims bridge covered calls to implemented DSPCore runtime blocks, but they are not guaranteed to reproduce every old-library edge behavior.
 - 旧 API shim 会把已覆盖调用桥接到已实现的 DSPCore 运行时功能块，但不保证复刻旧库所有边缘行为。

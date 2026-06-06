@@ -18,12 +18,12 @@
 
 ## 运行时前提
 
-请求会进入队列，由 DSPCore 在合适的 UI update 时机打开弹窗。当前过滤器在返回时兜底检查，尚未在实时网格中隐藏无效项。
+请求会进入队列，由 DSPCore 在合适的 UI update 时机打开弹窗。物品、配方和信号选择器刷新网格时会应用 `Filter`，返回值仍会再做一次兜底检查。
 
 ## 常见误用
 
 - 不要用 Pickers 分配页面或格子；页面用 Tabs / `TabSlot`，物品和配方格子用 `GridIndex`。
 - 不要假设 `OnReturn` 一定返回非空对象。
-- 不要把实时筛选 UI 当作当前已支持能力。
+- 不要假设第三方重写的 picker UI 一定会走原版实时过滤；GenesisBook、OrbitalRing、FE 等接管界面需要专门适配。
 
 代码示例见 `PickerRequestExample.cs`。

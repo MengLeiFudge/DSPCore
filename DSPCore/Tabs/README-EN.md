@@ -43,15 +43,15 @@ itemProto.GridIndex = ProtoRegistration.GetGridIndex(tab: 1, row: 2, index: 3);
 - Registration stores descriptors by `Id`; if the same `Id` is registered more than once, the later declaration replaces the earlier one but keeps the previously assigned `TabSlot`.
 - New ids receive the next DSPCore custom `TabSlot`.
 - When creating buttons, DSPCore orders tabs by `Order` and then `Id`; display order does not change the assigned `TabSlot` value.
-- When `UIItemPicker`, `UIRecipePicker`, or `UIReplicatorWindow` is created, DSPCore clones the vanilla type button and creates one extra button for each declaration.
+- When `UIItemPicker`, `UIRecipePicker`, `UIReplicatorWindow`, `UISignalPicker`, or `UISignalTagPicker` is created, DSPCore clones the vanilla type button and creates one extra button for each declaration.
 - The button title uses `.Translate()`. If `IconId` resolves through Icons, DSPCore applies the resolved sprite to the button image.
 - When a custom tab is clicked, DSPCore calls the window's vanilla `OnTypeButtonClick` and refreshes button interactability when selection changes.
 
 ## What This Block Does Not Own
 
 - It does not register items or recipes directly. Items and recipes still go through ProtoRegistration and use their own `GridIndex` to point at a cell inside a page.
-- It does not support every DSP UI surface. Current coverage is item picker, recipe picker, and replicator window.
-- Signal picker, beacon, blueprint, and other surfaces need a richer tab-content model before they can be supported.
+- It does not support every DSP UI surface. Current coverage is vanilla item picker, recipe picker, replicator window, signal picker, and tag-icon picker.
+- Blueprint icons, description icons, smart-input icons, and other vanilla surfaces that reuse signal/tag pickers benefit from this. Third-party UI takeover by GenesisBook, OrbitalRing, FE, and similar mods needs dedicated adapters.
 - It does not create icons or localization; use Icons and Resources for those.
 
 ## Examples

@@ -33,6 +33,14 @@ public static class QuickBarBindingExample
         // 需要沿用 BuildIndex 风格时，可从 BuildIndex 拆出 category/index。
         // Use the BuildIndex-style overload when migrating BuildIndex-based code.
         myItemProto.SetBuildBar(buildIndex: myItemProto.BuildIndex, row: 2);
+
+        // 玩家在你的 UI 中重绑槽位时，写入 DSPCore 自有玩家覆盖层。
+        // When your UI lets a player rebind a slot, write the DSPCore-owned override layer.
+        BuildBar.SetPlayerOverride(tab: 3, row: 2, index: 5, itemId: 9555);
+
+        // 清除覆盖后，该槽位会回到作者默认绑定。
+        // Clearing the override makes the slot fall back to the author default.
+        BuildBar.ClearPlayerOverride(new BuildBarSlot(3, 2, 5));
     }
 
     public static void RegisterLegacy()

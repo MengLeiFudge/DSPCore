@@ -1,6 +1,7 @@
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
@@ -19,6 +20,11 @@ internal static class BuildBarRuntime
     private static readonly Dictionary<RowButtonKey, Text> ExtendedCounts = new();
     private static UIBuildMenu? currentMenu;
 
+    public static void Initialize()
+    {
+        DspCore.Saves.Register("DSPCore.BuildBar", new BuildBarSaveHandler(), CoreLoadOrder.Postload);
+    }
+
     public static void Apply()
     {
         if (ProtosField?.GetValue(null) is not ItemProto[,] protos)
@@ -27,7 +33,7 @@ internal static class BuildBarRuntime
             return;
         }
 
-        foreach (var binding in DspCore.BuildBar.GetAll())
+        foreach (var binding in DspCore.BuildBar.GetEffectiveBindings())
         {
             var slot = binding.Key;
             var itemId = binding.Value;
@@ -59,7 +65,7 @@ internal static class BuildBarRuntime
     public static void EnsureExtendedRows(UIBuildMenu menu)
     {
         currentMenu = menu;
-        var maxRow = DspCore.BuildBar.GetAll().Keys.Select(item => item.Row).DefaultIfEmpty(1).Max();
+        var maxRow = DspCore.BuildBar.GetEffectiveBindings().Keys.Select(item => item.Row).DefaultIfEmpty(1).Max();
         if (maxRow <= 1)
         {
             return;
@@ -129,7 +135,7 @@ internal static class BuildBarRuntime
         }
 
         var category = GetCurrentCategory(menu);
-        var bindings = DspCore.BuildBar.GetAll();
+        var bindings = DspCore.BuildBar.GetEffectiveBindings();
         foreach (var pair in ExtendedButtons)
         {
             var key = pair.Key;
@@ -180,7 +186,7 @@ internal static class BuildBarRuntime
             return;
         }
 
-        if (!DspCore.BuildBar.GetAll().TryGetValue(new BuildBarSlot(category, row, index), out var itemId))
+        if (!DspCore.BuildBar.GetEffectiveBindings().TryGetValue(new BuildBarSlot(category, row, index), out var itemId))
         {
             return;
         }
@@ -265,6 +271,49 @@ internal static class BuildBarRuntime
         public override int GetHashCode()
         {
             return (Row * 397) ^ Index;
+        }
+    }
+
+    private sealed class BuildBarSaveHandler : ICoreSaveHandler
+    {
+        public void Export(BinaryWriter writer)
+        {
+            var overrides = DspCore.BuildBar.GetPlayerOverrides();
+            writer.Write(1);
+            writer.Write(overrides.Count);
+            foreach (var pair in overrides)
+            {
+                writer.Write(pair.Key.Tab);
+                writer.Write(pair.Key.Row);
+                writer.Write(pair.Key.Index);
+                writer.Write(pair.Value);
+            }
+        }
+
+        public void Import(BinaryReader reader)
+        {
+            DspCore.BuildBar.ClearPlayerOverrides();
+            var version = reader.ReadInt32();
+            if (version > 1)
+            {
+                DspCore.Logger?.LogWarning($"BuildBar save version {version} is newer than runtime version 1.");
+            }
+
+            var count = reader.ReadInt32();
+            for (var i = 0; i < count; i++)
+            {
+                var slot = new BuildBarSlot(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
+                var itemId = reader.ReadInt32();
+                DspCore.BuildBar.SetPlayerOverride(slot, itemId);
+            }
+
+            Apply();
+        }
+
+        public void IntoOtherSave()
+        {
+            DspCore.BuildBar.ClearPlayerOverrides();
+            Apply();
         }
     }
 }

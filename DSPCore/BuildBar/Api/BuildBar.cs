@@ -34,4 +34,40 @@ public static class BuildBar
     {
         return DspCore.BuildBar.GetAll();
     }
+
+    /// <summary>
+    /// 设置玩家自定义建造栏覆盖；覆盖优先于作者默认绑定。
+    /// Sets a player-defined build bar override; overrides take precedence over author defaults.
+    /// </summary>
+    public static bool SetPlayerOverride(int tab, int row, int index, int itemId)
+    {
+        return DspCore.BuildBar.SetPlayerOverride(tab, row, index, itemId);
+    }
+
+    /// <summary>
+    /// 设置玩家自定义建造栏覆盖；覆盖优先于作者默认绑定。
+    /// Sets a player-defined build bar override; overrides take precedence over author defaults.
+    /// </summary>
+    public static bool SetPlayerOverride(BuildBarSlot slot, int itemId)
+    {
+        return DspCore.BuildBar.SetPlayerOverride(slot, itemId);
+    }
+
+    /// <summary>
+    /// 清除一个玩家自定义建造栏覆盖。
+    /// Clears a player-defined build bar override.
+    /// </summary>
+    public static bool ClearPlayerOverride(BuildBarSlot slot)
+    {
+        return DspCore.BuildBar.ClearPlayerOverride(slot);
+    }
+
+    /// <summary>
+    /// 获取作者默认绑定叠加玩家覆盖后的有效建造栏绑定。
+    /// Gets effective build bar bindings after applying player overrides on top of author defaults.
+    /// </summary>
+    public static IReadOnlyDictionary<BuildBarSlot, int> GetEffectiveBindings()
+    {
+        return DspCore.BuildBar.GetEffectiveBindings();
+    }
 }

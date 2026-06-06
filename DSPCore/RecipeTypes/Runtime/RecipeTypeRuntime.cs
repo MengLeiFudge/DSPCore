@@ -7,6 +7,7 @@ namespace DSPCore;
 internal static class RecipeTypeRuntime
 {
     private static readonly Dictionary<int, RecipeTypeDescriptor> RecipeToType = new();
+    private static int currentAssemblerEntityId;
 
     public static void Apply()
     {
@@ -55,6 +56,33 @@ internal static class RecipeTypeRuntime
         var protoId = factory.entityPool[assemblerEntityId].protoId;
         return descriptor.AssemblerItemIds.Contains(protoId);
     }
+
+    public static bool CanCurrentAssemblerUseRecipe(int recipeId)
+    {
+        return currentAssemblerEntityId <= 0 || CanAssemblerUseRecipe(currentAssemblerEntityId, recipeId);
+    }
+
+    public static void SetCurrentAssembler(UIAssemblerWindow window)
+    {
+        currentAssemblerEntityId = 0;
+        if (window == null || window.assemblerId == 0 || window.factory == null || window.factorySystem == null)
+        {
+            return;
+        }
+
+        ref var assembler = ref window.factorySystem.assemblerPool[window.assemblerId];
+        if (assembler.id != window.assemblerId)
+        {
+            return;
+        }
+
+        currentAssemblerEntityId = assembler.entityId;
+    }
+
+    public static void ClearCurrentAssembler()
+    {
+        currentAssemblerEntityId = 0;
+    }
 }
 
 internal static class RecipeTypeRuntimePatches
@@ -69,5 +97,19 @@ internal static class RecipeTypeRuntimePatches
         }
 
         return RecipeTypeRuntime.CanAssemblerUseRecipe(__instance.entityId, recpId);
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(UIAssemblerWindow), "OnSelectRecipeClick")]
+    private static void BeforeAssemblerRecipePicker(UIAssemblerWindow __instance)
+    {
+        RecipeTypeRuntime.SetCurrentAssembler(__instance);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(UIAssemblerWindow), "OnRecipePickerReturn")]
+    private static void AfterAssemblerRecipePicker()
+    {
+        RecipeTypeRuntime.ClearCurrentAssembler();
     }
 }

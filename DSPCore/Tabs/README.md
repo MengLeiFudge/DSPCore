@@ -43,15 +43,15 @@ itemProto.GridIndex = ProtoRegistration.GetGridIndex(tab: 1, row: 2, index: 3);
 - 注册阶段按 `Id` 保存 descriptor；同一个 `Id` 后一次声明会覆盖前一次，但保留已经分配的 `TabSlot`。
 - 新 `Id` 会从 DSPCore 自定义页面范围分配新的 `TabSlot`。
 - 创建按钮时，DSPCore 会按 `Order` 再按 `Id` 排序；显示顺序不改变已分配的 `TabSlot` 值。
-- `UIItemPicker`、`UIRecipePicker` 和 `UIReplicatorWindow` 创建时，DSPCore 会 clone 原版 type button，并为每个声明创建一个额外按钮。
+- `UIItemPicker`、`UIRecipePicker`、`UIReplicatorWindow`、`UISignalPicker` 和 `UISignalTagPicker` 创建时，DSPCore 会 clone 原版 type button，并为每个声明创建一个额外按钮。
 - 按钮标题会走 `.Translate()`；如果能通过 `IconId` 找到图标，DSPCore 会解析 sprite 并写入按钮 image。
 - 点击自定义按钮时，DSPCore 会调用对应窗口的原版 `OnTypeButtonClick`，并在选择变化时刷新按钮可点击状态。
 
 ## 这个模块不负责什么
 
 - 不直接注册物品或配方；物品/配方仍通过 ProtoRegistration 注册，并用自己的 `GridIndex` 指向页面里的格子。
-- 不支持所有 DSP UI 表面；当前覆盖物品选择器、配方选择器和制造器窗口。
-- 信号选择器、全息信标、蓝图等界面需要更完整的分页内容模型后再支持。
+- 不支持所有 DSP UI 表面；当前覆盖原版物品选择器、配方选择器、制造器窗口、信号选择器和标签图标选择器。
+- 蓝图图标、描述图标和智能输入框图标等复用原版 signal/tag picker 的界面会受益；GenesisBook、OrbitalRing、FE 等接管 UI 的第三方界面需要专门适配。
 - 不创建图标或本地化；需要图标和文本时分别使用 Icons 与 Resources。
 
 ## 示例

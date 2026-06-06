@@ -27,7 +27,7 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods.
 - Legacy compatibility shims for `xiaoye97.LDBTool`, `crecheng.DSPModSave`, `CommonAPI`, and `BuildBarTool`; compatibility code lives under the owning feature block's `Compat/` directory instead of a centralized `Legacy/` directory.
 - Bilingual XML summaries for public APIs.
 
-The current version includes P0/P1 runtime bridges: BepInEx/Harmony startup, proto insertion, multi-row build bar binding, resource/icon loading, tabs for item/recipe/replicator surfaces, picker popups, custom recipe type guards, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error reporting, fatal-window copy/close buttons, localization entries, and common UI window lifecycle forwarding.
+The current version includes P0/P1 runtime bridges: BepInEx/Harmony startup, proto insertion, multi-row build bar binding, player overrides, resource/icon loading, tabs for item/recipe/replicator/signal/tag-icon surfaces, picker popups and live filtering, custom recipe type pre-selection filtering, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error reporting, fatal-window copy/close buttons, localization entries, and common UI window lifecycle forwarding.
 
 ## Feature Blocks
 
@@ -49,11 +49,11 @@ Implemented runtime bridges:
 
 - `DSPCorePlugin` starts from BepInEx and applies Harmony patches.
 - Proto registrations are applied around `VFPreload.InvokeOnLoadWorkEnded`; DSPCore rebuilds `ProtoSet` indices and key derived caches after final fixes.
-- `BuildBarRegistry.BindQuickBar` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons. Player-defined or dynamically overridden slots and RebindBuildBar integration belong to the same BuildBar feature block, but are not implemented yet.
+- `BuildBarRegistry.BindQuickBar` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons. `BuildBar.SetPlayerOverride(...)` writes a player override layer to the `.dspcore` save, and runtime uses author defaults overlaid with player overrides.
 - `IconSetRegistry` can load Unity `Resources` sprites or local PNG files, cache them, and apply them to target protos.
-- `TabRegistry` assigns a `TabSlot` for each stable page id and projects custom pages to item picker, recipe picker, and replicator surfaces through the existing GridIndex category flow.
-- `Pickers.Open` requests item, recipe, and signal picker popups and invokes the request callback.
-- `RecipeTypeRegistry` marks declared recipes as custom recipe types and blocks unsupported assembler machines from selecting them.
+- `TabRegistry` assigns a `TabSlot` for each stable page id and projects custom pages to item picker, recipe picker, replicator, signal picker, and tag-icon picker surfaces through the existing GridIndex category flow.
+- `Pickers.Open` requests item, recipe, and signal picker popups. Live grids apply request filters and duplicate `GridIndex` fallbacks, and the returned value is still checked again before callback delivery.
+- `RecipeTypeRegistry` marks declared recipes as custom recipe types and hides recipes unsupported by the current assembler before the recipe picker selection; `AssemblerComponent.SetRecipe` remains the final guard.
 - `KeyBindRegistry` polls registered key bindings and invokes callbacks, including simple `Ctrl`/`Alt`/`Shift` modifier combinations.
 - `SaveRegistry` writes a `.dspcore` sidecar save file and imports handlers by `CoreLoadOrder`.
 - `AchievementPolicyRegistry` aggregates each mod's achievement-disable declaration. Not declaring, or declaring `disableAchievements: false`, does not request disabling. If any mod declares true, DSPCore globally blocks achievement mutation, Milky Way / leaderboard uploads, and platform achievement/metadata calls. If no declaration is true, DSPCore blocks vanilla abnormality checks and keeps achievements available.
@@ -63,10 +63,8 @@ Implemented runtime bridges:
 
 Current runtime limits:
 
-- Player-defined build bar positions and RebindBuildBar compatibility are not implemented yet.
-- Tab projection currently covers item picker, recipe picker, and replicator surfaces. Signal picker, beacon, blueprint, and other surfaces need a richer tab-content model before they can be supported correctly.
-- Picker filters are applied on return as a safety check; they do not yet hide invalid entries inside the live picker grid.
-- Recipe type runtime blocks unsupported assembler selection, but the assembler recipe picker list is not yet filtered before selection.
+- RebindBuildBar external player configuration is not imported yet; the current player override layer is DSPCore-owned save data.
+- Tab projection currently covers vanilla `UIItemPicker`, `UIRecipePicker`, `UIReplicatorWindow`, `UISignalPicker`, and `UISignalTagPicker`. Blueprint icons, blueprint description icons, smart input icons, and other vanilla surfaces that use those pickers benefit from this; third-party UI takeover by GenesisBook, OrbitalRing, FE, and similar mods still needs dedicated adapters.
 - The UI framework provides common scaffolding only. It does not register concrete pages, business navigation, unlock conditions, or save state.
 - The proto phase hook is a conservative first bridge, not the final VFPreload mid-stage lifecycle.
 

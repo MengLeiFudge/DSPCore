@@ -34,6 +34,7 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
     {
         DspCore.InitializeRuntime(Logger);
         ErrorRuntime.Initialize();
+        BuildBarRuntime.Initialize();
         SaveRuntime.RegisterLegacyHandlers();
         harmony = new Harmony(PluginGuid);
         harmony.PatchAll(typeof(ProtoRegistrationRuntimePatches));
@@ -43,6 +44,7 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
         harmony.PatchAll(typeof(ErrorRuntimePatches));
         harmony.PatchAll(typeof(LocalizationRuntimePatches));
         harmony.PatchAll(typeof(TabRuntimePatches));
+        harmony.PatchAll(typeof(PickerRuntimePatches));
         harmony.PatchAll(typeof(RecipeTypeRuntimePatches));
         harmony.PatchAll(typeof(UiWindowRuntimePatches));
         Logger.LogInfo("DSPCore runtime bridges are initialized.");

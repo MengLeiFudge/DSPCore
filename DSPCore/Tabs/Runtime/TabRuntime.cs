@@ -10,6 +10,7 @@ namespace DSPCore;
 
 internal static class TabRuntime
 {
+    private const int SignalPickerCustomTypeOffset = 6;
     private static readonly Dictionary<object, List<TabButtonBinding>> Bindings = new();
 
     public static void AttachToItemPicker(UIItemPicker picker)
@@ -27,6 +28,16 @@ internal static class TabRuntime
         Attach(window, window.recipeGroup, window.typeButton2, type => InvokeTypeClick(window, type), -95f, 50f);
     }
 
+    public static void AttachToSignalPicker(UISignalPicker picker)
+    {
+        Attach(picker, picker.pickerTrans, picker.typeButton2, type => InvokeTypeClick(picker, ToSignalPickerType(type)), 156f, -75f, ToSignalPickerType);
+    }
+
+    public static void AttachToSignalTagPicker(UISignalTagPicker picker)
+    {
+        Attach(picker, picker.pickerTrans, picker.upgradeTab2Btn, type => InvokeTypeClick(picker, ToSignalPickerType(type)), -150f, 303f, ToSignalPickerType, 48f);
+    }
+
     public static void Select(object owner, int type)
     {
         if (!Bindings.TryGetValue(owner, out var bindings))
@@ -40,7 +51,15 @@ internal static class TabRuntime
         }
     }
 
-    private static void Attach(object owner, Transform parent, UIButton template, Action<int> onClick, float baseX, float y)
+    private static void Attach(
+        object owner,
+        Transform parent,
+        UIButton template,
+        Action<int> onClick,
+        float baseX,
+        float y,
+        Func<int, int>? typeMapper = null,
+        float spacing = 70f)
     {
         if (Bindings.ContainsKey(owner) || parent == null || template == null)
         {
@@ -53,9 +72,10 @@ internal static class TabRuntime
         {
             var tab = registration.Descriptor;
             var type = registration.Slot.Value;
+            var runtimeType = typeMapper?.Invoke(type) ?? type;
             var buttonObject = UnityEngine.Object.Instantiate(template.gameObject, parent, false);
             buttonObject.name = "dspcore-tab-" + tab.Id;
-            buttonObject.transform.localPosition = new Vector3(baseX + 70f * (displayIndex - 1), y, 0f);
+            buttonObject.transform.localPosition = new Vector3(baseX + spacing * (displayIndex - 1), y, 0f);
             displayIndex++;
             var uiButton = buttonObject.GetComponent<UIButton>();
             if (uiButton == null)
@@ -85,10 +105,15 @@ internal static class TabRuntime
                 }
             }
 
-            bindings.Add(new TabButtonBinding(type, uiButton));
+            bindings.Add(new TabButtonBinding(runtimeType, uiButton));
         }
 
         Bindings[owner] = bindings;
+    }
+
+    private static int ToSignalPickerType(int tabSlot)
+    {
+        return tabSlot + SignalPickerCustomTypeOffset;
     }
 
     private static void InvokeTypeClick(object owner, int type)
@@ -150,6 +175,34 @@ internal static class TabRuntimePatches
     [HarmonyPostfix]
     [HarmonyPatch(typeof(UIReplicatorWindow), "OnTypeButtonClick")]
     private static void ReplicatorType(UIReplicatorWindow __instance, int type)
+    {
+        TabRuntime.Select(__instance, type);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(UISignalPicker), "_OnCreate")]
+    private static void SignalPickerCreate(UISignalPicker __instance)
+    {
+        TabRuntime.AttachToSignalPicker(__instance);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(UISignalPicker), "OnTypeButtonClick")]
+    private static void SignalPickerType(UISignalPicker __instance, int type)
+    {
+        TabRuntime.Select(__instance, type);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(UISignalTagPicker), "_OnCreate")]
+    private static void SignalTagPickerCreate(UISignalTagPicker __instance)
+    {
+        TabRuntime.AttachToSignalTagPicker(__instance);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(UISignalTagPicker), "OnTypeButtonClick")]
+    private static void SignalTagPickerType(UISignalTagPicker __instance, int type)
     {
         TabRuntime.Select(__instance, type);
     }
