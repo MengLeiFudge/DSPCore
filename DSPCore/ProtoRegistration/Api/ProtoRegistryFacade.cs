@@ -10,6 +10,71 @@ namespace DSPCore;
 public sealed class ProtoRegistryFacade
 {
     private readonly List<ProtoRegistrationEntry> registrations = new();
+    private readonly List<ProtoPhaseAction> phaseActions = new();
+    private int nextPhaseActionOrder;
+
+    /// <summary>
+    /// 注册一个 Data 阶段回调。
+    /// Registers a Data phase callback.
+    /// </summary>
+    /// <param name="ownerModGuid">声明方模组 GUID。Declaring mod GUID.</param>
+    /// <param name="configure">阶段回调。Phase callback.</param>
+    /// <param name="priority">同阶段执行顺序，数值越小越早。Execution order within the phase; lower runs earlier.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    public void Data(string ownerModGuid, Action<ProtoPhaseContext> configure, int priority = 0, string? purpose = null)
+    {
+        RegisterPhaseAction(ownerModGuid, CoreDataPhase.Data, configure, priority, purpose);
+    }
+
+    /// <summary>
+    /// 注册一个 DataUpdates 阶段回调。
+    /// Registers a DataUpdates phase callback.
+    /// </summary>
+    /// <param name="ownerModGuid">声明方模组 GUID。Declaring mod GUID.</param>
+    /// <param name="configure">阶段回调。Phase callback.</param>
+    /// <param name="priority">同阶段执行顺序，数值越小越早。Execution order within the phase; lower runs earlier.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    public void DataUpdates(string ownerModGuid, Action<ProtoPhaseContext> configure, int priority = 0, string? purpose = null)
+    {
+        RegisterPhaseAction(ownerModGuid, CoreDataPhase.DataUpdates, configure, priority, purpose);
+    }
+
+    /// <summary>
+    /// 注册一个 DataFinalFixes 阶段回调。
+    /// Registers a DataFinalFixes phase callback.
+    /// </summary>
+    /// <param name="ownerModGuid">声明方模组 GUID。Declaring mod GUID.</param>
+    /// <param name="configure">阶段回调。Phase callback.</param>
+    /// <param name="priority">同阶段执行顺序，数值越小越早。Execution order within the phase; lower runs earlier.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    public void DataFinalFixes(string ownerModGuid, Action<ProtoPhaseContext> configure, int priority = 0, string? purpose = null)
+    {
+        RegisterPhaseAction(ownerModGuid, CoreDataPhase.DataFinalFixes, configure, priority, purpose);
+    }
+
+    /// <summary>
+    /// 注册一个指定数据阶段的回调。
+    /// Registers a callback for a specific data phase.
+    /// </summary>
+    /// <param name="ownerModGuid">声明方模组 GUID。Declaring mod GUID.</param>
+    /// <param name="phase">数据阶段。Data phase.</param>
+    /// <param name="configure">阶段回调。Phase callback.</param>
+    /// <param name="priority">同阶段执行顺序，数值越小越早。Execution order within the phase; lower runs earlier.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    public void RegisterPhaseAction(string ownerModGuid, CoreDataPhase phase, Action<ProtoPhaseContext> configure, int priority = 0, string? purpose = null)
+    {
+        if (string.IsNullOrWhiteSpace(ownerModGuid))
+        {
+            throw new ArgumentException("Owner mod GUID is required.", nameof(ownerModGuid));
+        }
+
+        if (configure == null)
+        {
+            throw new ArgumentNullException(nameof(configure));
+        }
+
+        phaseActions.Add(new ProtoPhaseAction(ownerModGuid, phase, configure, priority, purpose, nextPhaseActionOrder++));
+    }
 
     /// <summary>
     /// 注册一个原型对象。
@@ -124,4 +189,23 @@ public sealed class ProtoRegistryFacade
     {
         return registrations.ToArray();
     }
+
+    internal IReadOnlyList<ProtoPhaseAction> GetActionsByPhase(CoreDataPhase phase)
+    {
+        var actions = phaseActions.FindAll(item => item.Phase == phase);
+        actions.Sort(static (left, right) =>
+        {
+            var priorityCompare = left.Priority.CompareTo(right.Priority);
+            return priorityCompare != 0 ? priorityCompare : left.Order.CompareTo(right.Order);
+        });
+        return actions.ToArray();
+    }
+
+    internal sealed record ProtoPhaseAction(
+        string OwnerModGuid,
+        CoreDataPhase Phase,
+        Action<ProtoPhaseContext> Configure,
+        int Priority,
+        string? Purpose,
+        int Order);
 }

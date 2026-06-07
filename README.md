@@ -48,7 +48,7 @@ P0/P1 是当前实现目标。
 已接入运行时桥接：
 
 - `DSPCorePlugin` 通过 BepInEx 启动并应用 Harmony 补丁。
-- 原型注册会在 `VFPreload.InvokeOnLoadWorkEnded` 前后执行；DSPCore 在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
+- 原型注册会按类似 Factorio 的 `Data`、`DataUpdates`、`DataFinalFixes` 三阶段执行回调；运行时在 `VFPreload.InvokeOnLoadWorkEnded` 前后写入对应 Proto，并在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
 - `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。`BuildBar.SetPlayerOverride(...)` 会写入玩家覆盖层并保存到 `.dspcore`，运行时总是用作者默认绑定叠加玩家覆盖后的有效绑定。没有 DSPCore BuildBar 存档数据时，DSPCore 会从 RebindBuildBar 的 `CustomBarBind.cfg` 导入第 1 行玩家配置。
 - `IconSetRegistry` 可以加载 Unity `Resources` sprite 或本地 PNG 文件，缓存后写入目标 Proto。
 - `TabRegistry` 会为稳定页面 ID 分配 `TabSlot`，并通过现有 GridIndex 分类流程把自定义页面投射到物品选择器、配方选择器、制造器界面、信号选择器和标签图标选择器。
@@ -70,6 +70,27 @@ P0/P1 是当前实现目标。
 - 当前 Proto 阶段挂点是保守的第一版桥接，不是最终 VFPreload 中段生命周期。
 
 P2/P3 的自定义机器组件、星球/恒星系统、网络工具和玩家便利模块仍是 TODO，尚未实现。
+
+## 示例：原型三阶段注册
+
+```csharp
+using DSPCore;
+
+ProtoRegistration.Data("com.example.my-mod", data =>
+{
+    data.RegisterItem(itemProto, "Declare base item");
+});
+
+ProtoRegistration.DataUpdates("com.example.my-mod", data =>
+{
+    data.RegisterRecipe(recipeProto, "Attach recipe after item declarations");
+});
+
+ProtoRegistration.DataFinalFixes("com.example.my-mod", data =>
+{
+    data.RegisterTutorial(tutorialProto, "Final tutorial chain fix");
+});
+```
 
 ## 示例：成就策略
 

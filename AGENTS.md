@@ -159,8 +159,8 @@ DSPCore.sln
 - The current implementation includes P0/P1 runtime bridges, not just author-facing API skeletons.
 - 当前实现已包含 P0/P1 运行时桥接，不再只是作者可见 API 骨架。
 
-- Implemented runtime bridges: BepInEx/Harmony startup, proto insertion near `VFPreload.InvokeOnLoadWorkEnded`, multi-row build bar binding, DSPCore-owned player build-bar overrides, RebindBuildBar `CustomBarBind.cfg` import, resource/icon loading, item/recipe/replicator/signal/tag-icon tab projection, item/recipe/signal picker popups, live filtering, duplicate `GridIndex` fallback, dynamic picker row/column expansion, custom recipe type guards and pre-selection assembler recipe filtering, key callbacks, `.dspcore` sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error logging/fatal-window buttons, localization entries, and common UI window lifecycle forwarding.
-- 已实现运行时桥接：BepInEx/Harmony 启动、`VFPreload.InvokeOnLoadWorkEnded` 附近的 Proto 写入、多行建造栏绑定、DSPCore 自有玩家建造栏覆盖、RebindBuildBar `CustomBarBind.cfg` 导入、资源/图标加载、物品/配方/制造器/信号/标签图标分页投射、物品/配方/信号选择器弹窗、实时过滤、重复 `GridIndex` 兜底、选择器动态行列扩容、自定义配方类型限制与制作器配方选择前过滤、按键回调、`.dspcore` 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误日志/错误窗口按钮、本地化条目，以及通用 UI 窗口生命周期转发。
+- Implemented runtime bridges: BepInEx/Harmony startup, Factorio-like `Data` / `DataUpdates` / `DataFinalFixes` proto phase callbacks and proto insertion near `VFPreload.InvokeOnLoadWorkEnded`, multi-row build bar binding, DSPCore-owned player build-bar overrides, RebindBuildBar `CustomBarBind.cfg` import, resource/icon loading, item/recipe/replicator/signal/tag-icon tab projection, item/recipe/signal picker popups, live filtering, duplicate `GridIndex` fallback, dynamic picker row/column expansion, custom recipe type guards and pre-selection assembler recipe filtering, key callbacks, `.dspcore` sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error logging/fatal-window buttons, localization entries, and common UI window lifecycle forwarding.
+- 已实现运行时桥接：BepInEx/Harmony 启动、类似 Factorio `Data` / `DataUpdates` / `DataFinalFixes` 的 Proto 阶段回调和 `VFPreload.InvokeOnLoadWorkEnded` 附近的 Proto 写入、多行建造栏绑定、DSPCore 自有玩家建造栏覆盖、RebindBuildBar `CustomBarBind.cfg` 导入、资源/图标加载、物品/配方/制造器/信号/标签图标分页投射、物品/配方/信号选择器弹窗、实时过滤、重复 `GridIndex` 兜底、选择器动态行列扩容、自定义配方类型限制与制作器配方选择前过滤、按键回调、`.dspcore` 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误日志/错误窗口按钮、本地化条目，以及通用 UI 窗口生命周期转发。
 
 - UI owns common framework pieces only: descriptors, Unity window lifecycle helpers, reusable controls, declarative grid layout, and theme/card helpers. Concrete feature pages, business navigation, unlock logic, save state, and mod-specific panels stay in the owning feature block or mod.
 - UI 只负责通用框架件：描述对象、Unity 窗口生命周期辅助、可复用控件、声明式网格布局和主题/卡片辅助。具体功能页面、业务导航、解锁逻辑、存档状态和模组专属面板留在所属功能块或业务模组中。
@@ -171,6 +171,9 @@ DSPCore.sln
 - Runtime host owns only BepInEx startup and cross-feature patch assembly. Concrete runtime bridges belong in their feature block directories.
 - Runtime 宿主只负责 BepInEx 启动和跨功能 patch 装配。具体运行时桥接必须放在对应功能块目录。
 
+- ProtoRegistration owns the author-facing data lifecycle. New examples should prefer `ProtoRegistration.Data(...)`, `ProtoRegistration.DataUpdates(...)`, and `ProtoRegistration.DataFinalFixes(...)` callbacks with `ProtoPhaseContext`; direct `RegisterItem(..., phase)` remains available as a lower-level and compatibility entry.
+- ProtoRegistration 负责作者侧数据生命周期。新示例应优先使用 `ProtoRegistration.Data(...)`、`ProtoRegistration.DataUpdates(...)` 和 `ProtoRegistration.DataFinalFixes(...)` 回调，并通过 `ProtoPhaseContext` 注册物品、配方、科技和指引；直接 `RegisterItem(..., phase)` 继续作为低层和兼容入口保留。
+
 - Tabs own page declaration and `TabSlot` allocation. `GridIndex` remains the native item/recipe cell field on `ItemProto` and `RecipeProto`; use ProtoRegistration/GridIndexes helpers to build `GridIndex` values from `TabSlot`, row, and index.
 - Tabs 负责页面声明和 `TabSlot` 分配。`GridIndex` 仍是 `ItemProto` / `RecipeProto` 的游戏原生格子字段；用 ProtoRegistration/GridIndexes 辅助方法从 `TabSlot`、行号和格子号生成 `GridIndex`。
 
@@ -180,8 +183,8 @@ DSPCore.sln
 - RebindBuildBar compatibility imports `BuildBarBinds` from `CustomBarBind.cfg` into DSPCore row-1 player overrides when no DSPCore BuildBar save data exists. DSPCore does not take over RebindBuildBar's rebinding UI, hotkeys, or later config writes.
 - RebindBuildBar 兼容会在没有 DSPCore BuildBar 存档数据时，把 `CustomBarBind.cfg` 里的 `BuildBarBinds` 导入 DSPCore 第 1 行玩家覆盖层。DSPCore 不接管 RebindBuildBar 自己的重绑 UI、快捷键或后续配置写回。
 
-- Picker runtime is layered as author intent (`TabSlot` and native `GridIndex`), picker content layout planning, and UI surface adapters. DSPCore does not skip signal/tag picker tab injection based on GenesisBook, OrbitalRing, FE, or other plugin GUIDs. Vanilla picker surfaces remain covered through `UIItemPicker`, `UIRecipePicker`, `UIReplicatorWindow`, `UISignalPicker`, and `UISignalTagPicker`; truly rebuilt third-party picker surfaces still need dedicated adapters.
-- Picker 运行时按作者意图层（`TabSlot` 与原生 `GridIndex`）、选择器内容布局层、UI surface adapter 层组织。DSPCore 不按 GenesisBook、OrbitalRing、FE 或其他插件 GUID 跳过 signal/tag picker 分页按钮注入。原版 picker surface 仍通过 `UIItemPicker`、`UIRecipePicker`、`UIReplicatorWindow`、`UISignalPicker` 和 `UISignalTagPicker` 覆盖；真正自建、不复用原版 picker 的第三方界面仍需要专门 adapter。
+- Picker runtime owns vanilla UI surface adapters. DSPCore does not skip signal/tag picker tab injection based on GenesisBook, OrbitalRing, FE, or other plugin GUIDs. Vanilla picker surfaces remain covered through `UIItemPicker`, `UIRecipePicker`, `UIReplicatorWindow`, `UISignalPicker`, and `UISignalTagPicker`; truly rebuilt third-party picker surfaces still need dedicated adapters.
+- Picker runtime 负责原版 UI surface adapter。DSPCore 不按 GenesisBook、OrbitalRing、FE 或其他插件 GUID 跳过 signal/tag picker 分页按钮注入。原版 picker surface 仍通过 `UIItemPicker`、`UIRecipePicker`、`UIReplicatorWindow`、`UISignalPicker` 和 `UISignalTagPicker` 覆盖；真正自建、不复用原版 picker 的第三方界面仍需要专门 adapter。
 
 - Picker row/column counts are not declared by mods. Runtime starts from the current UI surface's real dimensions, scans registered item/recipe/signal `GridIndex` data for the largest required row and column, and expands backing arrays, `ComputeBuffer`, material grid, mouse hit testing, and visible content size together.
 - Picker 行列数不由模组声明。运行时会以当前 UI surface 的实际尺寸为基准，扫描已注册物品、配方和信号 `GridIndex` 数据得到需要的最大行列，并同步扩展后备数组、`ComputeBuffer`、材质网格、鼠标命中和可见内容尺寸。

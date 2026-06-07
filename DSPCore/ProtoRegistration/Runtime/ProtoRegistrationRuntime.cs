@@ -18,6 +18,8 @@ internal static class ProtoRegistrationRuntime
             return;
         }
 
+        ExecutePhaseActions(phase);
+
         var registrations = DspCore.ProtoRegistration.GetByPhase(phase);
         if (registrations.Count == 0)
         {
@@ -38,6 +40,23 @@ internal static class ProtoRegistrationRuntime
             {
                 DspCore.Errors.ReportException("DSPCore.ProtoRegistrationRuntime", ex);
                 DspCore.Logger?.LogError($"Failed to apply {phase} proto group {group.Key.FullName}: {ex}");
+            }
+        }
+    }
+
+    private static void ExecutePhaseActions(CoreDataPhase phase)
+    {
+        foreach (var action in DspCore.ProtoRegistration.GetActionsByPhase(phase))
+        {
+            try
+            {
+                var context = new ProtoPhaseContext(action.OwnerModGuid, phase, DspCore.ProtoRegistration);
+                action.Configure(context);
+            }
+            catch (Exception ex)
+            {
+                DspCore.Errors.ReportException(action.OwnerModGuid, ex);
+                DspCore.Logger?.LogError($"Failed to execute {phase} proto phase action from {action.OwnerModGuid}: {ex}");
             }
         }
     }

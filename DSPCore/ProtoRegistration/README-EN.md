@@ -5,14 +5,37 @@ The ProtoRegistration block lets a mod register DSP protos such as `ItemProto`, 
 ## What This Block Gives You
 
 - You do not need every mod to find its own LDB insertion timing, mutate `ProtoSet` manually, or remember every cache rebuild.
-- You can express ordering through `Data`, `DataUpdates`, and `DataFinalFixes`: declare first, adjust across mods, then apply final fixes.
+- You can express ordering through `Data`, `DataUpdates`, and `DataFinalFixes` callbacks: declare first, adjust across mods, then apply final fixes. This is close to Factorio's data.lua / data-updates.lua / data-final-fixes.lua flow.
 - After applying protos, DSPCore rebuilds key item, model, recipe, signal, icon, and index caches, reducing cases where data exists but UI or derived indices are stale.
 - Legacy LDBTool `PreAddProto` / `PostAddProto` calls bridge to ProtoRegistration for migration.
 - `Protos` remains as a compatibility/short alias; new documentation and examples prefer `ProtoRegistration`.
 
-## Capability: Register New Proto Objects
+## Capability: Register Data Phase Callbacks
 
-Common typed entries:
+The recommended pattern is to register data phase callbacks during startup. DSPCore passes a `ProtoPhaseContext` when the phase runs, and you register items, recipes, techs, or final fixes inside that callback.
+
+```csharp
+ProtoRegistration.Data("com.example.my-mod", data =>
+{
+    data.RegisterItem(itemProto, "Declare base item");
+});
+
+ProtoRegistration.DataUpdates("com.example.my-mod", data =>
+{
+    data.RegisterRecipe(recipeProto, "Attach recipe after item declarations");
+});
+
+ProtoRegistration.DataFinalFixes("com.example.my-mod", data =>
+{
+    data.RegisterTutorial(tutorialProto, "Final tutorial chain fix");
+});
+```
+
+Use `priority` to adjust order inside the same phase. Lower values run earlier; equal priorities keep registration order.
+
+## Capability: Directly Register New Proto Objects
+
+Typed direct entries remain available for compatibility and simple declarations. New code that needs data lifecycle semantics should prefer the callback pattern above.
 
 ```csharp
 ProtoRegistration.RegisterItem(itemProto, "com.example.my-mod");
@@ -21,7 +44,7 @@ ProtoRegistration.RegisterTech(techProto, "com.example.my-mod");
 ProtoRegistration.RegisterTutorial(tutorialProto, "com.example.my-mod");
 ```
 
-Use the generic entry when you need to specify the type or record a purpose:
+Use the generic direct entry when you need to specify the type or record a purpose:
 
 ```csharp
 ProtoRegistration.Register(typeof(ItemProto), itemProto, "com.example.my-mod", CoreDataPhase.Data, ProtoKind.Item, "new building item");
@@ -54,16 +77,18 @@ itemProto.GridIndex = ProtoRegistration.GetGridIndex(tab: 1, row: 2, index: 3);
 
 ## Capability: Choose A Data Phase
 
-- `CoreDataPhase.Data`: initial declarations, suitable for new protos and base fields.
-- `CoreDataPhase.DataUpdates`: cross-mod data updates, suitable for changes that depend on other declarations.
-- `CoreDataPhase.DataFinalFixes`: final fixes before derived caches are rebuilt.
+- `CoreDataPhase.Data` / `ProtoRegistration.Data(...)`: initial declarations, suitable for new protos and base fields.
+- `CoreDataPhase.DataUpdates` / `ProtoRegistration.DataUpdates(...)`: cross-mod data updates, suitable for changes that depend on other declarations.
+- `CoreDataPhase.DataFinalFixes` / `ProtoRegistration.DataFinalFixes(...)`: final fixes before derived caches are rebuilt.
 
 Do not put everything into `DataFinalFixes`. Use it only for work that truly depends on earlier declarations being complete.
 
 ## What DSPCore Does After The Call
 
-- Registration only records `ProtoType`, `Proto`, `ownerModGuid`, phase, kind, and purpose.
-- Runtime reads registrations by phase and groups them by concrete Proto type before writing them to the matching LDB `ProtoSet`.
+- Startup only records data phase callbacks and direct registrations; it does not write LDB immediately.
+- When runtime enters a phase, it first executes callbacks for that phase by `priority` and registration order.
+- Protos registered through `ProtoPhaseContext` are assigned to the currently executing phase.
+- Runtime then reads registrations by phase and groups them by concrete Proto type before writing them to the matching LDB `ProtoSet`.
 - If no matching LDB `ProtoSet` is found, that group is skipped and logged.
 - Each phase is applied only once, so repeated runtime triggers do not reinsert the same phase.
 - After final fixes, DSPCore rebuilds LDB indices, item derived caches, model derived caches, recipe derived caches, custom recipe types, signal indices, and icon caches.

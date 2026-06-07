@@ -48,7 +48,7 @@ P0/P1 blocks are the current implementation target.
 Implemented runtime bridges:
 
 - `DSPCorePlugin` starts from BepInEx and applies Harmony patches.
-- Proto registrations are applied around `VFPreload.InvokeOnLoadWorkEnded`; DSPCore rebuilds `ProtoSet` indices and key derived caches after final fixes.
+- Proto registration runs Factorio-like `Data`, `DataUpdates`, and `DataFinalFixes` callbacks. Runtime writes the resulting protos around `VFPreload.InvokeOnLoadWorkEnded`; DSPCore rebuilds `ProtoSet` indices and key derived caches after final fixes.
 - `BuildBarRegistry.BindQuickBar` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons. `BuildBar.SetPlayerOverride(...)` writes a player override layer to the `.dspcore` save, and runtime uses author defaults overlaid with player overrides. When no DSPCore BuildBar save data exists, DSPCore imports row-1 player configuration from RebindBuildBar's `CustomBarBind.cfg`.
 - `IconSetRegistry` can load Unity `Resources` sprites or local PNG files, cache them, and apply them to target protos.
 - `TabRegistry` assigns a `TabSlot` for each stable page id and projects custom pages to item picker, recipe picker, replicator, signal picker, and tag-icon picker surfaces through the existing GridIndex category flow.
@@ -70,6 +70,27 @@ Current runtime limits:
 - The proto phase hook is a conservative first bridge, not the final VFPreload mid-stage lifecycle.
 
 P2/P3 blocks such as custom machine components, planet/star systems, network helpers, and player convenience modules are TODO and not implemented yet.
+
+## Example: Proto Phase Registration
+
+```csharp
+using DSPCore;
+
+ProtoRegistration.Data("com.example.my-mod", data =>
+{
+    data.RegisterItem(itemProto, "Declare base item");
+});
+
+ProtoRegistration.DataUpdates("com.example.my-mod", data =>
+{
+    data.RegisterRecipe(recipeProto, "Attach recipe after item declarations");
+});
+
+ProtoRegistration.DataFinalFixes("com.example.my-mod", data =>
+{
+    data.RegisterTutorial(tutorialProto, "Final tutorial chain fix");
+});
+```
 
 ## Example: Achievement Policy
 

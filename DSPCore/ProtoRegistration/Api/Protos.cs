@@ -10,6 +10,42 @@ namespace DSPCore;
 public static class Protos
 {
     /// <summary>
+    /// 注册一个 Data 阶段回调。
+    /// Registers a Data phase callback.
+    /// </summary>
+    public static void Data(string ownerModGuid, Action<ProtoPhaseContext> configure, int priority = 0, string? purpose = null)
+    {
+        ProtoRegistration.Data(ownerModGuid, configure, priority, purpose);
+    }
+
+    /// <summary>
+    /// 注册一个 DataUpdates 阶段回调。
+    /// Registers a DataUpdates phase callback.
+    /// </summary>
+    public static void DataUpdates(string ownerModGuid, Action<ProtoPhaseContext> configure, int priority = 0, string? purpose = null)
+    {
+        ProtoRegistration.DataUpdates(ownerModGuid, configure, priority, purpose);
+    }
+
+    /// <summary>
+    /// 注册一个 DataFinalFixes 阶段回调。
+    /// Registers a DataFinalFixes phase callback.
+    /// </summary>
+    public static void DataFinalFixes(string ownerModGuid, Action<ProtoPhaseContext> configure, int priority = 0, string? purpose = null)
+    {
+        ProtoRegistration.DataFinalFixes(ownerModGuid, configure, priority, purpose);
+    }
+
+    /// <summary>
+    /// 注册一个指定数据阶段的回调。
+    /// Registers a callback for a specific data phase.
+    /// </summary>
+    public static void RegisterPhaseAction(string ownerModGuid, CoreDataPhase phase, Action<ProtoPhaseContext> configure, int priority = 0, string? purpose = null)
+    {
+        ProtoRegistration.RegisterPhaseAction(ownerModGuid, phase, configure, priority, purpose);
+    }
+
+    /// <summary>
     /// 从分页槽位、行和格子编号生成物品或配方 GridIndex。
     /// Creates an item or recipe GridIndex from a tab slot, row, and index.
     /// </summary>
