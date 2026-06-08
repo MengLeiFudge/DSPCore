@@ -33,8 +33,8 @@ DSPCore 是戴森球计划模组的新通用底层标准。它不是个人命名
 - Legacy namespaces are compatibility shims only and must be marked `[Obsolete]`.
 - 旧命名空间只作为兼容 shim，必须标记 `[Obsolete]`。
 
-- Compatibility code belongs to the owning feature block under `DSPCore/<Feature>/Compat/`; do not create a top-level `Legacy/` or centralized legacy compatibility directory. Old namespaces may be declared from feature `Compat/` files when required by source compatibility.
-- 兼容代码必须放在所属功能块的 `DSPCore/<Feature>/Compat/` 下；禁止创建顶层 `Legacy/` 或集中式旧兼容目录。为了源码兼容需要保留旧命名空间时，也应在对应功能块的 `Compat/` 文件中声明。
+- Compatibility code belongs to the owning authoring capability under `DSPCore/Authoring/<Capability>/Compat/`; do not create a top-level `Legacy/` or centralized legacy compatibility directory. Old namespaces may be declared from capability `Compat/` files when required by source compatibility.
+- 兼容代码必须放在所属作者能力的 `DSPCore/Authoring/<Capability>/Compat/` 下；禁止创建顶层 `Legacy/` 或集中式旧兼容目录。为了源码兼容需要保留旧命名空间时，也应在对应能力的 `Compat/` 文件中声明。
 
 - First-version compatibility target: existing mods should be able to reference DSPCore without changing source code where the old API surface is covered.
 - 初版兼容目标：已覆盖旧 API 面的已有模组，应能在不改源码的情况下引用 DSPCore。
@@ -86,29 +86,32 @@ Build succeeded.
 - AGENTS.md is for repository workflow, validation, and AI rules.
 - AGENTS.md 面向仓库工作流、验证要求和 AI 规则。
 
-- Legacy API migration notes belong in `README.md`, `README-EN.md`, or the owning feature block README until a real cross-feature documentation need appears.
-- 旧 API 迁移说明先放在 `README.md`、`README-EN.md` 或所属功能块 README；只有出现真实跨功能长文档需求时才恢复根 `docs/`。
+- Legacy API migration notes belong in `README.md`, `README-EN.md`, or the owning authoring capability README until a real cross-capability documentation need appears.
+- 旧 API 迁移说明先放在 `README.md`、`README-EN.md` 或所属作者能力 README；只有出现真实跨能力长文档需求时才恢复根 `docs/`。
 
-- Every public capability should have a concrete `.cs` example under its feature block's `Examples/` directory. All example `.cs` files are documentation artifacts and must be excluded from compilation.
-- 每一项公开能力都应在所属功能块的 `Examples/` 目录下有具体 `.cs` 示例。所有示例 `.cs` 文件都属于文档产物，必须排除编译。
+- Every public capability should have a concrete `.cs` example under `DSPCore/Authoring/<Capability>/Examples/` when a runnable author scenario exists. All example `.cs` files are documentation artifacts and must be excluded from compilation.
+- 每一项公开能力在存在可演示作者场景时，应在 `DSPCore/Authoring/<Capability>/Examples/` 下有具体 `.cs` 示例。所有示例 `.cs` 文件都属于文档产物，必须排除编译。
 
-- Feature-specific examples should use paired scenario files when practical: `Examples/<Scenario>.md` explains when to use the API, key parameters, runtime prerequisites, and common mistakes; `Examples/<Scenario>Example.cs` provides the small demo code. The `.md` explanation does not replace the feature block README, and the `.cs` demo remains excluded from compilation.
-- 功能专属示例在可行时应使用成对场景文件：`Examples/<Scenario>.md` 说明适用时机、关键参数、运行时前提和常见误用；`Examples/<Scenario>Example.cs` 提供小型 demo 代码。`.md` 说明不替代功能块 README，`.cs` demo 仍必须排除编译。
+- Capability-specific examples should use paired scenario files when practical: `Examples/<Scenario>.md` explains when to use the API, key parameters, runtime prerequisites, and common mistakes; `Examples/<Scenario>Example.cs` provides the small demo code. The `.md` explanation does not replace the authoring capability README, and the `.cs` demo remains excluded from compilation.
+- 能力专属示例在可行时应使用成对场景文件：`Examples/<Scenario>.md` 说明适用时机、关键参数、运行时前提和常见误用；`Examples/<Scenario>Example.cs` 提供小型 demo 代码。`.md` 说明不替代作者能力 README，`.cs` demo 仍必须排除编译。
 
-- Every feature block directory under `DSPCore/` must have `README.md` for Chinese documentation and `README-EN.md` for English documentation, excluding build/metadata directories such as `bin/`, `obj/`, `Properties/`, `Core/`, and project-only directories.
-- `DSPCore/` 下每个功能块目录都必须有中文 `README.md` 和英文 `README-EN.md`，但 `bin/`、`obj/`、`Properties/`、`Core/` 和纯项目目录除外。
+- Every authoring capability directory under `DSPCore/Authoring/` must have `README.md` for Chinese documentation and `README-EN.md` for English documentation, excluding project-only or metadata directories. System integration directories under `DSPCore/Systems/` need README files only when they expose durable lifecycle, projection, persistence, or compatibility rules that are not already covered by the owning authoring capability.
+- `DSPCore/Authoring/` 下每个作者能力目录都必须有中文 `README.md` 和英文 `README-EN.md`，但纯项目或元数据目录除外。`DSPCore/Systems/` 下的系统集成目录只有在暴露长期生命周期、投射、持久化或兼容规则，且这些规则没有被所属作者能力文档覆盖时，才需要 README。
 
 - User-visible behavior or public API changes require README/docs review in the same task.
 - 用户可见行为或公开 API 变更，必须在同一任务检查 README/docs。
 
-- Feature block README files target mod authors who understand DSP modding concepts but have not used DSPCore before. They must explain what the block does, what author-side work it removes, what repeated patching or compatibility problems it avoids, what happens after the author calls each public API, which runtime/game behaviors are affected, and the important defaults, conflicts, repeated calls, and unsupported boundaries.
-- 功能块 README 的目标读者是了解 DSP 模组语境、但第一次接触 DSPCore 的模组作者。文档必须说明该功能块能做什么、减少作者哪些重复劳动、避免哪些 patch 或兼容问题、作者调用公开 API 后 DSPCore 会怎么处理、会影响哪些运行时/游戏行为，以及重要的默认值、冲突处理、重复调用结果和不支持边界。
+- Authoring capability README files target mod authors who understand DSP modding concepts but have not used DSPCore before. They must explain what the capability does, what author-side work it removes, what repeated patching or compatibility problems it avoids, what happens after the author calls each public API, which runtime/game behaviors are affected, and the important defaults, conflicts, repeated calls, and unsupported boundaries.
+- 作者能力 README 的目标读者是了解 DSP 模组语境、但第一次接触 DSPCore 的模组作者。文档必须说明该能力能做什么、减少作者哪些重复劳动、避免哪些 patch 或兼容问题、作者调用公开 API 后 DSPCore 会怎么处理、会影响哪些运行时/游戏行为，以及重要的默认值、冲突处理、重复调用结果和不支持边界。
 
-- When one feature block contains multiple author-facing capabilities, its README must introduce them in separate sections instead of compressing them into one generic responsibility statement. Simple single-capability blocks may use a shorter structure, but still need author-facing behavior and boundary explanations.
-- 当一个功能块包含多个作者侧能力时，README 必须按功能分区块分别介绍，不能压缩成一句泛泛职责说明。简单的单功能块可以使用更短结构，但仍必须说明作者侧行为和边界。
+- When one authoring directory contains multiple author-facing capabilities, its README must introduce them in separate sections instead of compressing them into one generic responsibility statement. Simple single-capability directories may use a shorter structure, but still need author-facing behavior and boundary explanations.
+- 当一个作者目录包含多个作者侧能力时，README 必须按功能分区块分别介绍，不能压缩成一句泛泛职责说明。简单的单能力目录可以使用更短结构，但仍必须说明作者侧行为和边界。
 
-- Feature blocks are internally split into `Api/`, `Runtime/`, `Compat/`, and `Examples/` when they contain those responsibilities. `Api/` owns author-facing entry points, descriptors, registries, extension methods, and public models. `Runtime/` owns BepInEx/Harmony/DSP lifecycle bridges, Unity UI projection, data-phase executors, and other implementation that applies registered intent to the game. `Compat/` owns all legacy or third-party compatibility adapters for that feature block, including files that declare old namespaces or old type names. `Examples/` owns author-facing scenario documentation and demo code.
-- 功能块内部按职责拆成 `Api/`、`Runtime/`、`Compat/`、`Examples/`，只有实际存在对应职责时才创建目录。`Api/` 负责作者侧入口、descriptor、registry、扩展方法和公开模型。`Runtime/` 负责 BepInEx/Harmony/DSP 生命周期桥接、Unity UI 投射、数据阶段执行器，以及把注册意图应用到游戏里的实现。`Compat/` 负责该功能块的全部旧 API 或第三方兼容适配，包括声明旧命名空间或旧类型名的文件。`Examples/` 负责作者侧场景说明和 demo 代码。
+- `DSPCore/Authoring/` owns the author-facing surface: short entries, descriptors, registries, extension methods, public models, compatibility shims, examples, and author documentation. `DSPCore/Systems/` owns integration behavior: BepInEx/Harmony/DSP lifecycle bridges, Unity UI projection, data-phase executors, persistence bridges, resource loading, and other implementation that applies registered intent to the game. Do not put runtime patch classes back under `Authoring/`; do not make `Systems/` expose new author APIs directly.
+- `DSPCore/Authoring/` 负责作者侧表面：短入口、descriptor、registry、扩展方法、公开模型、兼容 shim、示例和作者文档。`DSPCore/Systems/` 负责系统集成行为：BepInEx/Harmony/DSP 生命周期桥接、Unity UI 投射、数据阶段执行器、持久化桥、资源加载，以及把注册意图应用到游戏里的实现。不要把运行时 patch 类放回 `Authoring/`；不要让 `Systems/` 直接暴露新的作者 API。
+
+- Authoring capability directories may contain `Api/`, `Compat/`, and `Examples/` when those responsibilities exist. `Api/` owns author-facing entry points, descriptors, registries, extension methods, and public models. `Compat/` owns legacy or third-party compatibility adapters for that capability, including files that declare old namespaces or old type names. `Examples/` owns author-facing scenario documentation and demo code.
+- 作者能力目录在实际存在对应职责时，可以包含 `Api/`、`Compat/` 和 `Examples/`。`Api/` 负责作者侧入口、descriptor、registry、扩展方法和公开模型。`Compat/` 负责该能力的旧 API 或第三方兼容适配，包括声明旧命名空间或旧类型名的文件。`Examples/` 负责作者侧场景说明和 demo 代码。
 
 ## Git Rules / Git 规则
 
@@ -137,19 +140,40 @@ Build succeeded.
 ```text
 DSPCore.sln
 ├── DSPCore/                 # main BepInEx plugin project / 主插件项目
-│   ├── Core/                # Api/Runtime/Compat: DspCore entry, startup assembly, feature/module registries, CommonAPI compatibility
-│   ├── Achievements/        # Api/Runtime/Examples: achievement policy aggregation
-│   ├── BuildBar/            # Api/Runtime/Compat/Examples: multi-row build bar placement and BuildBarTool compatibility
-│   ├── Errors/              # Api/Runtime: error report model and fatal-window runtime bridge
-│   ├── Icons/               # Api/Runtime/Examples: icon registration and icon runtime bridge
-│   ├── Input/               # Api/Runtime/Examples: key bind declarations and polling bridge
-│   ├── Pickers/             # Api/Runtime/Examples: picker requests and popup bridge
-│   ├── ProtoRegistration/   # Api/Runtime/Compat/Examples: proto registration facade, data-phase bridge, LDBTool compatibility
-│   ├── RecipeTypes/         # Api/Runtime/Examples: custom recipe types and recipe guard bridge
-│   ├── Resources/           # Api/Runtime: resource and localization declarations plus localization bridge
-│   ├── Saves/               # Api/Runtime/Compat/Examples: save abstraction, sidecar save bridge, DSPModSave compatibility
-│   ├── Tabs/                # Api/Runtime/Examples: tab slot declarations and UI projection bridge
-│   └── UI/                  # Api/Foundation/Controls/Layout/Theme: common UI descriptors, windows, controls, grid layout, and theme helpers
+│   ├── Authoring/           # author-facing capabilities / 作者侧能力
+│   │   ├── Core/            # DspCore entry, feature/module registries, CommonAPI compatibility
+│   │   ├── Achievements/    # achievement policy declarations and examples
+│   │   ├── BuildBar/        # quick bar binding API and BuildBarTool compatibility
+│   │   ├── Icons/           # icon registration descriptors
+│   │   ├── KeyBinds/        # key bind declarations
+│   │   ├── DataPhases/      # Data, DataUpdates, DataFinalFixes entries
+│   │   ├── ProtoAccess/     # phase-aware proto lookup and mutation direction
+│   │   ├── ProtoRegistration/ # low-level proto registry facade and LDBTool compatibility
+│   │   ├── Items/           # item proto registration entry
+│   │   ├── Recipes/         # recipe proto registration entry
+│   │   ├── Techs/           # tech proto registration entry
+│   │   ├── Tutorials/       # tutorial/guide proto registration entry
+│   │   ├── GameEnums/       # vanilla enum extension direction, current recipe type guard API
+│   │   ├── Resources/       # resource and localization declarations
+│   │   ├── Saves/           # save abstraction and DSPModSave compatibility
+│   │   ├── Tabs/            # tab slot declarations
+│   │   └── UI/              # common UI descriptors, windows, controls, grid layout, and theme helpers
+│   ├── Systems/             # lifecycle, projection, persistence, and patch bridges / 系统集成
+│   │   ├── Lifecycle/       # BepInEx startup and cross-system patch assembly
+│   │   ├── ProtoPipeline/   # data-phase execution and proto insertion bridge
+│   │   ├── TabProjection/   # tab projection into vanilla UI surfaces
+│   │   ├── PickerSurfaces/  # picker surface adapters and dynamic layout
+│   │   ├── QuickBarProjection/ # build bar projection and player overrides
+│   │   ├── ResourceLoading/ # localization and resource application
+│   │   ├── IconProjection/  # icon loading and application
+│   │   ├── GameEnumProjection/ # current recipe type guards and future enum patching
+│   │   ├── KeyBindProjection/ # key polling and callbacks
+│   │   ├── SaveBridge/      # sidecar saves and legacy handler bridge
+│   │   ├── AchievementPolicy/ # achievement and platform policy patches
+│   │   ├── ErrorWindow/     # error logging and fatal-window bridge
+│   │   └── UiRuntime/       # UI window lifecycle patches
+│   ├── Properties/
+│   └── DSPCore.csproj
 ├── DSPCore.Preloader/       # BepInEx patchers project / BepInEx patchers 项目
 └── DSPCore.Packaging/       # Thunderstore packaging project / Thunderstore 打包项目
 ```
@@ -162,14 +186,14 @@ DSPCore.sln
 - Implemented runtime bridges: BepInEx/Harmony startup, Factorio-like `Data` / `DataUpdates` / `DataFinalFixes` proto phase callbacks and proto insertion near `VFPreload.InvokeOnLoadWorkEnded`, multi-row build bar binding, DSPCore-owned player build-bar overrides, RebindBuildBar `CustomBarBind.cfg` import, resource/icon loading, item/recipe/replicator/signal/tag-icon tab projection, item/recipe/signal picker popups, live filtering, duplicate `GridIndex` fallback, dynamic picker row/column expansion, custom recipe type guards and pre-selection assembler recipe filtering, key callbacks, `.dspcore` sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error logging/fatal-window buttons, localization entries, and common UI window lifecycle forwarding.
 - 已实现运行时桥接：BepInEx/Harmony 启动、类似 Factorio `Data` / `DataUpdates` / `DataFinalFixes` 的 Proto 阶段回调和 `VFPreload.InvokeOnLoadWorkEnded` 附近的 Proto 写入、多行建造栏绑定、DSPCore 自有玩家建造栏覆盖、RebindBuildBar `CustomBarBind.cfg` 导入、资源/图标加载、物品/配方/制造器/信号/标签图标分页投射、物品/配方/信号选择器弹窗、实时过滤、重复 `GridIndex` 兜底、选择器动态行列扩容、自定义配方类型限制与制作器配方选择前过滤、按键回调、`.dspcore` 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误日志/错误窗口按钮、本地化条目，以及通用 UI 窗口生命周期转发。
 
-- UI owns common framework pieces only: descriptors, Unity window lifecycle helpers, reusable controls, declarative grid layout, and theme/card helpers. Concrete feature pages, business navigation, unlock logic, save state, and mod-specific panels stay in the owning feature block or mod.
-- UI 只负责通用框架件：描述对象、Unity 窗口生命周期辅助、可复用控件、声明式网格布局和主题/卡片辅助。具体功能页面、业务导航、解锁逻辑、存档状态和模组专属面板留在所属功能块或业务模组中。
+- UI owns common framework pieces only: descriptors, Unity window lifecycle helpers, reusable controls, declarative grid layout, and theme/card helpers. Concrete feature pages, business navigation, unlock logic, save state, and mod-specific panels stay in the owning authoring capability, owning system, or mod.
+- UI 只负责通用框架件：描述对象、Unity 窗口生命周期辅助、可复用控件、声明式网格布局和主题/卡片辅助。具体功能页面、业务导航、解锁逻辑、存档状态和模组专属面板留在所属作者能力、所属系统或业务模组中。
 
-- BuildBar owns the build bar placement feature block: item id or `ItemProto` -> tab/row/index bindings, two or more build bar rows, player-defined or dynamically overridden slots, related UI projection and refresh handling, RebindBuildBar compatibility, and BuildBarTool compatibility shims. New author-facing examples should prefer `ItemProto.SetBuildBar(...)`; use `BuildBar.BindQuickBar(...)` only when the caller only has an item id. Do not move proto creation responsibilities into BuildBar.
-- BuildBar 负责建造栏位置功能块：物品 ID 或 `ItemProto` -> tab/row/index 绑定、两层或更多层建造栏、玩家自定义或动态覆盖格子、相关 UI 投射和刷新处理、RebindBuildBar 兼容，以及 BuildBarTool 兼容 shim。新的作者侧示例应首选 `ItemProto.SetBuildBar(...)`；只有调用方手上只有物品 ID 时才使用 `BuildBar.BindQuickBar(...)`。不要把 Proto 创建职责移入 BuildBar。
+- BuildBar owns the author-facing build bar placement capability: item id or `ItemProto` -> tab/row/index bindings, two or more build bar rows, player-defined or dynamically overridden slots, related UI projection and refresh handling, RebindBuildBar compatibility, and BuildBarTool compatibility shims. New author-facing examples should prefer `ItemProto.SetBuildBar(...)`; use `BuildBar.BindQuickBar(...)` only when the caller only has an item id. Do not move proto creation responsibilities into BuildBar.
+- BuildBar 负责作者侧建造栏位置能力：物品 ID 或 `ItemProto` -> tab/row/index 绑定、两层或更多层建造栏、玩家自定义或动态覆盖格子、相关 UI 投射和刷新处理、RebindBuildBar 兼容，以及 BuildBarTool 兼容 shim。新的作者侧示例应首选 `ItemProto.SetBuildBar(...)`；只有调用方手上只有物品 ID 时才使用 `BuildBar.BindQuickBar(...)`。不要把 Proto 创建职责移入 BuildBar。
 
-- Runtime host owns only BepInEx startup and cross-feature patch assembly. Concrete runtime bridges belong in their feature block directories.
-- Runtime 宿主只负责 BepInEx 启动和跨功能 patch 装配。具体运行时桥接必须放在对应功能块目录。
+- Lifecycle owns only BepInEx startup and cross-system patch assembly. Concrete runtime bridges belong in their corresponding `DSPCore/Systems/` directories.
+- Lifecycle 只负责 BepInEx 启动和跨系统 patch 装配。具体运行时桥接必须放在对应的 `DSPCore/Systems/` 目录。
 
 - ProtoRegistration owns the author-facing data lifecycle. New examples should prefer `ProtoRegistration.Data(...)`, `ProtoRegistration.DataUpdates(...)`, and `ProtoRegistration.DataFinalFixes(...)` callbacks with `ProtoPhaseContext`; direct `RegisterItem(..., phase)` remains available as a lower-level and compatibility entry.
 - ProtoRegistration 负责作者侧数据生命周期。新示例应优先使用 `ProtoRegistration.Data(...)`、`ProtoRegistration.DataUpdates(...)` 和 `ProtoRegistration.DataFinalFixes(...)` 回调，并通过 `ProtoPhaseContext` 注册物品、配方、科技和指引；直接 `RegisterItem(..., phase)` 继续作为低层和兼容入口保留。

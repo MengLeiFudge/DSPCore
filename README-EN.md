@@ -17,14 +17,16 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods.
 
 ## Project Layout
 
-- `DSPCore/`: main BepInEx plugin project, including Core and feature blocks.
+- `DSPCore/`: main BepInEx plugin project, split into `Authoring/` capabilities and `Systems/` integrations.
+- `DSPCore/Authoring/`: capabilities mod authors call directly, such as Core, DataPhases, ProtoAccess, Items, Recipes, Techs, Tutorials, Tabs, BuildBar, Resources, Icons, GameEnums, KeyBinds, Saves, Achievements, and UI.
+- `DSPCore/Systems/`: runtime handling for author declarations, such as lifecycle, proto pipeline, tab projection, picker surfaces, quick bar projection, resource loading, save bridge, achievement policy, and error window handling.
 - `DSPCore.Preloader/`: BepInEx patchers project for pre-load game assembly patches.
 - `DSPCore.Packaging/`: Thunderstore packaging project.
 
 ## First Version Scope
 
-- P0/P1 author-facing feature blocks: feature lifecycle, data phases, proto registration, build bar placement, resources, icons, localization, tabs, pickers, recipe types, key binds, saves, achievements, error reports, and a common UI framework.
-- Legacy compatibility shims for `xiaoye97.LDBTool`, `crecheng.DSPModSave`, `CommonAPI`, and `BuildBarTool`; compatibility code lives under the owning feature block's `Compat/` directory instead of a centralized `Legacy/` directory.
+- P0/P1 author-facing capabilities: feature lifecycle, data phases, proto access, item/recipe/tech/tutorial registration, build bar placement, resources, icons, localization, tabs, game enum extensions, key binds, saves, achievement policies, and a common UI framework.
+- Legacy compatibility shims for `xiaoye97.LDBTool`, `crecheng.DSPModSave`, `CommonAPI`, and `BuildBarTool`; compatibility code lives under the owning `Authoring/<Capability>/Compat/` directory instead of a centralized `Legacy/` directory.
 - Bilingual XML summaries for public APIs.
 
 The current version includes P0/P1 runtime bridges: BepInEx/Harmony startup, proto insertion, multi-row build bar binding, player overrides, RebindBuildBar configuration import, resource/icon loading, tabs for item/recipe/replicator/signal/tag-icon surfaces, picker popups and live filtering, custom recipe type pre-selection filtering, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error reporting, fatal-window copy/close buttons, localization entries, and common UI window lifecycle forwarding.
@@ -33,14 +35,14 @@ The current version includes P0/P1 runtime bridges: BepInEx/Harmony startup, pro
 
 P0/P1 blocks are the current implementation target.
 
-- Feature lifecycle: declare feature blocks, dependencies, priority, and initialization.
+- Feature lifecycle: declare capability blocks, dependencies, priority, and initialization.
 - Data phases: `Data`, `DataUpdates`, and `DataFinalFixes`.
-- Proto registration: item, recipe, tech, tutorial, model/building binding, and vanilla data query descriptors.
-- Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot; row 1 writes to the vanilla build bar, row 2+ uses DSPCore extended buttons, and BuildBarTool compatibility entries remain available. Other feature blocks, such as item registration, should prefer `ItemProto.SetBuildBar(...)` after they have the item proto; BuildBar does not own proto creation.
+- Proto capabilities: DataPhases owns the three phases; ProtoAccess owns second/third phase lookup and mutation of registered data; Items, Recipes, Techs, and Tutorials own typed proto registration; ProtoRegistration remains the low-level aggregate and compatibility entry.
+- Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot; row 1 writes to the vanilla build bar, row 2+ uses DSPCore extended buttons, and BuildBarTool compatibility entries remain available. Other authoring capabilities, such as item registration, should prefer `ItemProto.SetBuildBar(...)` after they have the item proto; BuildBar does not own proto creation.
 - Resources, icons, and localization: resource roots, icon descriptors, and translation entries.
-- Tabs and pickers: authors can declare custom pages, receive a `TabSlot`, and use that slot to generate item/recipe `GridIndex` values; they can also open item/recipe/signal picker requests from their own UI.
+- Tabs: authors can declare custom pages, receive a `TabSlot`, and use that slot to generate item/recipe `GridIndex` values. Picker surfaces are DSPCore system implementation.
 - Saves: raw `BinaryReader`/`BinaryWriter` handlers and tagged block helpers.
-- Achievements and errors: achievement policy aggregation and structured error reports.
+- Achievement policies: declare policy effects such as Milky Way / leaderboard upload blocking. Error window and error collection belong to DSPCore systems.
 - UI framework: window lifecycle helpers, tabbed windows, base controls, declarative grid layout, and theme/card helpers; concrete business pages are not included.
 
 ## Runtime Status
@@ -52,12 +54,12 @@ Implemented runtime bridges:
 - `BuildBarRegistry.BindQuickBar` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons. `BuildBar.SetPlayerOverride(...)` writes a player override layer to the `.dspcore` save, and runtime uses author defaults overlaid with player overrides. When no DSPCore BuildBar save data exists, DSPCore imports row-1 player configuration from RebindBuildBar's `CustomBarBind.cfg`.
 - `IconSetRegistry` can load Unity `Resources` sprites or local PNG files, cache them, and apply them to target protos.
 - `TabRegistry` assigns a `TabSlot` for each stable page id and projects custom pages to item picker, recipe picker, replicator, signal picker, and tag-icon picker surfaces through the existing GridIndex category flow.
-- `Pickers.Open` requests item, recipe, and signal picker popups. Live grids apply request filters, duplicate `GridIndex` fallbacks, and dynamic row/column expansion, and the returned value is still checked again before callback delivery.
-- `RecipeTypeRegistry` marks declared recipes as custom recipe types and hides recipes unsupported by the current assembler before the recipe picker selection; `AssemblerComponent.SetRecipe` remains the final guard.
+- `PickerSurfaces` handles item, recipe, and signal picker surfaces. Live grids apply filters, duplicate `GridIndex` fallbacks, and dynamic row/column expansion.
+- `GameEnums` currently marks declared recipes as custom recipe types and hides recipes unsupported by the current assembler before the recipe picker selection; `AssemblerComponent.SetRecipe` remains the final guard.
 - `KeyBindRegistry` polls registered key bindings and invokes callbacks, including simple `Ctrl`/`Alt`/`Shift` modifier combinations.
 - `SaveRegistry` writes a `.dspcore` sidecar save file and imports handlers by `CoreLoadOrder`.
 - `AchievementPolicyRegistry` aggregates each mod's achievement-disable declaration. Not declaring, or declaring `disableAchievements: false`, does not request disabling. If any mod declares true, DSPCore globally blocks achievement mutation, Milky Way / leaderboard uploads, and platform achievement/metadata calls. If no declaration is true, DSPCore blocks vanilla abnormality checks and keeps achievements available.
-- `ErrorReporter` receives Unity fatal/error logs and fatal-window events.
+- `ErrorWindow` receives Unity fatal/error logs and fatal-window events.
 - `ResourceRegistry.RegisterLocalization` is applied to DSP localization keys and language strings.
 - `UiWindowManager` forwards DSPCore window lifecycle through `UIRoot` open, update, and destroy events; mods still create and open concrete windows themselves.
 
@@ -102,7 +104,7 @@ Achievements.Declare("com.example.my-mod", disableAchievements: true);
 bool disabled = Achievements.ShouldDisableAchievements();
 ```
 
-Not calling the API, or declaring `disableAchievements: false`, means that mod does not request achievement disabling. When multiple mods declare policies, any true wins. See `DSPCore/Achievements/README-EN.md` for the detailed cases.
+Not calling the API, or declaring `disableAchievements: false`, means that mod does not request achievement disabling. When multiple mods declare policies, any true wins. See `DSPCore/Authoring/Achievements/README-EN.md` for the detailed cases.
 
 ## Example: Build Bar
 
@@ -142,26 +144,26 @@ The old call is accepted, but it is marked obsolete. New mods should prefer `Ite
 ## Documentation
 
 - `README.md`
-- Feature examples use paired `Examples/<Scenario>.md` + `Examples/<Scenario>Example.cs` files. `.cs` examples are documentation artifacts and are excluded from compilation.
-- `DSPCore/Achievements/Examples/AchievementPolicyExample.cs`
-- `DSPCore/Achievements/Examples/AchievementPolicy.md`
-- `DSPCore/BuildBar/Examples/QuickBarBindingExample.cs`
-- `DSPCore/BuildBar/Examples/QuickBarBinding.md`
-- `DSPCore/Saves/Examples/SaveHandlerExample.cs`
-- `DSPCore/Saves/Examples/SaveHandler.md`
-- `DSPCore/Saves/Examples/SaveBlocksExample.cs`
-- `DSPCore/Saves/Examples/SaveBlocks.md`
-- `DSPCore/Icons/Examples/IconSetRegistrationExample.cs`
-- `DSPCore/Icons/Examples/IconSetRegistration.md`
-- `DSPCore/Tabs/Examples/TabRegistrationExample.cs`
-- `DSPCore/Tabs/Examples/TabRegistration.md`
-- `DSPCore/Pickers/Examples/PickerRequestExample.cs`
-- `DSPCore/Pickers/Examples/PickerRequest.md`
-- `DSPCore/RecipeTypes/Examples/RecipeTypeRegistrationExample.cs`
-- `DSPCore/RecipeTypes/Examples/RecipeTypeRegistration.md`
-- `DSPCore/ProtoRegistration/Examples/ProtoPhasesExample.cs`
-- `DSPCore/ProtoRegistration/Examples/ProtoPhases.md`
-- `DSPCore/Input/Examples/KeyBindRegistrationExample.cs`
-- `DSPCore/Input/Examples/KeyBindRegistration.md`
-- `DSPCore/UI/Examples/WindowScaffoldExample.cs`
-- `DSPCore/UI/Examples/WindowScaffold.md`
+- Capability examples use paired `Examples/<Scenario>.md` + `Examples/<Scenario>Example.cs` files. `.cs` examples are documentation artifacts and are excluded from compilation.
+- `DSPCore/Authoring/Achievements/Examples/AchievementPolicyExample.cs`
+- `DSPCore/Authoring/Achievements/Examples/AchievementPolicy.md`
+- `DSPCore/Authoring/BuildBar/Examples/QuickBarBindingExample.cs`
+- `DSPCore/Authoring/BuildBar/Examples/QuickBarBinding.md`
+- `DSPCore/Authoring/Saves/Examples/SaveHandlerExample.cs`
+- `DSPCore/Authoring/Saves/Examples/SaveHandler.md`
+- `DSPCore/Authoring/Saves/Examples/SaveBlocksExample.cs`
+- `DSPCore/Authoring/Saves/Examples/SaveBlocks.md`
+- `DSPCore/Authoring/Icons/Examples/IconSetRegistrationExample.cs`
+- `DSPCore/Authoring/Icons/Examples/IconSetRegistration.md`
+- `DSPCore/Authoring/Tabs/Examples/TabRegistrationExample.cs`
+- `DSPCore/Authoring/Tabs/Examples/TabRegistration.md`
+- `DSPCore/Systems/PickerSurfaces/Examples/PickerRequestExample.cs`
+- `DSPCore/Systems/PickerSurfaces/Examples/PickerRequest.md`
+- `DSPCore/Authoring/GameEnums/Examples/RecipeTypeRegistrationExample.cs`
+- `DSPCore/Authoring/GameEnums/Examples/RecipeTypeRegistration.md`
+- `DSPCore/Authoring/DataPhases/Examples/ProtoPhasesExample.cs`
+- `DSPCore/Authoring/DataPhases/Examples/ProtoPhases.md`
+- `DSPCore/Authoring/KeyBinds/Examples/KeyBindRegistrationExample.cs`
+- `DSPCore/Authoring/KeyBinds/Examples/KeyBindRegistration.md`
+- `DSPCore/Authoring/UI/Examples/WindowScaffoldExample.cs`
+- `DSPCore/Authoring/UI/Examples/WindowScaffold.md`
