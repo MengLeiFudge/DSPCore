@@ -117,6 +117,60 @@ public static class DspCore
     public static ErrorReporter Errors { get; } = new();
 
     /// <summary>
+    /// 全局实体组件注册表。
+    /// Global entity component registry.
+    /// </summary>
+    public static ComponentRegistry Components { get; } = new();
+
+    /// <summary>
+    /// 全局星球系统注册表。
+    /// Global planet system registry.
+    /// </summary>
+    public static PlanetSystemRegistry PlanetSystems { get; } = new();
+
+    /// <summary>
+    /// 全局建筑参数和蓝图参数注册表。
+    /// Global building and blueprint parameter registry.
+    /// </summary>
+    public static BuildingParameterRegistry Blueprints { get; } = new();
+
+    /// <summary>
+    /// 全局模型和预制体注册表。
+    /// Global model and prefab registry.
+    /// </summary>
+    public static ModelRegistry Models { get; } = new();
+
+    /// <summary>
+    /// 全局配置项注册表。
+    /// Global option registry.
+    /// </summary>
+    public static OptionRegistry Options { get; } = new();
+
+    /// <summary>
+    /// 全局可选联机桥注册表。
+    /// Global optional multiplayer bridge registry.
+    /// </summary>
+    public static MultiplayerRegistry Multiplayer { get; } = new();
+
+    /// <summary>
+    /// 全局网络查询注册表。
+    /// Global network query registry.
+    /// </summary>
+    public static NetworkRegistry Networks { get; } = new();
+
+    /// <summary>
+    /// 全局恒星系统注册表。
+    /// Global star system registry.
+    /// </summary>
+    public static StarSystemRegistry StarSystems { get; } = new();
+
+    /// <summary>
+    /// 全局银河系统注册表。
+    /// Global galaxy system registry.
+    /// </summary>
+    public static GalaxySystemRegistry GalaxySystems { get; } = new();
+
+    /// <summary>
     /// 初始化 DSPCore 的功能块和模块注册表。
     /// Initializes DSPCore feature blocks and module registries.
     /// </summary>
@@ -165,6 +219,14 @@ public static class DspCore
         RegisterFeature("core.saves", "Save sidecar bridge / 存档桥接", 40);
         RegisterFeature("core.achievements", "Achievement policy / 成就策略", 50);
         RegisterFeature("core.errors", "Error diagnostics / 错误诊断", 60);
+        RegisterFeature("core.components", "Entity component lifecycle / 实体组件生命周期", 70);
+        RegisterFeature("core.planet-systems", "Planet system lifecycle / 星球系统生命周期", 80);
+        RegisterFeature("core.blueprint-parameters", "Blueprint parameter blocks / 蓝图参数块", 90);
+        RegisterFeature("core.models", "Model and prefab augmentation / 模型和预制体扩展", 95);
+        RegisterFeature("core.options", "Config and option descriptors / 配置项描述", 96);
+        RegisterFeature("core.multiplayer", "Optional multiplayer bridge / 可选联机桥", 97);
+        RegisterFeature("core.networks", "Factory network queries / 工厂网络查询", 98);
+        RegisterFeature("core.galaxy-systems", "Star and galaxy lifecycle / 恒星和银河生命周期", 99);
         RegisterFeature("core.compat", "Feature compatibility shims / 功能块兼容", 100);
     }
 

@@ -78,9 +78,11 @@ internal static class ProtoRegistrationRuntime
             ItemProto.InitFighterIndices();
             ItemProto.InitPowerFacilityIndices();
             ItemProto.InitProductionMask();
+            ModelRuntime.Apply();
             ModelProto.InitMaxModelIndex();
             ModelProto.InitModelIndices();
             ModelProto.InitModelOrders();
+            ModelRuntime.RebuildPrefabDescArray();
             RecipeProto.InitRecipeItems();
             RecipeProto.InitFractionatorNeeds();
             RecipeTypeRuntime.Apply();

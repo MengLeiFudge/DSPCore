@@ -156,6 +156,14 @@ DSPCore.sln
 │   │   ├── GameEnums/       # vanilla enum extension direction, current recipe type guard API
 │   │   ├── Resources/       # resource and localization declarations
 │   │   ├── Saves/           # save abstraction and DSPModSave compatibility
+│   │   ├── Components/      # entity component descriptors and lifecycle base classes
+│   │   ├── Planets/         # planet factory system descriptors
+│   │   ├── Blueprints/      # tagged building parameter blocks
+│   │   ├── Models/          # model and prefab clone descriptors
+│   │   ├── Options/         # BepInEx config option descriptors
+│   │   ├── Multiplayer/     # optional multiplayer packet declarations
+│   │   ├── Networks/        # factory network query adapters
+│   │   ├── Galaxy/          # star and galaxy lifecycle descriptors
 │   │   ├── Tabs/            # tab slot declarations
 │   │   └── UI/              # common UI descriptors, windows, controls, grid layout, and theme helpers
 │   ├── Systems/             # lifecycle, projection, persistence, and patch bridges / 系统集成
@@ -169,6 +177,14 @@ DSPCore.sln
 │   │   ├── GameEnumProjection/ # current recipe type guards and future enum patching
 │   │   ├── KeyBindProjection/ # key polling and callbacks
 │   │   ├── SaveBridge/      # sidecar saves and legacy handler bridge
+│   │   ├── EntityLifecycle/ # entity component runtime and preloader field access
+│   │   ├── PlanetLifecycle/ # planet factory system runtime
+│   │   ├── BlueprintParameters/ # copy-paste and blueprint tagged parameter runtime
+│   │   ├── ModelProjection/ # model/prefab clone application and cache rebuild
+│   │   ├── Options/         # BepInEx config binding
+│   │   ├── Multiplayer/     # optional multiplayer detection
+│   │   ├── GalaxyLifecycle/ # star and galaxy runtime lifecycle
+│   │   ├── PatchPlatform/   # conditional patch declaration application
 │   │   ├── AchievementPolicy/ # achievement and platform policy patches
 │   │   ├── ErrorWindow/     # error logging and fatal-window bridge
 │   │   └── UiRuntime/       # UI window lifecycle patches
@@ -183,8 +199,8 @@ DSPCore.sln
 - The current implementation includes P0/P1 runtime bridges, not just author-facing API skeletons.
 - 当前实现已包含 P0/P1 运行时桥接，不再只是作者可见 API 骨架。
 
-- Implemented runtime bridges: BepInEx/Harmony startup, Factorio-like `Data` / `DataUpdates` / `DataFinalFixes` proto phase callbacks and proto insertion near `VFPreload.InvokeOnLoadWorkEnded`, multi-row build bar binding, DSPCore-owned player build-bar overrides, RebindBuildBar `CustomBarBind.cfg` import, resource/icon loading, item/recipe/replicator/signal/tag-icon tab projection, item/recipe/signal picker popups, live filtering, duplicate `GridIndex` fallback, dynamic picker row/column expansion, custom recipe type guards and pre-selection assembler recipe filtering, key callbacks, `.dspcore` sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error logging/fatal-window buttons, localization entries, and common UI window lifecycle forwarding.
-- 已实现运行时桥接：BepInEx/Harmony 启动、类似 Factorio `Data` / `DataUpdates` / `DataFinalFixes` 的 Proto 阶段回调和 `VFPreload.InvokeOnLoadWorkEnded` 附近的 Proto 写入、多行建造栏绑定、DSPCore 自有玩家建造栏覆盖、RebindBuildBar `CustomBarBind.cfg` 导入、资源/图标加载、物品/配方/制造器/信号/标签图标分页投射、物品/配方/信号选择器弹窗、实时过滤、重复 `GridIndex` 兜底、选择器动态行列扩容、自定义配方类型限制与制作器配方选择前过滤、按键回调、`.dspcore` 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误日志/错误窗口按钮、本地化条目，以及通用 UI 窗口生命周期转发。
+- Implemented runtime bridges: BepInEx/Harmony startup, real preloader field injection for `EntityData` / `PrefabDesc` and `ERecipeType.Custom`, Factorio-like `Data` / `DataUpdates` / `DataFinalFixes` proto phase callbacks and proto insertion near `VFPreload.InvokeOnLoadWorkEnded`, multi-row build bar binding, DSPCore-owned player build-bar overrides, RebindBuildBar `CustomBarBind.cfg` import, resource/icon loading, item/recipe/replicator/signal/tag-icon tab projection, item/recipe/signal picker popups, live filtering, duplicate `GridIndex` fallback, dynamic picker row/column expansion, custom recipe type guards and pre-selection assembler recipe filtering, key callbacks, `.dspcore` sidecar saves, legacy DSPModSave handler bridging, entity component lifecycle, planet/star/galaxy lifecycle, blueprint parameter blocks, model/prefab cloning, option binding, optional multiplayer detection and packet declarations, network query adapters, conditional patch platform, achievement/abnormality/platform policy patches, error logging/fatal-window buttons, localization entries, and common UI window lifecycle forwarding.
+- 已实现运行时桥接：BepInEx/Harmony 启动、面向 `EntityData` / `PrefabDesc` 和 `ERecipeType.Custom` 的真实 Preloader 字段注入、类似 Factorio `Data` / `DataUpdates` / `DataFinalFixes` 的 Proto 阶段回调和 `VFPreload.InvokeOnLoadWorkEnded` 附近的 Proto 写入、多行建造栏绑定、DSPCore 自有玩家建造栏覆盖、RebindBuildBar `CustomBarBind.cfg` 导入、资源/图标加载、物品/配方/制造器/信号/标签图标分页投射、物品/配方/信号选择器弹窗、实时过滤、重复 `GridIndex` 兜底、选择器动态行列扩容、自定义配方类型限制与制作器配方选择前过滤、按键回调、`.dspcore` 独立存档、旧 DSPModSave 处理器桥接、实体组件生命周期、星球/恒星/银河生命周期、蓝图参数块、模型/预制体克隆、配置项绑定、可选联机检测和 packet 声明、网络查询适配器、条件补丁平台、成就/异常/平台策略补丁、错误日志/错误窗口按钮、本地化条目，以及通用 UI 窗口生命周期转发。
 
 - UI owns common framework pieces only: descriptors, Unity window lifecycle helpers, reusable controls, declarative grid layout, and theme/card helpers. Concrete feature pages, business navigation, unlock logic, save state, and mod-specific panels stay in the owning authoring capability, owning system, or mod.
 - UI 只负责通用框架件：描述对象、Unity 窗口生命周期辅助、可复用控件、声明式网格布局和主题/卡片辅助。具体功能页面、业务导航、解锁逻辑、存档状态和模组专属面板留在所属作者能力、所属系统或业务模组中。
@@ -201,8 +217,17 @@ DSPCore.sln
 - Tabs own page declaration and `TabSlot` allocation. `GridIndex` remains the native item/recipe cell field on `ItemProto` and `RecipeProto`; use ProtoRegistration/GridIndexes helpers to build `GridIndex` values from `TabSlot`, row, and index.
 - Tabs 负责页面声明和 `TabSlot` 分配。`GridIndex` 仍是 `ItemProto` / `RecipeProto` 的游戏原生格子字段；用 ProtoRegistration/GridIndexes 辅助方法从 `TabSlot`、行号和格子号生成 `GridIndex`。
 
-- P2/P3 features such as custom machine components, planet/star systems, network helpers, and player convenience modules are not implemented.
-- 自定义机器组件、星球/恒星系统、网络工具和玩家便利模块等 P2/P3 功能尚未实现。
+- P2/P3 framework blocks now include custom entity components, planet/star/galaxy systems, blueprint parameter blocks, model/prefab cloning, option descriptors, optional multiplayer declarations, network query adapters, and a conditional patch platform. Player convenience modules such as RecipeFinder, FreeMechaCustom, and AssemblerUI-style panels are still outside core.
+- P2/P3 框架块当前已包含自定义实体组件、星球/恒星/银河系统、蓝图参数块、模型/预制体克隆、配置项描述、可选联机声明、网络查询适配器和条件补丁平台。RecipeFinder、FreeMechaCustom、AssemblerUI 风格面板等玩家便利模块仍未进入核心。
+
+- Preloader-injected fields are auxiliary interoperability markers. Runtime code must not compile directly against those injected fields because the referenced dumped `Assembly-CSharp.dll` may not contain them; use `InjectedFieldAccess` or reflection helpers instead.
+- Preloader 注入字段是辅助互操作 marker。运行时代码不能直接编译期访问这些注入字段，因为当前引用的 dumped `Assembly-CSharp.dll` 可能没有对应字段；必须使用 `InjectedFieldAccess` 或反射辅助层。
+
+- Blueprint parameter extensions must use DSPCore tagged blocks appended to `BuildingParameters.parameters`; do not reserve fixed vanilla parameter slots for a mod-specific feature.
+- 蓝图参数扩展必须使用追加到 `BuildingParameters.parameters` 的 DSPCore tagged block；不要为单个模组功能预留固定原版参数槽位。
+
+- Optional multiplayer support must stay soft in the main DSPCore project. Do not add a hard Nebula reference unless a separate adapter project or explicit dependency decision is added. The main project may declare packet, host relay, planet data request, and client missing-save boundaries for an adapter to consume.
+- 主 DSPCore 项目的可选联机支持必须保持软依赖。除非新增独立适配项目或明确依赖决策，不要添加 Nebula 硬引用。主项目可以声明 packet、host relay、planet data request 和 client missing-save 边界，供适配器消费。
 
 - RebindBuildBar compatibility imports `BuildBarBinds` from `CustomBarBind.cfg` into DSPCore row-1 player overrides when no DSPCore BuildBar save data exists. DSPCore does not take over RebindBuildBar's rebinding UI, hotkeys, or later config writes.
 - RebindBuildBar 兼容会在没有 DSPCore BuildBar 存档数据时，把 `CustomBarBind.cfg` 里的 `BuildBarBinds` 导入 DSPCore 第 1 行玩家覆盖层。DSPCore 不接管 RebindBuildBar 自己的重绑 UI、快捷键或后续配置写回。

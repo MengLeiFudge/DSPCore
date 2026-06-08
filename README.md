@@ -18,7 +18,7 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 ## 项目结构
 
 - `DSPCore/`：主 BepInEx 插件项目，内部拆成 `Authoring/` 作者能力和 `Systems/` 系统集成两片。
-- `DSPCore/Authoring/`：模组作者直接调用的能力，例如 Core、DataPhases、ProtoAccess、Items、Recipes、Techs、Tutorials、Tabs、BuildBar、Resources、Icons、GameEnums、KeyBinds、Saves、Achievements 和 UI。
+- `DSPCore/Authoring/`：模组作者直接调用的能力，例如 Core、DataPhases、ProtoAccess、Items、Recipes、Techs、Tutorials、Tabs、BuildBar、Resources、Icons、GameEnums、KeyBinds、Saves、Achievements、Components、Planets、Blueprints、Models、Options、Multiplayer、Networks、Galaxy 和 UI。
 - `DSPCore/Systems/`：DSPCore 对作者声明的运行时处理，例如生命周期、Proto pipeline、分页投射、选择器 surface、快捷栏投射、资源加载、存档桥、成就策略和错误窗口。
 - `DSPCore.Preloader/`：BepInEx patchers 项目，用于游戏程序集加载前 patch。
 - `DSPCore.Packaging/`：Thunderstore 打包项目。
@@ -29,7 +29,7 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 - 提供 `xiaoye97.LDBTool`、`crecheng.DSPModSave`、`CommonAPI` 和 `BuildBarTool` 的旧 API 兼容层；兼容代码按所属作者能力放入 `Authoring/<Capability>/Compat/`，不再使用集中式 `Legacy/` 目录。
 - 公开 API 提供中英文 XML summary。
 
-当前版本已接入 P0/P1 运行时桥接：BepInEx/Harmony 启动、Proto 写入、多行建造栏绑定、玩家覆盖、RebindBuildBar 配置导入、资源/图标加载、物品/配方/制造器/信号/标签图标分页、选择器弹窗和实时过滤、自定义配方类型选择前过滤、按键回调、DSPCore 独立存档、旧 DSPModSave 处理器桥接、成就/异常/平台策略补丁、错误报告、错误窗口复制/关闭按钮、本地化条目和通用 UI 窗口生命周期转发。
+当前版本已接入 P0/P1 和第一批 P2/P3 运行时桥接：BepInEx/Harmony 启动、Preloader 字段注入、Proto 写入、多行建造栏绑定、玩家覆盖、RebindBuildBar 配置导入、资源/图标加载、物品/配方/制造器/信号/标签图标分页、选择器弹窗和实时过滤、自定义配方类型选择前过滤、按键回调、DSPCore 独立存档、旧 DSPModSave 处理器桥接、实体组件生命周期、星球/恒星/银河系统生命周期、蓝图参数块、模型和预制体克隆、配置项绑定、可选联机软桥、网络查询适配器、补丁平台、成就/异常/平台策略补丁、错误报告、错误窗口复制/关闭按钮、本地化条目和通用 UI 窗口生命周期转发。
 
 ## 功能块
 
@@ -44,6 +44,12 @@ P0/P1 是当前实现目标。
 - 存档：原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
 - 成就策略：声明是否影响银河系/排行榜上传等策略。错误窗口和错误收集属于 DSPCore 系统实现。
 - UI 框架：窗口生命周期、标签页窗口、基础控件、声明式网格布局和主题卡片辅助；不包含具体业务页面。
+- 实体组件：按 item id、model index 或 `PrefabDesc` 条件给实体挂自定义组件，转发移除、tick 和存档。
+- 星球/恒星/银河系统：按 `PlanetFactory`、`StarData` 或 `GalaxyData` 创建系统实例并转发生命周期。
+- 蓝图参数：用 tagged block 避免多个模组抢 `BuildingParameters.parameters` 固定槽位。
+- 模型和预制体：从已有 `ModelProto` 克隆新模型，配置独立 `PrefabDesc`，并重建模型派生缓存。
+- 配置、联机和网络：提供 BepInEx 配置绑定、设置页面和设置版本描述、Nebula 软检测、packet/host relay/planet data/client save 声明、工厂网络查询适配器。
+- 补丁平台：集中声明条件补丁、必需插件 GUID/version、禁用原因和应用失败报告。
 
 ## 运行时状态
 
@@ -62,6 +68,15 @@ P0/P1 是当前实现目标。
 - `ErrorWindow` 会接收 Unity fatal/error 日志和错误窗口事件。
 - `ResourceRegistry.RegisterLocalization` 会写入 DSP 本地化 key 和语言字符串。
 - `UiWindowManager` 会在 `UIRoot` 打开、更新和销毁时转发 DSPCore 窗口生命周期；具体窗口由模组自己创建和打开。
+- `Components` 会在 `PlanetFactory.CreateEntityLogicComponents` 后按描述创建组件，并在实体移除、电力 tick、工厂 tick 和后置阶段转发回调；组件数据写入 `.dspcore`，未加载星球的数据会延迟到 `GameData.GetOrCreateFactory` 后恢复。
+- `Planets` 会在 `GameData.GetOrCreateFactory` 后为每个 `PlanetFactory` 创建星球系统，并转发本地星球绘制、电力 tick、工厂 tick 和后置阶段。
+- `Blueprints` 会把作者参数块编码到 `BuildingParameters` 参数数组尾部，在复制、蓝图、粘贴和预建筑落地链路中保持 block ID。
+- `Models` 会在最终 Proto 派生缓存重建前克隆 `ModelProto` 和 `PrefabDesc`，然后重建 `ModelProto` 索引和 `PlanetFactory.PrefabDescByModelIndex`。
+- `Options` 会把作者声明的字符串配置项绑定到 DSPCore 的 BepInEx 配置文件，并保存设置页面和设置版本描述。
+- `Multiplayer` 当前检测 Nebula 是否加载，并保存 packet、host relay、planet data request 和 client missing-save 声明；真实 Nebula 发送由专门适配器接入。
+- `Networks` 提供 `TryGetCommonNetwork(...)` 和 `IsConnectedToNetwork(...)` 查询表面，具体网络扫描由注册适配器提供。
+- `Galaxy` 会在银河数据存在后创建恒星/银河系统，并在 `SpaceSector.GameTick` 转发更新和 sidecar 存档。
+- `PatchRuntime` 会应用 `PatchDescriptor` 声明的条件补丁，记录禁用原因和失败异常。
 
 当前运行时限制：
 
@@ -70,8 +85,9 @@ P0/P1 是当前实现目标。
 - 选择器行列数由运行时汇总 `GridIndex` 后计算；DSPCore 会以当前 UI surface 的实际尺寸为基准，统计所有相关物品、配方或信号格子需要的最大行列，并同步扩展数组、材质、鼠标命中和显示尺寸。模组不需要也不能单独声明 picker 长宽。
 - UI 框架只提供通用架子，不注册具体页面、业务导航、解锁条件或存档状态。
 - 当前 Proto 阶段挂点是保守的第一版桥接，不是最终 VFPreload 中段生命周期。
-
-P2/P3 的自定义机器组件、星球/恒星系统、网络工具和玩家便利模块仍是 TODO，尚未实现。
+- 可选联机桥当前不直接发送 Nebula packet；需要专门 Nebula 适配器读取 DSPCore multiplayer registry。
+- 网络模块当前是查询适配平台，不内置所有原版或第三方网络扫描。
+- 玩家便利模块，例如 RecipeFinder、FreeMechaCustom、AssemblerUI 风格功能，仍未并入核心。
 
 ## 示例：原型三阶段注册
 
@@ -167,3 +183,19 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 - `DSPCore/Authoring/KeyBinds/Examples/KeyBindRegistration.md`
 - `DSPCore/Authoring/UI/Examples/WindowScaffoldExample.cs`
 - `DSPCore/Authoring/UI/Examples/WindowScaffold.md`
+- `DSPCore/Authoring/Components/Examples/EntityComponentExample.cs`
+- `DSPCore/Authoring/Components/Examples/EntityComponent.md`
+- `DSPCore/Authoring/Planets/Examples/PlanetSystemExample.cs`
+- `DSPCore/Authoring/Planets/Examples/PlanetSystem.md`
+- `DSPCore/Authoring/Blueprints/Examples/BuildingParametersExample.cs`
+- `DSPCore/Authoring/Blueprints/Examples/BuildingParameters.md`
+- `DSPCore/Authoring/Models/Examples/CloneModelExample.cs`
+- `DSPCore/Authoring/Models/Examples/CloneModel.md`
+- `DSPCore/Authoring/Options/Examples/OptionRegistrationExample.cs`
+- `DSPCore/Authoring/Options/Examples/OptionRegistration.md`
+- `DSPCore/Authoring/Multiplayer/Examples/SoftPacketExample.cs`
+- `DSPCore/Authoring/Multiplayer/Examples/SoftPacket.md`
+- `DSPCore/Authoring/Networks/Examples/CommonNetworkExample.cs`
+- `DSPCore/Authoring/Networks/Examples/CommonNetwork.md`
+- `DSPCore/Authoring/Galaxy/Examples/GalaxyLifecycleExample.cs`
+- `DSPCore/Authoring/Galaxy/Examples/GalaxyLifecycle.md`

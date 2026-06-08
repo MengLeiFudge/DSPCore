@@ -33,8 +33,13 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
     private void Awake()
     {
         DspCore.InitializeRuntime(Logger);
+        OptionRuntime.Initialize(Config);
+        MultiplayerRuntime.Initialize();
         ErrorRuntime.Initialize();
         BuildBarRuntime.Initialize();
+        EntityLifecycleRuntime.Initialize();
+        PlanetLifecycleRuntime.Initialize();
+        GalaxyLifecycleRuntime.Initialize();
         SaveRuntime.RegisterLegacyHandlers();
         harmony = new Harmony(PluginGuid);
         harmony.PatchAll(typeof(ProtoRegistrationRuntimePatches));
@@ -47,6 +52,11 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
         harmony.PatchAll(typeof(PickerRuntimePatches));
         harmony.PatchAll(typeof(RecipeTypeRuntimePatches));
         harmony.PatchAll(typeof(UiWindowRuntimePatches));
+        harmony.PatchAll(typeof(EntityLifecycleRuntimePatches));
+        harmony.PatchAll(typeof(PlanetLifecycleRuntimePatches));
+        harmony.PatchAll(typeof(BuildingParameterRuntimePatches));
+        harmony.PatchAll(typeof(GalaxyLifecycleRuntimePatches));
+        PatchRuntime.ApplyRegisteredPatches(harmony);
         Logger.LogInfo("DSPCore runtime bridges are initialized.");
     }
 

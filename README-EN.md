@@ -18,7 +18,7 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods.
 ## Project Layout
 
 - `DSPCore/`: main BepInEx plugin project, split into `Authoring/` capabilities and `Systems/` integrations.
-- `DSPCore/Authoring/`: capabilities mod authors call directly, such as Core, DataPhases, ProtoAccess, Items, Recipes, Techs, Tutorials, Tabs, BuildBar, Resources, Icons, GameEnums, KeyBinds, Saves, Achievements, and UI.
+- `DSPCore/Authoring/`: capabilities mod authors call directly, such as Core, DataPhases, ProtoAccess, Items, Recipes, Techs, Tutorials, Tabs, BuildBar, Resources, Icons, GameEnums, KeyBinds, Saves, Achievements, Components, Planets, Blueprints, Models, Options, Multiplayer, Networks, Galaxy, and UI.
 - `DSPCore/Systems/`: runtime handling for author declarations, such as lifecycle, proto pipeline, tab projection, picker surfaces, quick bar projection, resource loading, save bridge, achievement policy, and error window handling.
 - `DSPCore.Preloader/`: BepInEx patchers project for pre-load game assembly patches.
 - `DSPCore.Packaging/`: Thunderstore packaging project.
@@ -29,7 +29,7 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods.
 - Legacy compatibility shims for `xiaoye97.LDBTool`, `crecheng.DSPModSave`, `CommonAPI`, and `BuildBarTool`; compatibility code lives under the owning `Authoring/<Capability>/Compat/` directory instead of a centralized `Legacy/` directory.
 - Bilingual XML summaries for public APIs.
 
-The current version includes P0/P1 runtime bridges: BepInEx/Harmony startup, proto insertion, multi-row build bar binding, player overrides, RebindBuildBar configuration import, resource/icon loading, tabs for item/recipe/replicator/signal/tag-icon surfaces, picker popups and live filtering, custom recipe type pre-selection filtering, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, achievement/abnormality/platform policy patches, error reporting, fatal-window copy/close buttons, localization entries, and common UI window lifecycle forwarding.
+The current version includes P0/P1 and first P2/P3 runtime bridges: BepInEx/Harmony startup, preloader field injection, proto insertion, multi-row build bar binding, player overrides, RebindBuildBar configuration import, resource/icon loading, tabs for item/recipe/replicator/signal/tag-icon surfaces, picker popups and live filtering, custom recipe type pre-selection filtering, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, entity component lifecycle, planet/star/galaxy lifecycle, blueprint parameter blocks, model and prefab cloning, option binding, optional multiplayer soft bridge, network query adapters, patch platform, achievement/abnormality/platform policy patches, error reporting, fatal-window copy/close buttons, localization entries, and common UI window lifecycle forwarding.
 
 ## Feature Blocks
 
@@ -44,6 +44,12 @@ P0/P1 blocks are the current implementation target.
 - Saves: raw `BinaryReader`/`BinaryWriter` handlers and tagged block helpers.
 - Achievement policies: declare policy effects such as Milky Way / leaderboard upload blocking. Error window and error collection belong to DSPCore systems.
 - UI framework: window lifecycle helpers, tabbed windows, base controls, declarative grid layout, and theme/card helpers; concrete business pages are not included.
+- Entity components: attach custom components to entities by item id, model index, or `PrefabDesc`, then forward removal, ticks, and saves.
+- Planet/star/galaxy systems: create systems for `PlanetFactory`, `StarData`, or `GalaxyData` and forward lifecycle callbacks.
+- Blueprint parameters: use tagged blocks so multiple mods do not compete for fixed `BuildingParameters.parameters` slots.
+- Models and prefabs: clone existing `ModelProto` entries, configure independent `PrefabDesc` instances, and rebuild model derived caches.
+- Options, multiplayer, and networks: provide BepInEx config binding, option page and settings version descriptors, Nebula soft detection, packet/host relay/planet data/client save declarations, and factory network query adapters.
+- Patch platform: centralize conditional patch declarations, required plugin GUID/version checks, disabled reasons, and apply failure reporting.
 
 ## Runtime Status
 
@@ -62,6 +68,15 @@ Implemented runtime bridges:
 - `ErrorWindow` receives Unity fatal/error logs and fatal-window events.
 - `ResourceRegistry.RegisterLocalization` is applied to DSP localization keys and language strings.
 - `UiWindowManager` forwards DSPCore window lifecycle through `UIRoot` open, update, and destroy events; mods still create and open concrete windows themselves.
+- `Components` creates components after `PlanetFactory.CreateEntityLogicComponents`, then forwards entity removal, power ticks, factory ticks, and post phases. Component data is stored in `.dspcore`; data for unloaded planet factories is restored after `GameData.GetOrCreateFactory`.
+- `Planets` creates planet systems after `GameData.GetOrCreateFactory` and forwards local planet rendering, power ticks, factory ticks, and post phases.
+- `Blueprints` encodes author parameter blocks at the end of `BuildingParameters` arrays and preserves block IDs across copy, blueprints, paste, and prebuild apply.
+- `Models` clones `ModelProto` and `PrefabDesc` before final derived cache rebuilds, then rebuilds `ModelProto` indices and `PlanetFactory.PrefabDescByModelIndex`.
+- `Options` binds author-declared string options to the DSPCore BepInEx config file and stores option page and settings version descriptors.
+- `Multiplayer` currently detects whether Nebula is loaded and stores packet, host relay, planet data request, and client missing-save declarations. Actual Nebula sending belongs to a dedicated adapter.
+- `Networks` provides the `TryGetCommonNetwork(...)` and `IsConnectedToNetwork(...)` query surfaces; concrete scanning is supplied by registered adapters.
+- `Galaxy` creates star and galaxy systems after galaxy data exists, then forwards `SpaceSector.GameTick` updates and sidecar saves.
+- `PatchRuntime` applies conditional `PatchDescriptor` declarations and records disabled reasons or apply failures.
 
 Current runtime limits:
 
@@ -70,8 +85,9 @@ Current runtime limits:
 - Picker row and column counts are computed from runtime `GridIndex` data. DSPCore starts from the current UI surface's real dimensions, then scans the relevant item, recipe, or signal cells to find the largest required row/column count and expands arrays, materials, mouse hit testing, and visible size together. Mods do not declare picker width or height separately.
 - The UI framework provides common scaffolding only. It does not register concrete pages, business navigation, unlock conditions, or save state.
 - The proto phase hook is a conservative first bridge, not the final VFPreload mid-stage lifecycle.
-
-P2/P3 blocks such as custom machine components, planet/star systems, network helpers, and player convenience modules are TODO and not implemented yet.
+- The optional multiplayer bridge does not directly send Nebula packets yet; a dedicated Nebula adapter should read DSPCore's multiplayer registry.
+- The network module is currently a query adapter platform, not a built-in scanner for every vanilla or third-party network.
+- Player convenience modules such as RecipeFinder, FreeMechaCustom, and AssemblerUI-style features are still outside the core.
 
 ## Example: Proto Phase Registration
 
@@ -167,3 +183,19 @@ The old call is accepted, but it is marked obsolete. New mods should prefer `Ite
 - `DSPCore/Authoring/KeyBinds/Examples/KeyBindRegistration.md`
 - `DSPCore/Authoring/UI/Examples/WindowScaffoldExample.cs`
 - `DSPCore/Authoring/UI/Examples/WindowScaffold.md`
+- `DSPCore/Authoring/Components/Examples/EntityComponentExample.cs`
+- `DSPCore/Authoring/Components/Examples/EntityComponent.md`
+- `DSPCore/Authoring/Planets/Examples/PlanetSystemExample.cs`
+- `DSPCore/Authoring/Planets/Examples/PlanetSystem.md`
+- `DSPCore/Authoring/Blueprints/Examples/BuildingParametersExample.cs`
+- `DSPCore/Authoring/Blueprints/Examples/BuildingParameters.md`
+- `DSPCore/Authoring/Models/Examples/CloneModelExample.cs`
+- `DSPCore/Authoring/Models/Examples/CloneModel.md`
+- `DSPCore/Authoring/Options/Examples/OptionRegistrationExample.cs`
+- `DSPCore/Authoring/Options/Examples/OptionRegistration.md`
+- `DSPCore/Authoring/Multiplayer/Examples/SoftPacketExample.cs`
+- `DSPCore/Authoring/Multiplayer/Examples/SoftPacket.md`
+- `DSPCore/Authoring/Networks/Examples/CommonNetworkExample.cs`
+- `DSPCore/Authoring/Networks/Examples/CommonNetwork.md`
+- `DSPCore/Authoring/Galaxy/Examples/GalaxyLifecycleExample.cs`
+- `DSPCore/Authoring/Galaxy/Examples/GalaxyLifecycle.md`
