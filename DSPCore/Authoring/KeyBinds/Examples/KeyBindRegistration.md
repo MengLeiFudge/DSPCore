@@ -12,7 +12,7 @@
 - `Id`：稳定按键 ID。
 - `DefaultKey`：默认按键，当前支持单键和简单 `Ctrl`、`Alt`、`Shift` 修饰。
 - `Action`：触发动作，例如按下。
-- `ConflictGroup`：冲突分组。
+- `ConflictGroup`：冲突分组；为 0 时不检测，非 0 时同组同键会在统一设置窗口提示。
 - `CanOverride`：为 true 时自动生成设置窗口里的按键配置行。
 - `Callback`：触发后的回调。
 
@@ -24,6 +24,6 @@
 
 - 不要在回调里执行昂贵扫描。
 - 不要期待当前版本自动捕获“按下任意键”；玩家需要输入类似 `Ctrl+E`、`Alt+E` 或 `E` 的文本。
-- 不要期待 `ConflictGroup` 自动解决冲突；当前只作为显示和后续检测数据。
+- 不要期待 `ConflictGroup` 自动解决冲突；它只提示同组同键，具体改成哪个键仍由玩家或模组作者决定。
 
 代码示例见 `KeyBindRegistrationExample.cs`。

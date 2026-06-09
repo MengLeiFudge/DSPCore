@@ -78,6 +78,18 @@ internal static class KeyBindRuntime
         return TryParseKeyBinding(keyText, out _);
     }
 
+    internal static bool TryNormalizeKeyText(string keyText, out string normalized)
+    {
+        if (!TryParseKeyBinding(keyText, out var keyBinding))
+        {
+            normalized = string.Empty;
+            return false;
+        }
+
+        normalized = keyBinding.ToDisplayText();
+        return true;
+    }
+
     private static bool TryParseKeyBinding(string keyText, out KeyBinding keyBinding)
     {
         var primaryKeyText = keyText;
@@ -153,6 +165,28 @@ internal static class KeyBindRuntime
             return HasModifier(KeyModifiers.Control, KeyCode.LeftControl, KeyCode.RightControl) &&
                 HasModifier(KeyModifiers.Alt, KeyCode.LeftAlt, KeyCode.RightAlt) &&
                 HasModifier(KeyModifiers.Shift, KeyCode.LeftShift, KeyCode.RightShift);
+        }
+
+        public string ToDisplayText()
+        {
+            var parts = new List<string>();
+            if ((Modifiers & KeyModifiers.Control) != 0)
+            {
+                parts.Add("Ctrl");
+            }
+
+            if ((Modifiers & KeyModifiers.Alt) != 0)
+            {
+                parts.Add("Alt");
+            }
+
+            if ((Modifiers & KeyModifiers.Shift) != 0)
+            {
+                parts.Add("Shift");
+            }
+
+            parts.Add(KeyCode.ToString());
+            return string.Join("+", parts);
         }
 
         private bool HasModifier(KeyModifiers modifier, KeyCode left, KeyCode right)

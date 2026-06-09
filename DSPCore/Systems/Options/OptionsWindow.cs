@@ -99,7 +99,8 @@ internal sealed class OptionsWindow : UiWindow
         float controlX = LabelWidth + DescriptionWidth + Gap * 2f;
         float controlWidth = Math.Max(160f, root.sizeDelta.x - controlX);
         window.AddText2(0f, height / 2f, root, option.DisplayName ?? option.Key, UiPageLayout.BodyFontSize);
-        window.AddText2(LabelWidth + Gap, height / 2f, root, option.Description, UiPageLayout.BodyFontSize);
+        var descriptionText = window.AddText2(LabelWidth + Gap, height / 2f, root, GetOptionDescription(option), UiPageLayout.BodyFontSize);
+        descriptionText.rectTransform.sizeDelta = new Vector2(DescriptionWidth, descriptionText.rectTransform.sizeDelta.y);
 
         if (option.Kind == OptionValueKind.Bool)
         {
@@ -156,6 +157,7 @@ internal sealed class OptionsWindow : UiWindow
             }
 
             OptionRuntime.SetString(option.Section, option.Key, value);
+            descriptionText.text = GetOptionDescription(option).Translate();
         });
     }
 
@@ -216,6 +218,13 @@ internal sealed class OptionsWindow : UiWindow
             OptionValueKind.KeyBinding => KeyBindRuntime.IsValidKeyText(value),
             _ => true
         };
+    }
+
+    private static string GetOptionDescription(OptionDescriptor option)
+    {
+        return option.Kind == OptionValueKind.KeyBinding
+            ? KeyBinds.BuildOptionDescription(option)
+            : option.Description;
     }
 
     private abstract record RowModel(float Height)

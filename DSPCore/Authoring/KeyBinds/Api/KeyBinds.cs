@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DSPCore;
 
@@ -48,6 +49,20 @@ public static class KeyBinds
         return string.IsNullOrWhiteSpace(value) ? descriptor.DefaultKey : value;
     }
 
+    internal static string BuildOptionDescription(OptionDescriptor option)
+    {
+        if (!TryGetDescriptor(option.Section, option.Key, out var descriptor))
+        {
+            return option.Description;
+        }
+
+        var description = BuildDescription(descriptor);
+        var conflictText = BuildConflictText(descriptor);
+        return string.IsNullOrEmpty(conflictText)
+            ? description
+            : description + "; <color=#ffb347>" + conflictText + "</color>";
+    }
+
     private static string GetOptionSection(KeyBindDescriptor descriptor)
     {
         return "KeyBinds." + descriptor.OwnerModGuid;
@@ -63,5 +78,53 @@ public static class KeyBinds
         return descriptor.ConflictGroup == 0
             ? $"Default: {descriptor.DefaultKey}"
             : $"Default: {descriptor.DefaultKey}; conflict group: {descriptor.ConflictGroup}";
+    }
+
+    private static bool TryGetDescriptor(string section, string key, out KeyBindDescriptor descriptor)
+    {
+        foreach (var candidate in DspCore.KeyBinds.GetAll())
+        {
+            if (candidate.CanOverride &&
+                GetOptionSection(candidate).Equals(section, System.StringComparison.Ordinal) &&
+                GetOptionKey(candidate).Equals(key, System.StringComparison.Ordinal))
+            {
+                descriptor = candidate;
+                return true;
+            }
+        }
+
+        descriptor = default!;
+        return false;
+    }
+
+    private static string BuildConflictText(KeyBindDescriptor descriptor)
+    {
+        if (descriptor.ConflictGroup == 0 || !TryGetEffectiveKeyText(descriptor, out var keyText))
+        {
+            return string.Empty;
+        }
+
+        var conflicts = DspCore.KeyBinds.GetAll()
+            .Where(candidate => !candidate.Id.Equals(descriptor.Id, System.StringComparison.Ordinal))
+            .Where(candidate => candidate.ConflictGroup == descriptor.ConflictGroup)
+            .Where(candidate => TryGetEffectiveKeyText(candidate, out var candidateKeyText) && candidateKeyText.Equals(keyText, System.StringComparison.Ordinal))
+            .Select(candidate => $"{candidate.DisplayName} ({candidate.OwnerModGuid})")
+            .ToArray();
+
+        return conflicts.Length == 0
+            ? string.Empty
+            : "conflicts with " + string.Join(", ", conflicts);
+    }
+
+    private static bool TryGetEffectiveKeyText(KeyBindDescriptor descriptor, out string keyText)
+    {
+        var configured = descriptor.CanOverride ? GetConfiguredKeyText(descriptor) : descriptor.DefaultKey;
+        if (KeyBindRuntime.TryNormalizeKeyText(configured, out keyText))
+        {
+            return true;
+        }
+
+        return !configured.Equals(descriptor.DefaultKey, System.StringComparison.OrdinalIgnoreCase) &&
+            KeyBindRuntime.TryNormalizeKeyText(descriptor.DefaultKey, out keyText);
     }
 }
