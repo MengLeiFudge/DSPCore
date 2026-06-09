@@ -90,6 +90,39 @@ internal static class KeyBindRuntime
         return true;
     }
 
+    internal static bool TryCaptureCurrentKey(out string keyText)
+    {
+        foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
+        {
+            if (IsModifierKey(keyCode) || !Input.GetKeyDown(keyCode))
+            {
+                continue;
+            }
+
+            var modifiers = KeyModifiers.None;
+            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+            {
+                modifiers |= KeyModifiers.Control;
+            }
+
+            if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+            {
+                modifiers |= KeyModifiers.Alt;
+            }
+
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+            {
+                modifiers |= KeyModifiers.Shift;
+            }
+
+            keyText = new KeyBinding(keyCode, modifiers).ToDisplayText();
+            return true;
+        }
+
+        keyText = string.Empty;
+        return false;
+    }
+
     private static bool TryParseKeyBinding(string keyText, out KeyBinding keyBinding)
     {
         var primaryKeyText = keyText;
@@ -137,6 +170,16 @@ internal static class KeyBindRuntime
         }
 
         DspCore.Logger?.LogWarning($"Key binding {descriptor.Id} from {descriptor.OwnerModGuid} has invalid key text '{keyText}'. Falling back to '{descriptor.DefaultKey}'.");
+    }
+
+    private static bool IsModifierKey(KeyCode keyCode)
+    {
+        return keyCode == KeyCode.LeftControl ||
+            keyCode == KeyCode.RightControl ||
+            keyCode == KeyCode.LeftAlt ||
+            keyCode == KeyCode.RightAlt ||
+            keyCode == KeyCode.LeftShift ||
+            keyCode == KeyCode.RightShift;
     }
 
     [Flags]

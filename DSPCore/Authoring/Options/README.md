@@ -31,7 +31,7 @@ float opacity = Options.FloatRange("Example", "Opacity", 0.8f, "Panel opacity.",
 Options.OpenWindow();
 ```
 
-统一设置窗口会展示所有已注册配置项：`Bool` 使用复选框，`Enum` 使用下拉框，`IntRange` / `FloatRange` 使用滑条，`String`、`Int`、`Float` 和按键绑定使用输入框，输入结束后写回 DSPCore 的 BepInEx 配置文件。按键绑定会在同一 `ConflictGroup` 内提示同键冲突。窗口必须在 `UIRoot` 初始化后打开，通常从模组按钮、快捷键或自己的 UI 回调里调用。
+统一设置窗口会展示所有已注册配置项：`Bool` 使用复选框，`Enum` 使用下拉框，`IntRange` / `FloatRange` 使用滑条，`String`、`Int` 和 `Float` 使用输入框，按键绑定使用输入框加 Capture 按钮。输入结束或按键捕获后会写回 DSPCore 的 BepInEx 配置文件。按键绑定会在同一 `ConflictGroup` 内提示同键冲突。窗口必须在 `UIRoot` 初始化后打开，通常从模组按钮、快捷键或自己的 UI 回调里调用。
 
 ## 边界
 

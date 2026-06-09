@@ -64,7 +64,7 @@ P0/P1 是当前实现目标。
 - `TabRegistry` 会为稳定页面 ID 分配 `TabSlot`，并通过现有 GridIndex 分类流程把自定义页面投射到物品选择器、配方选择器、制造器界面、信号选择器和标签图标选择器。
 - `PickerSurfaces` 会处理物品、配方和信号选择器 surface，实时网格会应用过滤、重复 `GridIndex` 兜底和动态行列扩容。
 - `GameEnums.RegisterRecipeType(...)` 当前会把声明的配方标记为自定义配方类型，并在制作器配方列表打开前隐藏当前机器不能使用的配方；`ItemProto.SetCustomItemType()` 会把已有物品标记为 DSPCore 预留的自定义物品类型；`RecipeTypes` 保留为旧别名，`AssemblerComponent.SetRecipe` 仍保留最终保护。
-- `KeyBindRegistry` 会轮询已注册按键并调用回调，支持简单的 `Ctrl`/`Alt`/`Shift` 修饰键组合；`CanOverride=true` 的按键会进入 DSPCore 统一设置窗口，同一 `ConflictGroup` 内的同键配置会显示冲突提示；运行时优先读取玩家配置，配置为空或非法时回落默认键。
+- `KeyBindRegistry` 会轮询已注册按键并调用回调，支持简单的 `Ctrl`/`Alt`/`Shift` 修饰键组合；`CanOverride=true` 的按键会进入 DSPCore 统一设置窗口，玩家可用 Capture 捕获按键或直接编辑文本，同一 `ConflictGroup` 内的同键配置会显示冲突提示；运行时优先读取玩家配置，配置为空或非法时回落默认键。
 - `SaveRegistry` 会写入 `.dspcore` 独立存档，并按 `CoreLoadOrder` 导入处理器。
 - `AchievementPolicyRegistry` 汇总每个模组的成就禁用声明；不声明或声明 `disableAchievements: false` 不会请求禁用，任意模组声明 true 时全局阻断成就变更、Milky Way / 排行榜上传和平台成就/元数据调用。没有 true 声明时，DSPCore 会屏蔽原版异常检查并保持成就可用。
 - `ErrorWindow` 会接收 Unity fatal/error 日志和错误窗口事件，并生成包含当前游戏状态、可选星球/实体上下文、最近错误、候选插件文本命中、DSPCore 声明和 Harmony patch map 概览的可复制诊断文本。

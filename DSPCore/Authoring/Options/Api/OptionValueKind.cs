@@ -49,8 +49,8 @@ public enum OptionValueKind
     FloatRange,
 
     /// <summary>
-    /// 按键绑定文本输入。
-    /// Key binding text input.
+    /// 按键绑定文本输入和捕获。
+    /// Key binding text input and capture.
     /// </summary>
     KeyBinding
 }

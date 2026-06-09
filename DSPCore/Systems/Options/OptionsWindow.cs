@@ -15,7 +15,9 @@ internal sealed class OptionsWindow : UiWindow
     private const float EmptyRowHeight = 42f;
     private const float LabelWidth = 230f;
     private const float DescriptionWidth = 360f;
+    private const float CaptureButtonWidth = 86f;
     private const float Gap = 12f;
+    private KeyCaptureState keyCapture;
 
     protected override void _OnCreate()
     {
@@ -52,6 +54,12 @@ internal sealed class OptionsWindow : UiWindow
             ]);
 
         GridDsl.BuildLayout(this, root, layout);
+    }
+
+    protected override void _OnUpdate()
+    {
+        base._OnUpdate();
+        UpdateKeyCapture();
     }
 
     private static List<OptionGroup> BuildGroups()
@@ -141,13 +149,18 @@ internal sealed class OptionsWindow : UiWindow
             return;
         }
 
+        var optionsWindow = window as OptionsWindow;
+        var keyBinding = option.Kind == OptionValueKind.KeyBinding && optionsWindow != null;
+        var inputWidth = keyBinding
+            ? Math.Max(120f, controlWidth - CaptureButtonWidth - Gap)
+            : controlWidth;
         var input = window.AddInputField(
             controlX,
             height / 2f,
             root,
             DspCore.Options.GetString(option.Section, option.Key),
             UiPageLayout.BodyFontSize);
-        input.GetComponent<RectTransform>().sizeDelta = new Vector2(controlWidth, input.GetComponent<RectTransform>().sizeDelta.y);
+        input.GetComponent<RectTransform>().sizeDelta = new Vector2(inputWidth, input.GetComponent<RectTransform>().sizeDelta.y);
         input.onEndEdit.AddListener(value =>
         {
             if (!IsValid(option.Kind, value))
@@ -159,6 +172,45 @@ internal sealed class OptionsWindow : UiWindow
             OptionRuntime.SetString(option.Section, option.Key, value);
             descriptionText.text = GetOptionDescription(option).Translate();
         });
+
+        if (keyBinding)
+        {
+            window.AddButton(
+                controlX + inputWidth + Gap,
+                height / 2f,
+                CaptureButtonWidth,
+                root,
+                "Capture",
+                UiPageLayout.BodyFontSize,
+                "capture-key-button",
+                () => optionsWindow.StartKeyCapture(option, input, descriptionText));
+        }
+    }
+
+    private void StartKeyCapture(OptionDescriptor option, InputField input, Text descriptionText)
+    {
+        keyCapture = new KeyCaptureState(option, input, descriptionText, Time.frameCount);
+        input.text = "Press a key...";
+        input.ActivateInputField();
+    }
+
+    private void UpdateKeyCapture()
+    {
+        if (keyCapture == null || Time.frameCount <= keyCapture.StartFrame)
+        {
+            return;
+        }
+
+        if (!KeyBindRuntime.TryCaptureCurrentKey(out var keyText))
+        {
+            return;
+        }
+
+        OptionRuntime.SetString(keyCapture.Option.Section, keyCapture.Option.Key, keyText);
+        keyCapture.Input.text = keyText;
+        keyCapture.DescriptionText.text = GetOptionDescription(keyCapture.Option).Translate();
+        keyCapture.Input.DeactivateInputField();
+        keyCapture = null;
     }
 
     private static void BuildRangeControl(UiWindow window, RectTransform root, OptionDescriptor option, float x, float y, float width)
@@ -257,4 +309,6 @@ internal sealed class OptionsWindow : UiWindow
     }
 
     private sealed record OptionGroup(string Title, IReadOnlyList<OptionDescriptor> Options);
+
+    private sealed record KeyCaptureState(OptionDescriptor Option, InputField Input, Text DescriptionText, int StartFrame);
 }

@@ -12,7 +12,7 @@ namespace ExampleMod;
 //
 // Usage:
 // - Register once during plugin startup.
-// - Players edit the key text in the DSPCore unified settings window.
+// - Players can click Capture and press a key, or edit the key text directly.
 // - ConflictGroup only reports same-key conflicts inside the same group.
 // - Keep callbacks short; expensive work should be deferred to your own update logic.
 public static class KeyBindRegistrationExample

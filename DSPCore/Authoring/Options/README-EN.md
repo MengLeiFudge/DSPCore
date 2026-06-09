@@ -31,7 +31,7 @@ These methods register the option first, then return the current value. Use them
 Options.OpenWindow();
 ```
 
-The unified settings window displays all registered options. `Bool` uses a checkbox, `Enum` uses a dropdown, `IntRange` / `FloatRange` use sliders, and `String`, `Int`, `Float`, and key bindings use input fields that write back to the DSPCore BepInEx config when editing ends. Key binding rows report same-key conflicts inside the same `ConflictGroup`. The window must be opened after `UIRoot` is initialized, usually from a mod button, key bind, or custom UI callback.
+The unified settings window displays all registered options. `Bool` uses a checkbox, `Enum` uses a dropdown, `IntRange` / `FloatRange` use sliders, `String`, `Int`, and `Float` use input fields, and key bindings use an input field plus a Capture button. Edits and captured keys write back to the DSPCore BepInEx config. Key binding rows report same-key conflicts inside the same `ConflictGroup`. The window must be opened after `UIRoot` is initialized, usually from a mod button, key bind, or custom UI callback.
 
 ## Boundaries
 

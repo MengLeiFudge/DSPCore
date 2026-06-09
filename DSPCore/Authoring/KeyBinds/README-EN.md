@@ -6,7 +6,7 @@ The KeyBinds block lets a mod declare a default key binding, trigger timing, and
 
 - You do not need every mod to write its own `Input.GetKeyDown` / `GetKey` / `GetKeyUp` polling.
 - Default key parsing and simple `Ctrl` / `Alt` / `Shift` modifiers are centralized in DSPCore.
-- Key bindings with `CanOverride=true` are automatically added to the DSPCore unified settings window, where players can edit the key text.
+- Key bindings with `CanOverride=true` are automatically added to the DSPCore unified settings window, where players can click Capture and press a key, or edit the key text directly.
 - When bindings in the same `ConflictGroup` resolve to the same key text, the unified settings window shows the conflicting bindings.
 - Callback exceptions are reported through the ErrorWindow system instead of being silently swallowed or breaking the whole update flow.
 - One descriptor model covers press, hold, and release triggers.
@@ -38,7 +38,7 @@ KeyBinds.Register(new KeyBindDescriptor(
 
 ## What This Block Does Not Own
 
-- The current rebinding entry is text input; it does not capture "press any key" interactions yet.
+- Capture records the next pressed non-modifier key and includes currently held `Ctrl` / `Alt` / `Shift`; pressing only a modifier key does not finish capture.
 - `ConflictGroup` only reports same-key conflicts in the same group; it does not automatically rebind keys, disable callbacks, or choose mod priority.
 - Keep callbacks small. Expensive scans or complex state machines should be handled by your mod's later update flow.
 - Invalid player config logs one warning and falls back to the default key; if the default key is invalid too, the binding is skipped.
