@@ -13,6 +13,7 @@
 - `UiWindowManager.CreateWindow<T>()` 只创建并登记窗口，不自动决定打开时机。
 - 窗口内容通常在 `_OnCreate` 或模组自己的初始化流程中创建。
 - `GridDsl.BuildLayout(...)` 只负责把布局节点投射成 Unity `RectTransform`。
+- `GridDsl.FormCard(...)`、`ListCard(...)`、`DetailCard(...)` 和 `StatusFooter(...)` 可以减少常见工具页的重复布局代码。
 - 具体按钮行为、配置保存、解锁逻辑和业务页面仍由模组自己处理。
 
 ## 常见误用

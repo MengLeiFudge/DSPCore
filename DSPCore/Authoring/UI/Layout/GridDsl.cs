@@ -1,6 +1,7 @@
 #nullable disable
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BepInEx.Configuration;
 using UnityEngine;
 using UnityEngine.Events;
@@ -254,6 +255,133 @@ public static class GridDsl {
                 onBuilt?.Invoke(btn);
             },
         };
+    }
+
+    /// <summary>
+    /// 标签和值组成的一行，适合表单和详情属性。
+    /// A label/value row for forms and detail properties.
+    /// </summary>
+    public static LayoutLeaf LabeledValueNode(string label, string value, int labelWidth = 180,
+        int fontSize = UiPageLayout.BodyFontSize, Action<Text> onValueBuilt = null,
+        (int, int)? pos = null, (int, int)? span = null, int? row = null, int? col = null,
+        int? rowSpan = null, int? colSpan = null, string objectName = "labeled-value-node") {
+        return new() {
+            Pos = pos, Span = span, Row = row, Col = col, RowSpan = rowSpan, ColSpan = colSpan,
+            ObjectName = objectName,
+            BuildAction = (_, root) => {
+                float h = root.sizeDelta.y;
+                float effectiveLabelWidth = Math.Min(labelWidth, root.sizeDelta.x * 0.45f);
+                UiPageLayout.AddCenteredText(root, label, fontSize,
+                    MutedWhite, TextAnchor.MiddleLeft, 0f, 0f, effectiveLabelWidth, h,
+                    $"{objectName}-label");
+                Text valueText = UiPageLayout.AddCenteredText(root, value, fontSize,
+                    White, TextAnchor.MiddleLeft, effectiveLabelWidth + 10f, 0f,
+                    Math.Max(80f, root.sizeDelta.x - effectiveLabelWidth - 10f), h,
+                    $"{objectName}-value", true);
+                onValueBuilt?.Invoke(valueText);
+            },
+        };
+    }
+
+    /// <summary>
+    /// 标准表单卡片：标题 + 多行标签和值。
+    /// Standard form card: title plus label/value rows.
+    /// </summary>
+    public static LayoutGrid FormCard(string title, IReadOnlyList<UiFormRowDescriptor> rows, float rowHeight = 32f,
+        (int, int)? pos = null, (int, int)? span = null, int? row = null, int? col = null,
+        int? rowSpan = null, int? colSpan = null, bool strong = false, string objectName = "form-card") {
+        IReadOnlyList<UiFormRowDescriptor> effectiveRows = rows ?? Array.Empty<UiFormRowDescriptor>();
+        var tracks = new List<LayoutTrack> { Px(UiPageLayout.CardHeaderHeight) };
+        tracks.AddRange(effectiveRows.Select(_ => Px(rowHeight)));
+        var children = new List<LayoutNode> { CardTitleNode(title, row: 0, col: 0) };
+        for (int i = 0; i < effectiveRows.Count; i++) {
+            UiFormRowDescriptor item = effectiveRows[i];
+            children.Add(LabeledValueNode(item.Label, item.Value, row: i + 1, col: 0));
+        }
+
+        return ContentCard(pos, span, row, col, rowSpan, colSpan, strong, objectName,
+            rows: tracks, cols: [Fr(1f)], rowGap: 6f, children: children);
+    }
+
+    /// <summary>
+    /// 标准列表卡片：标题 + 可选操作按钮的列表项。
+    /// Standard list card: title plus list items with an optional action button.
+    /// </summary>
+    public static LayoutGrid ListCard(string title, IReadOnlyList<UiListItemDescriptor> items,
+        Action<UiListItemDescriptor> onSelect = null, string actionText = "Open", float rowHeight = 46f,
+        (int, int)? pos = null, (int, int)? span = null, int? row = null, int? col = null,
+        int? rowSpan = null, int? colSpan = null, bool strong = false, string objectName = "list-card") {
+        IReadOnlyList<UiListItemDescriptor> effectiveItems = items ?? Array.Empty<UiListItemDescriptor>();
+        var tracks = new List<LayoutTrack> { Px(UiPageLayout.CardHeaderHeight) };
+        tracks.AddRange(effectiveItems.Select(_ => Px(rowHeight)));
+        var children = new List<LayoutNode> { CardTitleNode(title, row: 0, col: 0) };
+        for (int i = 0; i < effectiveItems.Count; i++) {
+            UiListItemDescriptor item = effectiveItems[i];
+            children.Add(ListItemNode(item, onSelect, actionText, row: i + 1, col: 0));
+        }
+
+        return ContentCard(pos, span, row, col, rowSpan, colSpan, strong, objectName,
+            rows: tracks, cols: [Fr(1f)], rowGap: 6f, children: children);
+    }
+
+    /// <summary>
+    /// 标准详情卡片：标题、摘要和属性行。
+    /// Standard detail card: title, summary, and property rows.
+    /// </summary>
+    public static LayoutGrid DetailCard(UiDetailDescriptor detail, float rowHeight = 32f,
+        (int, int)? pos = null, (int, int)? span = null, int? row = null, int? col = null,
+        int? rowSpan = null, int? colSpan = null, bool strong = false, string objectName = "detail-card") {
+        IReadOnlyList<UiFormRowDescriptor> properties = detail.Properties ?? Array.Empty<UiFormRowDescriptor>();
+        var tracks = new List<LayoutTrack> { Px(UiPageLayout.CardHeaderHeight), Px(44f) };
+        tracks.AddRange(properties.Select(_ => Px(rowHeight)));
+        var children = new List<LayoutNode> {
+            CardTitleNode(detail.Title, row: 0, col: 0),
+            TextNode(detail.Summary, color: MutedWhite, wrap: true, row: 1, col: 0)
+        };
+        for (int i = 0; i < properties.Count; i++) {
+            UiFormRowDescriptor item = properties[i];
+            children.Add(LabeledValueNode(item.Label, item.Value, row: i + 2, col: 0));
+        }
+
+        return ContentCard(pos, span, row, col, rowSpan, colSpan, strong, objectName,
+            rows: tracks, cols: [Fr(1f)], rowGap: 6f, children: children);
+    }
+
+    /// <summary>
+    /// 标准状态页脚：左侧状态文本，右侧可选按钮。
+    /// Standard status footer: status text on the left and an optional button on the right.
+    /// </summary>
+    public static LayoutGrid StatusFooter(string status, string buttonText = "", UnityAction onClick = null,
+        (int, int)? pos = null, (int, int)? span = null, int? row = null, int? col = null,
+        int? rowSpan = null, int? colSpan = null, string objectName = "status-footer") {
+        bool hasButton = !string.IsNullOrWhiteSpace(buttonText);
+        return FooterCard(pos, span, row, col, rowSpan, colSpan, objectName,
+            cols: hasButton ? [Fr(1f), Px(120f)] : [Fr(1f)],
+            children: hasButton
+                ? [TextNode(status, row: 0, col: 0), ButtonNode(buttonText, onClick, row: 0, col: 1)]
+                : [TextNode(status, row: 0, col: 0)]);
+    }
+
+    private static LayoutLeaf ListItemNode(UiListItemDescriptor item, Action<UiListItemDescriptor> onSelect,
+        string actionText, int? row = null, int? col = null, string objectName = "list-item-node") {
+        return Node(row: row, col: col, objectName: objectName, build: (wnd, root) => {
+            float h = root.sizeDelta.y;
+            float actionWidth = onSelect == null ? 0f : 96f;
+            float textWidth = Math.Max(80f, root.sizeDelta.x - actionWidth - 12f);
+            Color titleColor = item.Selected ? Orange : White;
+            UiPageLayout.AddCenteredText(root, item.Title, UiPageLayout.BodyFontSize,
+                titleColor, TextAnchor.MiddleLeft, 0f, 0f, textWidth, h * 0.52f,
+                $"{objectName}-title", true);
+            UiPageLayout.AddCenteredText(root, item.Summary, UiPageLayout.BodyFontSize - 1,
+                MutedWhite, TextAnchor.MiddleLeft, 0f, h * 0.48f, textWidth, h * 0.52f,
+                $"{objectName}-summary", true);
+
+            if (onSelect != null) {
+                wnd.AddButton(root.sizeDelta.x - actionWidth, h / 2f, actionWidth, root,
+                    actionText, UiPageLayout.BodyFontSize, $"{objectName}-button",
+                    () => onSelect(item));
+            }
+        });
     }
 
     /// <summary>

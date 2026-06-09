@@ -23,6 +23,12 @@ public static class UiStyle
     public static readonly Color White = new(1f, 1f, 1f, 0.9f);
 
     /// <summary>
+    /// 次要文本颜色。
+    /// Secondary text color.
+    /// </summary>
+    public static readonly Color MutedWhite = new(1f, 1f, 1f, 0.56f);
+
+    /// <summary>
     /// 数值或辅助强调色。
     /// Secondary accent color for counters and helper highlights.
     /// </summary>

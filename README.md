@@ -43,7 +43,7 @@ P0/P1 是当前实现目标。
 - 分页：作者可以声明自定义页面并取得 `TabSlot`，再用 `TabSlot` 生成物品/配方 `GridIndex`。选择器 surface 属于 DSPCore 系统实现。
 - 存档：`Saves.Auto(...)` 自动 schema、委托式简单存档处理器、原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
 - 成就策略：声明是否影响银河系/排行榜上传等策略。错误窗口和错误收集属于 DSPCore 系统实现。
-- UI 框架：窗口生命周期、标签页窗口、基础控件、声明式网格布局和主题卡片辅助；不包含具体业务页面。
+- UI 框架：窗口生命周期、标签页窗口、基础控件、声明式网格布局、主题卡片辅助，以及标准表单、列表、详情区和状态页脚脚手架；不包含具体业务页面。
 - 实体组件：按 item id、model index 或 `PrefabDesc` 条件给实体挂自定义组件，转发移除、tick 和存档。
 - 星球/恒星/银河系统：按 `PlanetFactory`、`StarData` 或 `GalaxyData` 创建系统实例并转发生命周期。
 - 蓝图参数：用 tagged block 避免多个模组抢 `BuildingParameters.parameters` 固定槽位。

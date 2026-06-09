@@ -9,6 +9,7 @@ It does not provide concrete business pages. A mod's own pages, navigation, unlo
 - Shared window creation, initialization, update, close, and destroy flow, so each mod does not need to patch `UIRoot` again.
 - Reusable controls such as check boxes, combo boxes, sliders, flat buttons, image buttons, and image button groups.
 - `GridDsl`, `LayoutGrid`, `LayoutTrack`, and `LayoutInsets` for fixed-size UI layout without hand-written coordinate math in every page.
+- `GridDsl.FormCard(...)`, `ListCard(...)`, `DetailCard(...)`, and `StatusFooter(...)` for common tool-page scaffolds.
 - `UiPageLayout` and `UiRoundedSpriteFactory` for consistent rounded cards, headers, footers, scroll cards, and state borders.
 - Lightweight descriptor objects such as `UiButtonDescriptor` and `UiNodeFactory` for sharing UI metadata across capabilities.
 
@@ -68,6 +69,19 @@ var root = GridDsl.Grid(
 ```
 
 `GridLayoutRuntime.BuildRoot(window, parent, root)` builds the layout nodes into a `RectTransform` hierarchy.
+
+## Capability: Form, List, And Detail Scaffolds
+
+Common tool pages can use the standard card helpers directly:
+
+```csharp
+GridDsl.FormCard("Status", rows, row: 1, col: 0);
+GridDsl.ListCard("Items", items, item => SelectItem(item), row: 1, col: 0);
+GridDsl.DetailCard(detail, row: 1, col: 1);
+GridDsl.StatusFooter("Ready", "Close", Close, row: 2, col: 0);
+```
+
+These helpers only generate layout nodes. Form rows use `UiFormRowDescriptor`, list items use `UiListItemDescriptor`, and detail panels use `UiDetailDescriptor`. Selection callbacks and concrete business state remain owned by the caller.
 
 ## Capability: Theme Cards
 

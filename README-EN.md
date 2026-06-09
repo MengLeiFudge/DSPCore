@@ -43,7 +43,7 @@ P0/P1 blocks are the current implementation target.
 - Tabs: authors can declare custom pages, receive a `TabSlot`, and use that slot to generate item/recipe `GridIndex` values. Picker surfaces are DSPCore system implementation.
 - Saves: `Saves.Auto(...)` automatic schemas, delegate-based simple save handlers, raw `BinaryReader`/`BinaryWriter` handlers, and tagged block helpers.
 - Achievement policies: declare policy effects such as Milky Way / leaderboard upload blocking. Error window and error collection belong to DSPCore systems.
-- UI framework: window lifecycle helpers, tabbed windows, base controls, declarative grid layout, and theme/card helpers; concrete business pages are not included.
+- UI framework: window lifecycle helpers, tabbed windows, base controls, declarative grid layout, theme/card helpers, and standard form, list, detail, and status-footer scaffolds; concrete business pages are not included.
 - Entity components: attach custom components to entities by item id, model index, or `PrefabDesc`, then forward removal, ticks, and saves.
 - Planet/star/galaxy systems: create systems for `PlanetFactory`, `StarData`, or `GalaxyData` and forward lifecycle callbacks.
 - Blueprint parameters: use tagged blocks so multiple mods do not compete for fixed `BuildingParameters.parameters` slots.
