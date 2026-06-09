@@ -18,9 +18,8 @@ internal static class PlanetSystemExample
 {
     public static void Register()
     {
-        PlanetSystems.Register(new PlanetSystemDescriptor(
+        PlanetSystems.Register<ExamplePlanetSystem>(
             systemId: "com.example.planet-cache",
-            ownerModGuid: "com.example.my-mod",
-            factory: static factory => new ExamplePlanetSystem()));
+            ownerModGuid: "com.example.my-mod");
     }
 }

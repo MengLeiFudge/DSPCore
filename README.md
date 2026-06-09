@@ -45,8 +45,8 @@ P0/P1 是当前实现目标。
 - 存档：`Saves.Auto(...)` 自动 schema、委托式简单存档处理器、原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
 - 成就策略：声明是否影响银河系/排行榜上传等策略。错误窗口和错误收集属于 DSPCore 系统实现。
 - UI 框架：窗口生命周期、标签页窗口、基础控件、声明式网格布局、主题卡片辅助，以及标准表单、列表、详情区和状态页脚脚手架；不包含具体业务页面。
-- 实体组件：按 item id、model index 或 `PrefabDesc` 条件给实体挂自定义组件，转发移除、tick 和存档。
-- 星球/恒星/银河系统：按 `PlanetFactory`、`StarData` 或 `GalaxyData` 创建系统实例并转发生命周期。
+- 实体组件：用 `Components.Register<TComponent>(...)` 按 item id、model index 或 `PrefabDesc` 条件给实体挂自定义组件，转发移除、tick 和存档；复杂构造再使用 descriptor。
+- 星球/恒星/银河系统：用 `PlanetSystems.Register<TSystem>(...)`、`GalaxySystems.RegisterStar<TSystem>(...)` 或 `RegisterGalaxy<TSystem>(...)` 注册系统，按 `PlanetFactory`、`StarData` 或 `GalaxyData` 创建实例并转发生命周期；复杂构造再使用 descriptor。
 - 蓝图参数：用 tagged block 避免多个模组抢 `BuildingParameters.parameters` 固定槽位。
 - 模型和预制体：从已有 `ModelProto` 克隆新模型，配置独立 `PrefabDesc`，并重建模型派生缓存。
 - 配置、联机和网络：提供 `Options.String/Bool/Int/Float/Enum/IntRange/FloatRange` 短入口，支持同名方法加 `OptionUi` 设置页面、显示名、同页排序和 Reset 按钮，提供 BepInEx 配置绑定、DSPCore 统一设置窗口、设置页面、设置版本描述、配置导入/导出、Nebula 软检测、packet/host relay/planet data/client save 声明、adapter snapshot/query 入口、工厂网络查询适配器。
@@ -70,14 +70,14 @@ P0/P1 是当前实现目标。
 - `ErrorWindow` 会接收 Unity fatal/error 日志和错误窗口事件，并生成包含当前游戏状态、可选星球/实体上下文、最近错误、候选插件文本命中、DSPCore 声明和 Harmony patch map 概览的可复制诊断文本。
 - `ResourceRegistry.RegisterLocalization` 会写入 DSP 本地化 key 和语言字符串；作者侧短入口是 `ModResources.Root(...)`、`ModResources.Text(...)` 和 `ModResources.Pack(...)`。
 - `UiWindowManager` 会在 `UIRoot` 打开、更新和销毁时转发 DSPCore 窗口生命周期；具体窗口由模组自己创建和打开。
-- `Components` 会在 `PlanetFactory.CreateEntityLogicComponents` 后按描述创建组件，并在实体移除、电力 tick、工厂 tick 和后置阶段转发回调；组件数据写入 `.dspcore`，未加载星球的数据会延迟到 `GameData.GetOrCreateFactory` 后恢复。
-- `Planets` 会在 `GameData.GetOrCreateFactory` 后为每个 `PlanetFactory` 创建星球系统，并转发本地星球绘制、电力 tick、工厂 tick 和后置阶段。
+- `Components` 会在 `PlanetFactory.CreateEntityLogicComponents` 后按描述创建组件；无参构造组件可用 `Components.Register<TComponent>(...)` 短入口注册。运行时会在实体移除、电力 tick、工厂 tick 和后置阶段转发回调；组件数据写入 `.dspcore`，未加载星球的数据会延迟到 `GameData.GetOrCreateFactory` 后恢复。
+- `Planets` 会在 `GameData.GetOrCreateFactory` 后为每个 `PlanetFactory` 创建星球系统；无参构造系统可用 `PlanetSystems.Register<TSystem>(...)` 短入口注册。运行时转发本地星球绘制、电力 tick、工厂 tick 和后置阶段。
 - `Blueprints` 会把作者参数块编码到 `BuildingParameters` 参数数组尾部，在复制、蓝图、粘贴和预建筑落地链路中保持 block ID。
 - `Models` 会在最终 Proto 派生缓存重建前克隆 `ModelProto` 和 `PrefabDesc`，然后重建 `ModelProto` 索引和 `PlanetFactory.PrefabDescByModelIndex`。
 - `Options` 会把作者声明的字符串配置项绑定到 DSPCore 的 BepInEx 配置文件，并保存设置页面和设置版本描述；`String`、`Bool`、`Int`、`Float`、`Enum`、`IntRange` 和 `FloatRange` 会注册配置并返回当前值，需要页面、显示名、排序或 Reset 按钮时可给同名短入口传入 `OptionUi`；`ExportValues` / `ExportText` 与 `ImportValues` / `ImportText` 提供配置快照导入导出；`Options.OpenWindow()` 会打开 DSPCore 自有统一设置窗口。
 - `Multiplayer` 当前检测 Nebula 是否加载，保存 packet、host relay、planet data request 和 client missing-save 声明，并提供 adapter snapshot/query 入口；真实 Nebula 发送由专门适配器接入。
 - `Networks` 提供 `TryGetCommonNetwork(...)` 和 `IsConnectedToNetwork(...)` 查询表面，具体网络扫描由注册适配器提供。
-- `Galaxy` 会在银河数据存在后创建恒星/银河系统，并在 `SpaceSector.GameTick` 转发更新和 sidecar 存档。
+- `Galaxy` 会在银河数据存在后创建恒星/银河系统；无参构造系统可用 `GalaxySystems.RegisterStar<TSystem>(...)` / `RegisterGalaxy<TSystem>(...)` 短入口注册。运行时在 `SpaceSector.GameTick` 转发更新和 sidecar 存档。
 - `PatchRuntime` 会应用 `PatchDescriptor` 声明的条件补丁，记录禁用原因和失败异常。
 
 当前运行时限制：

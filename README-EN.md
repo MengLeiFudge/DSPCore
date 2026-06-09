@@ -45,8 +45,8 @@ P0/P1 blocks are the current implementation target.
 - Saves: `Saves.Auto(...)` automatic schemas, delegate-based simple save handlers, raw `BinaryReader`/`BinaryWriter` handlers, and tagged block helpers.
 - Achievement policies: declare policy effects such as Milky Way / leaderboard upload blocking. Error window and error collection belong to DSPCore systems.
 - UI framework: window lifecycle helpers, tabbed windows, base controls, declarative grid layout, theme/card helpers, and standard form, list, detail, and status-footer scaffolds; concrete business pages are not included.
-- Entity components: attach custom components to entities by item id, model index, or `PrefabDesc`, then forward removal, ticks, and saves.
-- Planet/star/galaxy systems: create systems for `PlanetFactory`, `StarData`, or `GalaxyData` and forward lifecycle callbacks.
+- Entity components: use `Components.Register<TComponent>(...)` to attach custom components to entities by item id, model index, or `PrefabDesc`, then forward removal, ticks, and saves; use descriptors for complex construction.
+- Planet/star/galaxy systems: use `PlanetSystems.Register<TSystem>(...)`, `GalaxySystems.RegisterStar<TSystem>(...)`, or `RegisterGalaxy<TSystem>(...)` to register systems, create instances for `PlanetFactory`, `StarData`, or `GalaxyData`, and forward lifecycle callbacks; use descriptors for complex construction.
 - Blueprint parameters: use tagged blocks so multiple mods do not compete for fixed `BuildingParameters.parameters` slots.
 - Models and prefabs: clone existing `ModelProto` entries, configure independent `PrefabDesc` instances, and rebuild model derived caches.
 - Options, multiplayer, and networks: provide `Options.String/Bool/Int/Float/Enum/IntRange/FloatRange` short entries, same-name overloads with `OptionUi` for page, display, in-page order, and Reset button metadata, BepInEx config binding, a DSPCore unified settings window, option page and settings version descriptors, option import/export, Nebula soft detection, packet/host relay/planet data/client save declarations, adapter snapshot/query entries, and factory network query adapters.
@@ -70,14 +70,14 @@ Implemented runtime bridges:
 - `ErrorWindow` receives Unity fatal/error logs and fatal-window events, and builds copyable diagnostic text with current game state, optional planet/entity context, recent errors, candidate plugin text hits, DSPCore declarations, and a Harmony patch-map overview.
 - `ResourceRegistry.RegisterLocalization` is applied to DSP localization keys and language strings. Author-side short entries are `ModResources.Root(...)`, `ModResources.Text(...)`, and `ModResources.Pack(...)`.
 - `UiWindowManager` forwards DSPCore window lifecycle through `UIRoot` open, update, and destroy events; mods still create and open concrete windows themselves.
-- `Components` creates components after `PlanetFactory.CreateEntityLogicComponents`, then forwards entity removal, power ticks, factory ticks, and post phases. Component data is stored in `.dspcore`; data for unloaded planet factories is restored after `GameData.GetOrCreateFactory`.
-- `Planets` creates planet systems after `GameData.GetOrCreateFactory` and forwards local planet rendering, power ticks, factory ticks, and post phases.
+- `Components` creates components after `PlanetFactory.CreateEntityLogicComponents`; parameterless components can be registered through the `Components.Register<TComponent>(...)` short entry. Runtime forwards entity removal, power ticks, factory ticks, and post phases. Component data is stored in `.dspcore`; data for unloaded planet factories is restored after `GameData.GetOrCreateFactory`.
+- `Planets` creates planet systems after `GameData.GetOrCreateFactory`; parameterless systems can be registered through the `PlanetSystems.Register<TSystem>(...)` short entry. Runtime forwards local planet rendering, power ticks, factory ticks, and post phases.
 - `Blueprints` encodes author parameter blocks at the end of `BuildingParameters` arrays and preserves block IDs across copy, blueprints, paste, and prebuild apply.
 - `Models` clones `ModelProto` and `PrefabDesc` before final derived cache rebuilds, then rebuilds `ModelProto` indices and `PlanetFactory.PrefabDescByModelIndex`.
 - `Options` binds author-declared string options to the DSPCore BepInEx config file and stores option page and settings version descriptors. `String`, `Bool`, `Int`, `Float`, `Enum`, `IntRange`, and `FloatRange` register an option and return the current value; same-name short entries accept `OptionUi` when page, display-name, order, or Reset metadata is needed; `ExportValues` / `ExportText` and `ImportValues` / `ImportText` provide option snapshot import/export; `Options.OpenWindow()` opens the DSPCore-owned unified settings window.
 - `Multiplayer` currently detects whether Nebula is loaded, stores packet, host relay, planet data request, and client missing-save declarations, and exposes adapter snapshot/query entries. Actual Nebula sending belongs to a dedicated adapter.
 - `Networks` provides the `TryGetCommonNetwork(...)` and `IsConnectedToNetwork(...)` query surfaces; concrete scanning is supplied by registered adapters.
-- `Galaxy` creates star and galaxy systems after galaxy data exists, then forwards `SpaceSector.GameTick` updates and sidecar saves.
+- `Galaxy` creates star and galaxy systems after galaxy data exists; parameterless systems can be registered through `GalaxySystems.RegisterStar<TSystem>(...)` / `RegisterGalaxy<TSystem>(...)` short entries. Runtime forwards `SpaceSector.GameTick` updates and sidecar saves.
 - `PatchRuntime` applies conditional `PatchDescriptor` declarations and records disabled reasons or apply failures.
 
 Current runtime limits:

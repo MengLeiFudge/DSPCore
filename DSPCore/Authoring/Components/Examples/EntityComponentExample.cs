@@ -28,10 +28,9 @@ internal static class EntityComponentExample
 {
     public static void Register()
     {
-        Components.Register(new ComponentDescriptor(
+        Components.Register<ExampleCounterComponent>(
             componentId: "com.example.counter",
             ownerModGuid: "com.example.my-mod",
-            factory: static (factory, entityId, desc, prebuildId) => new ExampleCounterComponent(),
-            itemId: 9554));
+            itemId: 9554);
     }
 }

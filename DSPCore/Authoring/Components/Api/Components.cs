@@ -1,3 +1,5 @@
+using System;
+
 namespace DSPCore;
 
 /// <summary>
@@ -6,6 +8,33 @@ namespace DSPCore;
 /// </summary>
 public static class Components
 {
+    /// <summary>
+    /// 注册一个带无参构造函数的实体组件类型。
+    /// Registers an entity component type with a parameterless constructor.
+    /// </summary>
+    /// <typeparam name="TComponent">组件类型。Component type.</typeparam>
+    /// <param name="componentId">组件稳定 ID。Stable component ID.</param>
+    /// <param name="ownerModGuid">所属模组 GUID。Owner mod GUID.</param>
+    /// <param name="itemId">可选物品 ID 匹配。Optional item ID match.</param>
+    /// <param name="modelIndex">可选模型索引匹配。Optional model index match.</param>
+    /// <param name="predicate">可选自定义匹配。Optional custom match.</param>
+    public static void Register<TComponent>(
+        string componentId,
+        string ownerModGuid,
+        int? itemId = null,
+        int? modelIndex = null,
+        Func<PrefabDesc, bool>? predicate = null)
+        where TComponent : CoreFactoryComponent, new()
+    {
+        Register(new ComponentDescriptor(
+            componentId,
+            ownerModGuid,
+            static (factory, entityId, desc, prebuildId) => new TComponent(),
+            itemId,
+            modelIndex,
+            predicate));
+    }
+
     /// <summary>
     /// 注册实体组件描述。
     /// Registers an entity component descriptor.

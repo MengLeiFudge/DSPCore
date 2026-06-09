@@ -12,9 +12,8 @@ internal static class GalaxyLifecycleExample
 {
     public static void Register()
     {
-        GalaxySystems.RegisterGalaxy(new GalaxySystemDescriptor(
-            SystemId: "com.example.galaxy",
-            OwnerModGuid: "com.example.my-mod",
-            Factory: static galaxy => new ExampleGalaxySystem()));
+        GalaxySystems.RegisterGalaxy<ExampleGalaxySystem>(
+            systemId: "com.example.galaxy",
+            ownerModGuid: "com.example.my-mod");
     }
 }
