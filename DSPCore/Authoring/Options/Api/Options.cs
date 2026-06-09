@@ -39,7 +39,7 @@ public static class Options
     public static string String(string section, string key, string defaultValue, string description, OptionUi? ui)
     {
         var metadata = ui ?? OptionUi.Empty;
-        Register(section, key, defaultValue, description, metadata.PageId, displayName: metadata.DisplayName);
+        Register(section, key, defaultValue, description, metadata.PageId, displayName: metadata.DisplayName, order: metadata.Order, canReset: metadata.CanReset);
         return GetString(section, key);
     }
 
@@ -72,7 +72,7 @@ public static class Options
     public static bool Bool(string section, string key, bool defaultValue, string description, OptionUi? ui)
     {
         var metadata = ui ?? OptionUi.Empty;
-        Register(section, key, defaultValue.ToString(), description, metadata.PageId, OptionValueKind.Bool, metadata.DisplayName);
+        Register(section, key, defaultValue.ToString(), description, metadata.PageId, OptionValueKind.Bool, metadata.DisplayName, order: metadata.Order, canReset: metadata.CanReset);
         return GetBool(section, key, defaultValue);
     }
 
@@ -105,7 +105,7 @@ public static class Options
     public static int Int(string section, string key, int defaultValue, string description, OptionUi? ui)
     {
         var metadata = ui ?? OptionUi.Empty;
-        Register(section, key, defaultValue.ToString(CultureInfo.InvariantCulture), description, metadata.PageId, OptionValueKind.Int, metadata.DisplayName);
+        Register(section, key, defaultValue.ToString(CultureInfo.InvariantCulture), description, metadata.PageId, OptionValueKind.Int, metadata.DisplayName, order: metadata.Order, canReset: metadata.CanReset);
         return GetInt(section, key, defaultValue);
     }
 
@@ -138,7 +138,7 @@ public static class Options
     public static float Float(string section, string key, float defaultValue, string description, OptionUi? ui)
     {
         var metadata = ui ?? OptionUi.Empty;
-        Register(section, key, defaultValue.ToString(CultureInfo.InvariantCulture), description, metadata.PageId, OptionValueKind.Float, metadata.DisplayName);
+        Register(section, key, defaultValue.ToString(CultureInfo.InvariantCulture), description, metadata.PageId, OptionValueKind.Float, metadata.DisplayName, order: metadata.Order, canReset: metadata.CanReset);
         return GetFloat(section, key, defaultValue);
     }
 
@@ -190,7 +190,9 @@ public static class Options
             metadata.PageId,
             OptionValueKind.Enum,
             metadata.DisplayName,
-            System.Enum.GetNames(typeof(TEnum)));
+            System.Enum.GetNames(typeof(TEnum)),
+            order: metadata.Order,
+            canReset: metadata.CanReset);
         return GetEnum(section, key, defaultValue);
     }
 
@@ -264,7 +266,9 @@ public static class Options
             metadata.DisplayName,
             minimum: minimum,
             maximum: maximum,
-            step: Math.Max(1, step));
+            step: Math.Max(1, step),
+            order: metadata.Order,
+            canReset: metadata.CanReset);
         return Math.Min(maximum, Math.Max(minimum, GetInt(section, key, defaultValue)));
     }
 
@@ -338,7 +342,9 @@ public static class Options
             metadata.DisplayName,
             minimum: minimum,
             maximum: maximum,
-            step: step);
+            step: step,
+            order: metadata.Order,
+            canReset: metadata.CanReset);
         return Math.Min(maximum, Math.Max(minimum, GetFloat(section, key, defaultValue)));
     }
 
@@ -357,6 +363,8 @@ public static class Options
     /// <param name="minimum">可选最小值。Optional minimum value.</param>
     /// <param name="maximum">可选最大值。Optional maximum value.</param>
     /// <param name="step">可选步进值。Optional step value.</param>
+    /// <param name="order">同页内排序值。Sort order within the page.</param>
+    /// <param name="canReset">是否显示重置按钮。Whether to show a reset button.</param>
     public static void Register(
         string section,
         string key,
@@ -368,9 +376,15 @@ public static class Options
         string[]? choices = null,
         float? minimum = null,
         float? maximum = null,
-        float? step = null)
+        float? step = null,
+        int order = 0,
+        bool canReset = false)
     {
-        DspCore.Options.Register(new OptionDescriptor(section, key, defaultValue, description, pageId, kind, displayName, choices, minimum, maximum, step));
+        DspCore.Options.Register(new OptionDescriptor(section, key, defaultValue, description, pageId, kind, displayName, choices, minimum, maximum, step)
+        {
+            Order = order,
+            CanReset = canReset
+        });
     }
 
     /// <summary>

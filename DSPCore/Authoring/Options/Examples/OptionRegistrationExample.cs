@@ -26,7 +26,11 @@ internal static class OptionRegistrationExample
             description: "Enable example behavior.",
             ui: new OptionUi(
                 PageId: "com.example.settings",
-                DisplayName: "Enable Example"));
+                DisplayName: "Enable Example")
+            {
+                Order = 10,
+                CanReset = true
+            });
 
         int rowCount = Options.Int(
             section: "Example",
@@ -58,7 +62,11 @@ internal static class OptionRegistrationExample
             maximum: 6,
             ui: new OptionUi(
                 PageId: "com.example.settings",
-                DisplayName: "Maximum Rows"));
+                DisplayName: "Maximum Rows")
+            {
+                Order = 20,
+                CanReset = true
+            });
 
         float opacity = Options.FloatRange(
             section: "Example",

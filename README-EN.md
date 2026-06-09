@@ -49,7 +49,7 @@ P0/P1 blocks are the current implementation target.
 - Planet/star/galaxy systems: create systems for `PlanetFactory`, `StarData`, or `GalaxyData` and forward lifecycle callbacks.
 - Blueprint parameters: use tagged blocks so multiple mods do not compete for fixed `BuildingParameters.parameters` slots.
 - Models and prefabs: clone existing `ModelProto` entries, configure independent `PrefabDesc` instances, and rebuild model derived caches.
-- Options, multiplayer, and networks: provide `Options.String/Bool/Int/Float/Enum/IntRange/FloatRange` short entries, same-name overloads with `OptionUi` for page/display metadata, BepInEx config binding, a DSPCore unified settings window, option page and settings version descriptors, Nebula soft detection, packet/host relay/planet data/client save declarations, adapter snapshot/query entries, and factory network query adapters.
+- Options, multiplayer, and networks: provide `Options.String/Bool/Int/Float/Enum/IntRange/FloatRange` short entries, same-name overloads with `OptionUi` for page, display, in-page order, and Reset button metadata, BepInEx config binding, a DSPCore unified settings window, option page and settings version descriptors, Nebula soft detection, packet/host relay/planet data/client save declarations, adapter snapshot/query entries, and factory network query adapters.
 - Patch platform: centralize conditional patch declarations, required plugin GUID/version checks, disabled reasons, and apply failure reporting.
 
 ## Runtime Status
@@ -74,7 +74,7 @@ Implemented runtime bridges:
 - `Planets` creates planet systems after `GameData.GetOrCreateFactory` and forwards local planet rendering, power ticks, factory ticks, and post phases.
 - `Blueprints` encodes author parameter blocks at the end of `BuildingParameters` arrays and preserves block IDs across copy, blueprints, paste, and prebuild apply.
 - `Models` clones `ModelProto` and `PrefabDesc` before final derived cache rebuilds, then rebuilds `ModelProto` indices and `PlanetFactory.PrefabDescByModelIndex`.
-- `Options` binds author-declared string options to the DSPCore BepInEx config file and stores option page and settings version descriptors. `String`, `Bool`, `Int`, `Float`, `Enum`, `IntRange`, and `FloatRange` register an option and return the current value; same-name short entries accept `OptionUi` when page or display-name metadata is needed; `Options.OpenWindow()` opens the DSPCore-owned unified settings window.
+- `Options` binds author-declared string options to the DSPCore BepInEx config file and stores option page and settings version descriptors. `String`, `Bool`, `Int`, `Float`, `Enum`, `IntRange`, and `FloatRange` register an option and return the current value; same-name short entries accept `OptionUi` when page, display-name, order, or Reset metadata is needed; `Options.OpenWindow()` opens the DSPCore-owned unified settings window.
 - `Multiplayer` currently detects whether Nebula is loaded, stores packet, host relay, planet data request, and client missing-save declarations, and exposes adapter snapshot/query entries. Actual Nebula sending belongs to a dedicated adapter.
 - `Networks` provides the `TryGetCommonNetwork(...)` and `IsConnectedToNetwork(...)` query surfaces; concrete scanning is supplied by registered adapters.
 - `Galaxy` creates star and galaxy systems after galaxy data exists, then forwards `SpaceSector.GameTick` updates and sidecar saves.

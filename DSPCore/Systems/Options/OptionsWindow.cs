@@ -16,6 +16,7 @@ internal sealed class OptionsWindow : UiWindow
     private const float LabelWidth = 230f;
     private const float DescriptionWidth = 360f;
     private const float CaptureButtonWidth = 86f;
+    private const float ResetButtonWidth = 72f;
     private const float Gap = 12f;
     private KeyCaptureState keyCapture;
 
@@ -72,6 +73,7 @@ internal sealed class OptionsWindow : UiWindow
         return DspCore.Options.GetAll()
             .OrderBy(option => pages.TryGetValue(option.PageId ?? string.Empty, out var page) ? page.Order : int.MaxValue)
             .ThenBy(option => option.PageId ?? string.Empty, StringComparer.Ordinal)
+            .ThenBy(option => option.Order)
             .ThenBy(option => option.Section, StringComparer.Ordinal)
             .ThenBy(option => option.Key, StringComparer.Ordinal)
             .GroupBy(option => option.PageId ?? string.Empty, StringComparer.Ordinal)
@@ -105,10 +107,13 @@ internal sealed class OptionsWindow : UiWindow
     {
         float height = root.sizeDelta.y;
         float controlX = LabelWidth + DescriptionWidth + Gap * 2f;
-        float controlWidth = Math.Max(160f, root.sizeDelta.x - controlX);
+        float resetReserve = option.CanReset ? ResetButtonWidth + Gap : 0f;
+        float controlWidth = Math.Max(120f, root.sizeDelta.x - controlX - resetReserve);
+        float resetX = controlX + controlWidth + Gap;
         window.AddText2(0f, height / 2f, root, option.DisplayName ?? option.Key, UiPageLayout.BodyFontSize);
         var descriptionText = window.AddText2(LabelWidth + Gap, height / 2f, root, GetOptionDescription(option), UiPageLayout.BodyFontSize);
         descriptionText.rectTransform.sizeDelta = new Vector2(DescriptionWidth, descriptionText.rectTransform.sizeDelta.y);
+        AddResetButton(window, root, option, resetX, height / 2f);
 
         if (option.Kind == OptionValueKind.Bool)
         {
@@ -238,6 +243,28 @@ internal sealed class OptionsWindow : UiWindow
             OptionRuntime.SetString(option.Section, option.Key, stepped.ToString(CultureInfo.InvariantCulture));
             slider.SetLabelText(stepped.ToString("0.###", CultureInfo.InvariantCulture));
         };
+    }
+
+    private static void AddResetButton(UiWindow window, RectTransform root, OptionDescriptor option, float x, float y)
+    {
+        if (!option.CanReset)
+        {
+            return;
+        }
+
+        window.AddButton(
+            x,
+            y,
+            ResetButtonWidth,
+            root,
+            "Reset",
+            UiPageLayout.BodyFontSize,
+            "reset-option-button",
+            () =>
+            {
+                OptionRuntime.SetString(option.Section, option.Key, option.DefaultValue);
+                OptionRuntime.OpenWindow();
+            });
     }
 
     private static float ReadRangeValue(OptionDescriptor option, float minimum, float maximum)

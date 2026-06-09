@@ -5,7 +5,7 @@ The Options module lets mods declare simple options that DSPCore binds to the Be
 ## What This Module Provides
 
 - Mods can declare options from authoring code without holding the DSPCore plugin instance.
-- Simple options can use short entries such as `Options.Bool(...)`, `Options.IntRange(...)`, and `Options.Enum(...)` to register and read in one call. When display names or page grouping are needed, pass `OptionUi` to the same method name.
+- Simple options can use short entries such as `Options.Bool(...)`, `Options.IntRange(...)`, and `Options.Enum(...)` to register and read in one call. When display names, page grouping, order, or reset buttons are needed, pass `OptionUi` to the same method name.
 - DSPCore binds options registered before startup, and also binds options registered after startup.
 - If the DSPCore runtime has not bound the config file yet, short entries return the descriptor default instead of an empty string.
 - The DSPCore unified settings window groups options by `OptionPageDescriptor` and `OptionDescriptor.PageId`.
@@ -33,10 +33,14 @@ bool enabled = Options.Bool(
     "Enabled",
     true,
     "Enable example feature.",
-    new OptionUi(PageId: "com.example.settings", DisplayName: "Enable Example"));
+    new OptionUi(PageId: "com.example.settings", DisplayName: "Enable Example")
+    {
+        Order = 10,
+        CanReset = true
+    });
 ```
 
-`OptionUi.PageId` controls grouping in the unified settings window. `OptionUi.DisplayName` controls the row title shown to players. Use the shortest overload when those are not needed.
+`OptionUi.PageId` controls grouping in the unified settings window. `OptionUi.DisplayName` controls the row title shown to players. `OptionUi.Order` controls order within the page. `OptionUi.CanReset` controls whether a Reset button is shown. Use the shortest overload when those are not needed.
 
 ## Capability: Open The Unified Settings Window
 
@@ -44,13 +48,15 @@ bool enabled = Options.Bool(
 Options.OpenWindow();
 ```
 
-The unified settings window displays all registered options. `Bool` uses a checkbox, `Enum` uses a dropdown, `IntRange` / `FloatRange` use sliders, `String`, `Int`, and `Float` use input fields, and key bindings use an input field plus a Capture button. Edits and captured keys write back to the DSPCore BepInEx config. Key binding rows report same-key conflicts inside the same `ConflictGroup`. The window must be opened after `UIRoot` is initialized, usually from a mod button, key bind, or custom UI callback.
+The unified settings window displays all registered options. `Bool` uses a checkbox, `Enum` uses a dropdown, `IntRange` / `FloatRange` use sliders, `String`, `Int`, and `Float` use input fields, and key bindings use an input field plus a Capture button. Edits, captured keys, and Reset clicks write back to the DSPCore BepInEx config. Key binding rows report same-key conflicts inside the same `ConflictGroup`. The window must be opened after `UIRoot` is initialized, usually from a mod button, key bind, or custom UI callback.
 
 ## Boundaries
 
 - The underlying BepInEx values are still strings. Boolean, integer, floating-point, and enum read helpers exist.
 - The current window is DSPCore-owned and does not inject into the vanilla option page.
 - Invalid `Int` / `Float` / key binding input is reverted to the current config value; range sliders write back according to their minimum, maximum, and step values.
+- `OptionUi.Order` only changes in-window ordering inside the same page; it does not change config load order.
+- The Reset button only writes the descriptor default value; it does not run migrations, restart logic, or custom side effects.
 - Config keys should stay stable so player configuration remains valid.
 
 ## Examples
