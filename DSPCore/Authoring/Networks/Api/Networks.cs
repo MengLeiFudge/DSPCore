@@ -1,3 +1,5 @@
+using System;
+
 namespace DSPCore;
 
 /// <summary>
@@ -6,6 +8,23 @@ namespace DSPCore;
 /// </summary>
 public static class Networks
 {
+    /// <summary>
+    /// 注册网络查询适配器。
+    /// Registers a network query adapter.
+    /// </summary>
+    /// <param name="networkId">网络适配器 ID。Network adapter ID.</param>
+    /// <param name="ownerModGuid">所属模组 GUID。Owner mod GUID.</param>
+    /// <param name="tryGetCommonNetwork">查询两个实体共同网络。Queries the common network of two entities.</param>
+    /// <param name="isConnectedToNetwork">查询实体是否连接到指定网络。Queries whether an entity is connected to a network.</param>
+    public static void Register(
+        string networkId,
+        string ownerModGuid,
+        Func<PlanetFactory, int, int, int?> tryGetCommonNetwork,
+        Func<PlanetFactory, int, int, bool>? isConnectedToNetwork = null)
+    {
+        Register(new NetworkDescriptor(networkId, ownerModGuid, tryGetCommonNetwork, isConnectedToNetwork));
+    }
+
     /// <summary>
     /// 注册网络查询适配器。
     /// Registers a network query adapter.
