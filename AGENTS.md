@@ -229,8 +229,8 @@ DSPCore.sln
 - Preloader-injected enum members are reserved compatibility markers. Runtime code should use numeric constants such as `GameEnums.CustomRecipeTypeValue` and `GameEnums.CustomItemTypeValue` instead of compiling directly against injected enum names.
 - Preloader 注入的枚举成员是预留兼容 marker。运行时代码应使用 `GameEnums.CustomRecipeTypeValue`、`GameEnums.CustomItemTypeValue` 等数值常量，不要直接编译期访问注入枚举名。
 
-- Blueprint parameter extensions must use DSPCore tagged blocks appended to `BuildingParameters.parameters`; do not reserve fixed vanilla parameter slots for a mod-specific feature.
-- 蓝图参数扩展必须使用追加到 `BuildingParameters.parameters` 的 DSPCore tagged block；不要为单个模组功能预留固定原版参数槽位。
+- Blueprint parameter extensions must use DSPCore tagged blocks appended to `BuildingParameters.parameters`; do not reserve fixed vanilla parameter slots for a mod-specific feature. New examples should prefer the integer-payload `Blueprints.Register(blockId, ownerModGuid, copy, paste, ...)` overload for ordinary settings and use `BuildingParameterDescriptor` only when full block control is needed.
+- 蓝图参数扩展必须使用追加到 `BuildingParameters.parameters` 的 DSPCore tagged block；不要为单个模组功能预留固定原版参数槽位。普通设置的新示例应优先使用整数负载版 `Blueprints.Register(blockId, ownerModGuid, copy, paste, ...)` 重载；只有需要完整 block 控制时才使用 `BuildingParameterDescriptor`。
 
 - Optional multiplayer support must stay soft in the main DSPCore project. Do not add a hard Nebula reference unless a separate adapter project or explicit dependency decision is added. The main project may declare packet, host relay, planet data request, and client missing-save boundaries, plus adapter snapshot/query entries for an adapter to consume.
 - 主 DSPCore 项目的可选联机支持必须保持软依赖。除非新增独立适配项目或明确依赖决策，不要添加 Nebula 硬引用。主项目可以声明 packet、host relay、planet data request 和 client missing-save 边界，并提供 adapter snapshot/query 入口供适配器消费。

@@ -4,18 +4,18 @@ internal static class BuildingParametersExample
 {
     public static void Register()
     {
-        Blueprints.Register(new BuildingParameterDescriptor(
+        Blueprints.Register(
             blockId: "com.example.mode",
             ownerModGuid: "com.example.my-mod",
-            copy: static (factory, objectId) => new BuildingParameterBlock("com.example.mode", new[] { 1 }),
-            paste: static (factory, entityId, block) =>
+            copy: static (factory, objectId) => new[] { 1 },
+            paste: static (factory, entityId, data) =>
             {
-                int mode = block.Data.Length > 0 ? block.Data[0] : 0;
+                int mode = data.Length > 0 ? data[0] : 0;
             },
-            canPaste: static (factory, entityId, block) => block.Data.Length <= 4,
-            applyPrebuild: static (factory, entityId, block) =>
+            canPaste: static (factory, entityId, data) => data.Length <= 4,
+            applyPrebuild: static (factory, entityId, data) =>
             {
-                int mode = block.Data.Length > 0 ? block.Data[0] : 0;
-            }));
+                int mode = data.Length > 0 ? data[0] : 0;
+            });
     }
 }
