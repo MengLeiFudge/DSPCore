@@ -40,6 +40,32 @@ internal static class OptionRegistrationExample
             description: "Example UI scale.",
             pageId: "com.example.settings");
 
+        ExampleDisplayMode displayMode = Options.Enum(
+            section: "Example",
+            key: "DisplayMode",
+            defaultValue: ExampleDisplayMode.Normal,
+            description: "Example display mode.",
+            pageId: "com.example.settings");
+
+        int maxRows = Options.IntRange(
+            section: "Example",
+            key: "MaxRows",
+            defaultValue: 3,
+            description: "Maximum example rows shown in the UI.",
+            minimum: 1,
+            maximum: 6,
+            pageId: "com.example.settings");
+
+        float opacity = Options.FloatRange(
+            section: "Example",
+            key: "Opacity",
+            defaultValue: 0.8f,
+            description: "Example panel opacity.",
+            minimum: 0.2f,
+            maximum: 1.0f,
+            step: 0.05f,
+            pageId: "com.example.settings");
+
         string mode = Options.String(
             section: "Example",
             key: "Mode",
@@ -53,5 +79,12 @@ internal static class OptionRegistrationExample
         // Call OpenWindow from a button, key bind, or custom UI callback after UIRoot exists.
         // Calling it during early plugin startup logs a warning and does not create a window.
         Options.OpenWindow();
+    }
+
+    private enum ExampleDisplayMode
+    {
+        Compact,
+        Normal,
+        Detailed
     }
 }

@@ -8,10 +8,11 @@ namespace ExampleMod;
 // 用途：
 // - KeyBinds 用于声明可重绑定按键和触发回调。
 // - 当前运行时支持单键以及简单 Ctrl/Alt/Shift 修饰键。
-// - 完整玩家重绑定 UI 仍是后续功能；这里先声明默认键和冲突组。
+// - CanOverride=true 时会自动进入 DSPCore 统一设置窗口。
 //
 // Usage:
 // - Register once during plugin startup.
+// - Players edit the key text in the DSPCore unified settings window.
 // - Keep callbacks short; expensive work should be deferred to your own update logic.
 public static class KeyBindRegistrationExample
 {

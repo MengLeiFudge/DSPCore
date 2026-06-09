@@ -6,7 +6,8 @@ namespace DSPCore;
 
 internal static class KeyBindRuntime
 {
-    private static readonly Dictionary<string, KeyBinding> KeyCache = new(StringComparer.Ordinal);
+    private static readonly Dictionary<string, CachedKeyBinding> KeyCache = new(StringComparer.Ordinal);
+    private static readonly HashSet<string> InvalidKeyWarnings = new(StringComparer.Ordinal);
 
     public static void Update()
     {
@@ -49,14 +50,39 @@ internal static class KeyBindRuntime
 
     private static bool TryGetKeyBinding(KeyBindDescriptor descriptor, out KeyBinding keyBinding)
     {
-        if (KeyCache.TryGetValue(descriptor.Id, out keyBinding))
+        var keyText = descriptor.CanOverride ? KeyBinds.GetConfiguredKeyText(descriptor) : descriptor.DefaultKey;
+        if (KeyCache.TryGetValue(descriptor.Id, out var cached) && cached.KeyText.Equals(keyText, StringComparison.Ordinal))
         {
+            keyBinding = cached.Binding;
             return true;
         }
 
-        var keyText = descriptor.DefaultKey;
+        if (!TryParseKeyBinding(keyText, out keyBinding))
+        {
+            WarnInvalidKeyOnce(descriptor, keyText);
+            if (keyText.Equals(descriptor.DefaultKey, StringComparison.OrdinalIgnoreCase) ||
+                !TryParseKeyBinding(descriptor.DefaultKey, out keyBinding))
+            {
+                return false;
+            }
+
+            keyText = descriptor.DefaultKey;
+        }
+
+        KeyCache[descriptor.Id] = new CachedKeyBinding(keyText, keyBinding);
+        return true;
+    }
+
+    internal static bool IsValidKeyText(string keyText)
+    {
+        return TryParseKeyBinding(keyText, out _);
+    }
+
+    private static bool TryParseKeyBinding(string keyText, out KeyBinding keyBinding)
+    {
+        var primaryKeyText = keyText;
         var modifiers = KeyModifiers.None;
-        foreach (var part in descriptor.DefaultKey.Split(new[] { '+' }, StringSplitOptions.RemoveEmptyEntries))
+        foreach (var part in keyText.Split(new[] { '+' }, StringSplitOptions.RemoveEmptyEntries))
         {
             var token = part.Trim();
             if (token.Equals("Ctrl", StringComparison.OrdinalIgnoreCase) || token.Equals("Control", StringComparison.OrdinalIgnoreCase))
@@ -80,15 +106,25 @@ internal static class KeyBindRuntime
             keyText = token;
         }
 
-        if (!Enum.TryParse(keyText, true, out KeyCode keyCode))
+        if (primaryKeyText.Trim().Length == 0 || !Enum.TryParse(keyText, true, out KeyCode keyCode))
         {
-            DspCore.Logger?.LogWarning($"Key binding {descriptor.Id} has invalid DefaultKey '{descriptor.DefaultKey}'.");
+            keyBinding = default;
             return false;
         }
 
         keyBinding = new KeyBinding(keyCode, modifiers);
-        KeyCache[descriptor.Id] = keyBinding;
         return true;
+    }
+
+    private static void WarnInvalidKeyOnce(KeyBindDescriptor descriptor, string keyText)
+    {
+        var warningKey = descriptor.Id + "\u001f" + keyText;
+        if (!InvalidKeyWarnings.Add(warningKey))
+        {
+            return;
+        }
+
+        DspCore.Logger?.LogWarning($"Key binding {descriptor.Id} from {descriptor.OwnerModGuid} has invalid key text '{keyText}'. Falling back to '{descriptor.DefaultKey}'.");
     }
 
     [Flags]
@@ -123,5 +159,18 @@ internal static class KeyBindRuntime
         {
             return (Modifiers & modifier) == 0 || Input.GetKey(left) || Input.GetKey(right);
         }
+    }
+
+    private readonly struct CachedKeyBinding
+    {
+        public CachedKeyBinding(string keyText, KeyBinding binding)
+        {
+            KeyText = keyText;
+            Binding = binding;
+        }
+
+        public string KeyText { get; }
+
+        public KeyBinding Binding { get; }
     }
 }

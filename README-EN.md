@@ -48,7 +48,7 @@ P0/P1 blocks are the current implementation target.
 - Planet/star/galaxy systems: create systems for `PlanetFactory`, `StarData`, or `GalaxyData` and forward lifecycle callbacks.
 - Blueprint parameters: use tagged blocks so multiple mods do not compete for fixed `BuildingParameters.parameters` slots.
 - Models and prefabs: clone existing `ModelProto` entries, configure independent `PrefabDesc` instances, and rebuild model derived caches.
-- Options, multiplayer, and networks: provide `Options.String/Bool/Int/Float` short entries, BepInEx config binding, a DSPCore unified settings window, option page and settings version descriptors, Nebula soft detection, packet/host relay/planet data/client save declarations, adapter snapshot/query entries, and factory network query adapters.
+- Options, multiplayer, and networks: provide `Options.String/Bool/Int/Float/Enum/IntRange/FloatRange` short entries, BepInEx config binding, a DSPCore unified settings window, option page and settings version descriptors, Nebula soft detection, packet/host relay/planet data/client save declarations, adapter snapshot/query entries, and factory network query adapters.
 - Patch platform: centralize conditional patch declarations, required plugin GUID/version checks, disabled reasons, and apply failure reporting.
 
 ## Runtime Status
@@ -63,7 +63,7 @@ Implemented runtime bridges:
 - `TabRegistry` assigns a `TabSlot` for each stable page id and projects custom pages to item picker, recipe picker, replicator, signal picker, and tag-icon picker surfaces through the existing GridIndex category flow.
 - `PickerSurfaces` handles item, recipe, and signal picker surfaces. Live grids apply filters, duplicate `GridIndex` fallbacks, and dynamic row/column expansion.
 - `GameEnums.RegisterRecipeType(...)` currently marks declared recipes as custom recipe types and hides recipes unsupported by the current assembler before the recipe picker selection; `RecipeTypes` remains a legacy alias, and `AssemblerComponent.SetRecipe` remains the final guard.
-- `KeyBindRegistry` polls registered key bindings and invokes callbacks, including simple `Ctrl`/`Alt`/`Shift` modifier combinations.
+- `KeyBindRegistry` polls registered key bindings and invokes callbacks, including simple `Ctrl`/`Alt`/`Shift` modifier combinations. Bindings with `CanOverride=true` enter the DSPCore unified settings window; runtime prefers player config and falls back to the default key when config is empty or invalid.
 - `SaveRegistry` writes a `.dspcore` sidecar save file and imports handlers by `CoreLoadOrder`.
 - `AchievementPolicyRegistry` aggregates each mod's achievement-disable declaration. Not declaring, or declaring `disableAchievements: false`, does not request disabling. If any mod declares true, DSPCore globally blocks achievement mutation, Milky Way / leaderboard uploads, and platform achievement/metadata calls. If no declaration is true, DSPCore blocks vanilla abnormality checks and keeps achievements available.
 - `ErrorWindow` receives Unity fatal/error logs and fatal-window events, and builds copyable diagnostic text with recent errors, candidate plugin text hits, DSPCore declarations, and a Harmony patch-map overview.
@@ -73,7 +73,7 @@ Implemented runtime bridges:
 - `Planets` creates planet systems after `GameData.GetOrCreateFactory` and forwards local planet rendering, power ticks, factory ticks, and post phases.
 - `Blueprints` encodes author parameter blocks at the end of `BuildingParameters` arrays and preserves block IDs across copy, blueprints, paste, and prebuild apply.
 - `Models` clones `ModelProto` and `PrefabDesc` before final derived cache rebuilds, then rebuilds `ModelProto` indices and `PlanetFactory.PrefabDescByModelIndex`.
-- `Options` binds author-declared string options to the DSPCore BepInEx config file and stores option page and settings version descriptors. `String`, `Bool`, `Int`, and `Float` register an option and return the current value; `Options.OpenWindow()` opens the DSPCore-owned unified settings window.
+- `Options` binds author-declared string options to the DSPCore BepInEx config file and stores option page and settings version descriptors. `String`, `Bool`, `Int`, `Float`, `Enum`, `IntRange`, and `FloatRange` register an option and return the current value; `Options.OpenWindow()` opens the DSPCore-owned unified settings window.
 - `Multiplayer` currently detects whether Nebula is loaded, stores packet, host relay, planet data request, and client missing-save declarations, and exposes adapter snapshot/query entries. Actual Nebula sending belongs to a dedicated adapter.
 - `Networks` provides the `TryGetCommonNetwork(...)` and `IsConnectedToNetwork(...)` query surfaces; concrete scanning is supplied by registered adapters.
 - `Galaxy` creates star and galaxy systems after galaxy data exists, then forwards `SpaceSector.GameTick` updates and sidecar saves.
@@ -139,6 +139,7 @@ using DSPCore;
 
 bool enabled = Options.Bool("Example", "Enabled", true, "Enable example feature.");
 int rows = Options.Int("Example", "Rows", 2, "Example row count.");
+int maxRows = Options.IntRange("Example", "MaxRows", 3, "Maximum rows.", minimum: 1, maximum: 6);
 // Open from a button, key bind, or custom UI callback after UIRoot is ready.
 Options.OpenWindow();
 

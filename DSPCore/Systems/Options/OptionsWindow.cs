@@ -98,7 +98,7 @@ internal sealed class OptionsWindow : UiWindow
         float height = root.sizeDelta.y;
         float controlX = LabelWidth + DescriptionWidth + Gap * 2f;
         float controlWidth = Math.Max(160f, root.sizeDelta.x - controlX);
-        window.AddText2(0f, height / 2f, root, option.Key, UiPageLayout.BodyFontSize);
+        window.AddText2(0f, height / 2f, root, option.DisplayName ?? option.Key, UiPageLayout.BodyFontSize);
         window.AddText2(LabelWidth + Gap, height / 2f, root, option.Description, UiPageLayout.BodyFontSize);
 
         if (option.Kind == OptionValueKind.Bool)
@@ -106,6 +106,37 @@ internal sealed class OptionsWindow : UiWindow
             bool current = DspCore.Options.GetBool(option.Section, option.Key, bool.TryParse(option.DefaultValue, out var fallback) && fallback);
             var checkBox = UiCheckBox.CreateCheckBox(controlX, height / 2f, root, current, string.Empty, UiPageLayout.BodyFontSize);
             checkBox.OnChecked += () => OptionRuntime.SetString(option.Section, option.Key, checkBox.Checked.ToString());
+            return;
+        }
+
+        if (option.Kind == OptionValueKind.Enum && option.Choices is { Length: > 0 } choices)
+        {
+            var current = DspCore.Options.GetString(option.Section, option.Key);
+            var selected = Array.FindIndex(choices, choice => choice.Equals(current, StringComparison.OrdinalIgnoreCase));
+            if (selected < 0)
+            {
+                selected = Math.Max(0, Array.FindIndex(choices, choice => choice.Equals(option.DefaultValue, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            window.AddComboBox(controlX, height / 2f, root, UiPageLayout.BodyFontSize)
+                .WithItems(choices)
+                .WithIndex(selected)
+                .WithSize(controlWidth, 0f)
+                .WithOnSelChanged(index =>
+                {
+                    if (index >= 0 && index < choices.Length)
+                    {
+                        OptionRuntime.SetString(option.Section, option.Key, choices[index]);
+                    }
+                });
+            return;
+        }
+
+        if ((option.Kind == OptionValueKind.IntRange || option.Kind == OptionValueKind.FloatRange) &&
+            option.Minimum.HasValue &&
+            option.Maximum.HasValue)
+        {
+            BuildRangeControl(window, root, option, controlX, height / 2f, controlWidth);
             return;
         }
 
@@ -128,12 +159,61 @@ internal sealed class OptionsWindow : UiWindow
         });
     }
 
+    private static void BuildRangeControl(UiWindow window, RectTransform root, OptionDescriptor option, float x, float y, float width)
+    {
+        var minimum = option.Minimum.GetValueOrDefault();
+        var maximum = Math.Max(minimum, option.Maximum.GetValueOrDefault());
+        var value = ReadRangeValue(option, minimum, maximum);
+        var slider = window.AddSlider(x, y, root, value, minimum, maximum, option.Kind == OptionValueKind.IntRange ? "F0" : "0.###", width);
+
+        slider.OnValueChanged += () =>
+        {
+            var stepped = ApplyStep(slider.Value, option.Step.GetValueOrDefault(), minimum, maximum);
+            if (!Mathf.Approximately(stepped, slider.Value))
+            {
+                slider.Value = stepped;
+            }
+
+            if (option.Kind == OptionValueKind.IntRange)
+            {
+                OptionRuntime.SetString(option.Section, option.Key, Mathf.RoundToInt(stepped).ToString(CultureInfo.InvariantCulture));
+                slider.SetLabelText(Mathf.RoundToInt(stepped).ToString(CultureInfo.InvariantCulture));
+                return;
+            }
+
+            OptionRuntime.SetString(option.Section, option.Key, stepped.ToString(CultureInfo.InvariantCulture));
+            slider.SetLabelText(stepped.ToString("0.###", CultureInfo.InvariantCulture));
+        };
+    }
+
+    private static float ReadRangeValue(OptionDescriptor option, float minimum, float maximum)
+    {
+        var text = DspCore.Options.GetString(option.Section, option.Key);
+        if (!float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var value))
+        {
+            float.TryParse(option.DefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+        }
+
+        return Math.Min(maximum, Math.Max(minimum, value));
+    }
+
+    private static float ApplyStep(float value, float step, float minimum, float maximum)
+    {
+        if (step > 0f)
+        {
+            value = minimum + Mathf.Round((value - minimum) / step) * step;
+        }
+
+        return Math.Min(maximum, Math.Max(minimum, value));
+    }
+
     private static bool IsValid(OptionValueKind kind, string value)
     {
         return kind switch
         {
             OptionValueKind.Int => int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out _),
             OptionValueKind.Float => float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out _),
+            OptionValueKind.KeyBinding => KeyBindRuntime.IsValidKeyText(value),
             _ => true
         };
     }

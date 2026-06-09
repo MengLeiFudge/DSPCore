@@ -28,5 +28,29 @@ public enum OptionValueKind
     /// 浮点输入。
     /// Floating-point input.
     /// </summary>
-    Float
+    Float,
+
+    /// <summary>
+    /// 枚举下拉选择。
+    /// Enumeration dropdown.
+    /// </summary>
+    Enum,
+
+    /// <summary>
+    /// 整数范围滑条。
+    /// Integer range slider.
+    /// </summary>
+    IntRange,
+
+    /// <summary>
+    /// 浮点范围滑条。
+    /// Floating-point range slider.
+    /// </summary>
+    FloatRange,
+
+    /// <summary>
+    /// 按键绑定文本输入。
+    /// Key binding text input.
+    /// </summary>
+    KeyBinding
 }
