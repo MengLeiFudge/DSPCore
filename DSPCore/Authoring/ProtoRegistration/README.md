@@ -95,7 +95,7 @@ itemProto.GridIndex = ProtoRegistration.GetGridIndex(tab: 1, row: 2, index: 3);
 
 ## 功能：读取原版数据描述
 
-`DspCore.Vanilla.GetItem(...)`、`GetRecipe(...)`、`GetTech(...)` 当前返回的是读取描述，用于记录“谁要读什么原版数据”。它不是直接返回 LDB 对象的查询 API。
+`DspCore.Vanilla.GetItem(...)`、`GetRecipe(...)`、`GetTech(...)` 返回的是旧的读取描述。新的阶段内直接查询和修改应使用 `ProtoPhaseContext.FindItem(...)` / `FindRecipe(...)` 或 `data.Access`，相关说明见 `Authoring/ProtoAccess`。
 
 ## 这个模块不负责什么
 

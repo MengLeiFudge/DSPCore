@@ -214,6 +214,9 @@ DSPCore.sln
 - ProtoRegistration owns the author-facing data lifecycle. New examples should prefer `ProtoRegistration.Data(...)`, `ProtoRegistration.DataUpdates(...)`, and `ProtoRegistration.DataFinalFixes(...)` callbacks with `ProtoPhaseContext`; direct `RegisterItem(..., phase)` remains available as a lower-level and compatibility entry.
 - ProtoRegistration 负责作者侧数据生命周期。新示例应优先使用 `ProtoRegistration.Data(...)`、`ProtoRegistration.DataUpdates(...)` 和 `ProtoRegistration.DataFinalFixes(...)` 回调，并通过 `ProtoPhaseContext` 注册物品、配方、科技和指引；直接 `RegisterItem(..., phase)` 继续作为低层和兼容入口保留。
 
+- ProtoAccess owns phase-aware lookup and mutation of visible protos through `ProtoPhaseContext.FindItem(...)`, `FindRecipe(...)`, `FindTech(...)`, `FindTutorial(...)`, and `data.Access`. Cross-mod mutation belongs in `DataUpdates` or `DataFinalFixes`; `Data` remains for initial declarations.
+- ProtoAccess 负责通过 `ProtoPhaseContext.FindItem(...)`、`FindRecipe(...)`、`FindTech(...)`、`FindTutorial(...)` 和 `data.Access` 进行阶段感知的可见 Proto 查询与修改。跨模组修改应放在 `DataUpdates` 或 `DataFinalFixes`；`Data` 仍用于初始声明。
+
 - Tabs own page declaration and `TabSlot` allocation. `GridIndex` remains the native item/recipe cell field on `ItemProto` and `RecipeProto`; use ProtoRegistration/GridIndexes helpers to build `GridIndex` values from `TabSlot`, row, and index.
 - Tabs 负责页面声明和 `TabSlot` 分配。`GridIndex` 仍是 `ItemProto` / `RecipeProto` 的游戏原生格子字段；用 ProtoRegistration/GridIndexes 辅助方法从 `TabSlot`、行号和格子号生成 `GridIndex`。
 

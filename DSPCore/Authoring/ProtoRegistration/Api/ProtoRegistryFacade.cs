@@ -201,6 +201,11 @@ public sealed class ProtoRegistryFacade
         return actions.ToArray();
     }
 
+    internal IReadOnlyList<ProtoRegistrationEntry> GetVisibleEntries(CoreDataPhase phase)
+    {
+        return registrations.FindAll(item => item.Phase <= phase).ToArray();
+    }
+
     internal sealed record ProtoPhaseAction(
         string OwnerModGuid,
         CoreDataPhase Phase,

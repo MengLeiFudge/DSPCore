@@ -13,6 +13,7 @@ public sealed class ProtoPhaseContext
         OwnerModGuid = ownerModGuid;
         Phase = phase;
         registryFacade = registry;
+        Access = new ProtoAccessView(registry, phase);
     }
 
     private readonly ProtoRegistryFacade registryFacade;
@@ -28,6 +29,56 @@ public sealed class ProtoPhaseContext
     /// Gets the currently executing data phase.
     /// </summary>
     public CoreDataPhase Phase { get; }
+
+    /// <summary>
+    /// 当前阶段可见 Proto 的查询和修改入口。
+    /// Gets lookup and mutation access to protos visible in this phase.
+    /// </summary>
+    public ProtoAccessView Access { get; }
+
+    /// <summary>
+    /// 查找当前阶段可见物品原型。
+    /// Finds an item proto visible in the current phase.
+    /// </summary>
+    /// <param name="itemId">物品 ID。Item ID.</param>
+    /// <returns>物品原型；找不到时返回 null。Item proto, or null when missing.</returns>
+    public ItemProto? FindItem(int itemId)
+    {
+        return Access.FindItem(itemId);
+    }
+
+    /// <summary>
+    /// 查找当前阶段可见配方原型。
+    /// Finds a recipe proto visible in the current phase.
+    /// </summary>
+    /// <param name="recipeId">配方 ID。Recipe ID.</param>
+    /// <returns>配方原型；找不到时返回 null。Recipe proto, or null when missing.</returns>
+    public RecipeProto? FindRecipe(int recipeId)
+    {
+        return Access.FindRecipe(recipeId);
+    }
+
+    /// <summary>
+    /// 查找当前阶段可见科技原型。
+    /// Finds a tech proto visible in the current phase.
+    /// </summary>
+    /// <param name="techId">科技 ID。Tech ID.</param>
+    /// <returns>科技原型；找不到时返回 null。Tech proto, or null when missing.</returns>
+    public TechProto? FindTech(int techId)
+    {
+        return Access.FindTech(techId);
+    }
+
+    /// <summary>
+    /// 查找当前阶段可见教程原型。
+    /// Finds a tutorial proto visible in the current phase.
+    /// </summary>
+    /// <param name="tutorialId">教程 ID。Tutorial ID.</param>
+    /// <returns>教程原型；找不到时返回 null。Tutorial proto, or null when missing.</returns>
+    public TutorialProto? FindTutorial(int tutorialId)
+    {
+        return Access.FindTutorial(tutorialId);
+    }
 
     /// <summary>
     /// 在当前阶段注册一个原型对象。

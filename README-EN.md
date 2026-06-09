@@ -37,7 +37,7 @@ P0/P1 blocks are the current implementation target.
 
 - Feature lifecycle: declare capability blocks, dependencies, priority, and initialization, and use `Lifecycle` to register DSPCore started, update, destroyed, and common save-chain callbacks.
 - Data phases: `Data`, `DataUpdates`, and `DataFinalFixes`.
-- Proto capabilities: DataPhases owns the three phases; ProtoAccess owns second/third phase lookup and mutation of registered data; Items, Recipes, Techs, and Tutorials own typed proto registration; ProtoRegistration remains the low-level aggregate and compatibility entry.
+- Proto capabilities: DataPhases owns the three phases; ProtoAccess provides second/third phase lookup and mutation of registered data through `ProtoPhaseContext.FindItem(...)` / `FindRecipe(...)` and `data.Access`; Items, Recipes, Techs, and Tutorials own typed proto registration; ProtoRegistration remains the low-level aggregate and compatibility entry.
 - Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot; row 1 writes to the vanilla build bar, row 2+ uses DSPCore extended buttons, and BuildBarTool compatibility entries remain available. Other authoring capabilities, such as item registration, should prefer `ItemProto.SetBuildBar(...)` after they have the item proto; BuildBar does not own proto creation.
 - Resources, icons, and localization: register resource roots and translation entries through `ModResources`, and register icons through `Icons.FromResources(...)`, `Icons.FromFile(...)`, `Icons.FromEmbedded(...)`, or `Icons.BindToProto(...)`.
 - Tabs: authors can declare custom pages, receive a `TabSlot`, and use that slot to generate item/recipe `GridIndex` values. Picker surfaces are DSPCore system implementation.
@@ -57,7 +57,7 @@ Implemented runtime bridges:
 
 - `DSPCorePlugin` starts from BepInEx and applies Harmony patches.
 - `Lifecycle` raises `OnStarted` after DSPCore runtime bridges are assembled, raises `OnUpdate` / `OnDestroyed` during plugin update and destroy, and forwards `OnNewGame`, `OnBeforeSave`, `OnBeforeLoad`, `OnAfterLoad`, and `OnSaveDeleted` from SaveRuntime.
-- Proto registration runs Factorio-like `Data`, `DataUpdates`, and `DataFinalFixes` callbacks. Runtime writes the resulting protos around `VFPreload.InvokeOnLoadWorkEnded`; DSPCore rebuilds `ProtoSet` indices and key derived caches after final fixes.
+- Proto registration runs Factorio-like `Data`, `DataUpdates`, and `DataFinalFixes` callbacks. Phase contexts provide lookup and mutation access to currently visible protos. Runtime writes the resulting protos around `VFPreload.InvokeOnLoadWorkEnded`; DSPCore rebuilds `ProtoSet` indices and key derived caches after final fixes.
 - `BuildBarRegistry.BindQuickBar` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons. `BuildBar.SetPlayerOverride(...)` writes a player override layer to the `.dspcore` save, and runtime uses author defaults overlaid with player overrides. When no DSPCore BuildBar save data exists, DSPCore imports row-1 player configuration from RebindBuildBar's `CustomBarBind.cfg`.
 - `IconSetRegistry` can load Unity `Resources` sprites, local PNG files, or embedded PNG files from loaded assemblies, cache them, and apply them to target protos. Author-side short entries are `Icons.FromResources(...)`, `Icons.FromFile(...)`, `Icons.FromEmbedded(...)`, and `Icons.BindToProto(...)`.
 - `TabRegistry` assigns a `TabSlot` for each stable page id and projects custom pages to item picker, recipe picker, replicator, signal picker, and tag-icon picker surfaces through the existing GridIndex category flow.
@@ -103,6 +103,9 @@ ProtoRegistration.Data("com.example.my-mod", data =>
 ProtoRegistration.DataUpdates("com.example.my-mod", data =>
 {
     data.RegisterRecipe(recipeProto, "Attach recipe after item declarations");
+    ItemProto baseItem = data.FindItem(1001);
+    if (baseItem != null)
+        baseItem.GridIndex = GridIndexes.From(tab: 3, row: 1, index: 5);
 });
 
 ProtoRegistration.DataFinalFixes("com.example.my-mod", data =>

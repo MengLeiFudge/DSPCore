@@ -95,7 +95,7 @@ Do not put everything into `DataFinalFixes`. Use it only for work that truly dep
 
 ## Capability: Describe Vanilla Data Reads
 
-`DspCore.Vanilla.GetItem(...)`, `GetRecipe(...)`, and `GetTech(...)` currently return read descriptors that record who wants which vanilla data. They are not direct LDB object query APIs.
+`DspCore.Vanilla.GetItem(...)`, `GetRecipe(...)`, and `GetTech(...)` return the older read descriptors. New direct phase lookup and mutation should use `ProtoPhaseContext.FindItem(...)` / `FindRecipe(...)` or `data.Access`; see `Authoring/ProtoAccess`.
 
 ## What This Block Does Not Own
 
