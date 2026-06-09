@@ -29,7 +29,7 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods.
 - Legacy compatibility shims for `xiaoye97.LDBTool`, `crecheng.DSPModSave`, `CommonAPI`, and `BuildBarTool`; compatibility code lives under the owning `Authoring/<Capability>/Compat/` directory instead of a centralized `Legacy/` directory.
 - Bilingual XML summaries for public APIs.
 
-The current version includes P0/P1 and first P2/P3 runtime bridges: BepInEx/Harmony startup, preloader field and reserved enum-slot injection, proto insertion, multi-row build bar binding, player overrides, RebindBuildBar configuration import, resource/icon loading, tabs for item/recipe/replicator/signal/tag-icon surfaces, picker popups and live filtering, custom recipe type pre-selection filtering, custom item type marker entries, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, entity component lifecycle, planet/star/galaxy lifecycle, blueprint parameter blocks, model and prefab cloning, option binding, optional multiplayer soft bridge, network query adapters, patch platform, achievement/abnormality/platform policy patches, error reporting, copyable diagnostic text with game/entity context, fatal-window copy/close buttons, localization entries, and common UI window lifecycle forwarding.
+The current version includes P0/P1 and first P2/P3 runtime bridges: BepInEx/Harmony startup, preloader field and reserved enum-slot injection, proto insertion, multi-row build bar binding, player overrides, RebindBuildBar configuration import, resource/icon loading, tabs for item/recipe/replicator/signal/tag-icon surfaces, picker popups and live filtering, custom recipe type pre-selection filtering, custom item type marker entries, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, entity component lifecycle, planet/star/galaxy lifecycle, blueprint parameter blocks, model and prefab cloning, option binding, optional multiplayer soft bridge, network query adapters, patch platform, achievement abnormality-check and competitive-upload policy patches, error reporting, copyable diagnostic text with game/entity context, fatal-window copy/close buttons, localization entries, and common UI window lifecycle forwarding.
 
 ## Feature Blocks
 
@@ -66,7 +66,7 @@ Implemented runtime bridges:
 - `GameEnums.RegisterRecipeType(...)` currently marks declared recipes as custom recipe types and hides recipes unsupported by the current assembler before the recipe picker selection; `ItemProto.SetCustomItemType()` marks existing items with DSPCore's reserved custom item type; `RecipeTypes` remains a legacy alias, and `AssemblerComponent.SetRecipe` remains the final guard.
 - `KeyBindRegistry` polls registered key bindings and invokes callbacks; the author-side short entry is `KeyBinds.Register(id, ownerModGuid, displayName, defaultKey, callback, ...)`, including simple `Ctrl`/`Alt`/`Shift` modifier combinations. Bindings with `CanOverride=true` enter the DSPCore unified settings window, where players can capture a key or edit text directly, and same-key bindings in the same `ConflictGroup` show a conflict hint. Runtime prefers player config and falls back to the default key when config is empty or invalid.
 - `SaveRegistry` writes a `.dspcore` sidecar save file and imports handlers by `CoreLoadOrder`.
-- `AchievementPolicyRegistry` aggregates each mod's achievement-disable declaration. Not declaring, or declaring `disableAchievements: false`, does not request disabling. If any mod declares true, DSPCore globally blocks achievement mutation, Milky Way / leaderboard uploads, and platform achievement/metadata calls. If no declaration is true, DSPCore blocks vanilla abnormality checks and keeps achievements available.
+- `AchievementPolicyRegistry` aggregates each mod's competitive-upload blocking declaration. DSPCore always blocks vanilla abnormality checks and keeps local/platform achievements available. If any mod calls `Achievements.BlockCompetitiveUpload(...)`, DSPCore blocks only Milky Way / Steam leaderboard uploads. The old `disableAchievements` parameter remains as a compatibility name; its current meaning is competitive-upload blocking.
 - `ErrorWindow` receives Unity fatal/error logs and fatal-window events, and builds copyable diagnostic text with current game state, optional planet/entity context, recent errors, candidate plugin text hits, DSPCore declarations, and a Harmony patch-map overview.
 - `ResourceRegistry.RegisterLocalization` is applied to DSP localization keys and language strings. Author-side short entries are `ModResources.Root(...)`, `ModResources.Text(...)`, and `ModResources.Pack(...)`.
 - `UiWindowManager` forwards DSPCore window lifecycle through `UIRoot` open, update, and destroy events; mods still create and open concrete windows themselves.
@@ -125,12 +125,12 @@ ProtoRegistration.DataFinalFixes("com.example.my-mod", data =>
 ```csharp
 using DSPCore;
 
-Achievements.Declare("com.example.my-mod", disableAchievements: true);
+Achievements.BlockCompetitiveUpload("com.example.my-mod");
 
-bool disabled = Achievements.ShouldDisableAchievements();
+bool blockUpload = Achievements.ShouldBlockCompetitiveUpload();
 ```
 
-Not calling the API, or declaring `disableAchievements: false`, means that mod does not request achievement disabling. When multiple mods declare policies, any true wins. See `DSPCore/Authoring/Achievements/README-EN.md` for the detailed cases.
+Not calling the API means that mod does not request competitive-upload blocking. When multiple mods declare policies, any true wins. Local achievements, platform achievements, and platform metadata calls stay available. See `DSPCore/Authoring/Achievements/README-EN.md` for the detailed cases.
 
 ## Example: Build Bar
 

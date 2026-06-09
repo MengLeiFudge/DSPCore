@@ -7,8 +7,9 @@ namespace ExampleMod;
 //
 // 用途：
 // - 模组作者只需要 using DSPCore，即可使用 Achievements 这个短入口。
-// - 每个模组只声明自己的 GUID 和是否禁用成就，DSPCore 会汇总所有声明。
-// - 只要任意模组声明 DisableAchievements = true，最终策略就是禁用成就。
+// - 每个模组只声明自己的 GUID 和是否阻止竞争性上传，DSPCore 会汇总所有声明。
+// - 只要任意模组要求阻止上传，DSPCore 就会阻断 Milky Way / 排行榜上传。
+// - 本地成就和平台成就/元数据调用仍保持可用。
 //
 // 建议调用位置：
 // - 在你的 BepInEx 插件 Awake 或 CommonAPI/DSPCore 注册阶段调用 Register。
@@ -16,7 +17,7 @@ namespace ExampleMod;
 //
 // Usage:
 // - Add using DSPCore, then call the short Achievements entry point.
-// - Declare only your own mod GUID and achievement-disable flag. DSPCore aggregates all declarations.
+// - Declare only your own mod GUID and competitive-upload policy. DSPCore aggregates all declarations.
 // - Call this once during plugin startup or feature registration.
 public static class AchievementPolicyExample
 {
@@ -24,6 +25,6 @@ public static class AchievementPolicyExample
     {
         // ModGuid 必须稳定，建议使用你的 BepInEx GUID。
         // Use a stable mod GUID, normally your BepInEx plugin GUID.
-        Achievements.Declare("com.example.balance", disableAchievements: true);
+        Achievements.BlockCompetitiveUpload("com.example.balance");
     }
 }
