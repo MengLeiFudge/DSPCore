@@ -7,7 +7,7 @@ The Core block provides the DSPCore global entry point, built-in feature registr
 - You can use short entries through `using DSPCore;`, or use `DspCore` to access all global registries.
 - DSPCore initializes built-in features and module declarations from BepInEx `Awake`, then assembles Harmony patches for systems.
 - `Features` and `Modules` let mods declare feature/module metadata that other mods can query.
-- `Lifecycle` can register DSPCore runtime started, update, and destroyed callbacks for small framework-level initialization or cleanup.
+- `Lifecycle` can register DSPCore runtime started, update, destroyed, and common save-chain callbacks for small framework-level initialization, cleanup, or save-boundary coordination.
 - Legacy CommonAPI `CommonAPIPlugin.IsSubmoduleLoaded(...)` bridges to `Modules.TryGet(...)` for migration.
 
 ## Capability: Access Global Registries
@@ -51,11 +51,15 @@ During initialization, DSPCore initializes features by priority and ID. Modules 
 Lifecycle.OnStarted(InitializeAfterDspCore);
 Lifecycle.OnUpdate(PollSmallRuntimeState);
 Lifecycle.OnDestroyed(DisposeState);
+Lifecycle.OnBeforeSave(saveName => FlushRuntimeCache(saveName));
+Lifecycle.OnAfterLoad(RebuildRuntimeCache);
 ```
 
 `OnStarted` runs after the DSPCore plugin entry finishes runtime bridge assembly; if registered after DSPCore has already started, it runs immediately once. `OnUpdate` follows the DSPCore plugin update loop, and `OnDestroyed` runs when the DSPCore plugin is destroyed.
 
-These events only describe the DSPCore framework lifecycle. They do not mean a specific game save, planet, factory, or UI surface exists.
+Save-chain events include `OnNewGame`, `OnBeforeSave(saveName)`, `OnBeforeLoad(saveName)`, `OnAfterLoad`, and `OnSaveDeleted(saveName)`. They are forwarded from DSPCore's existing `GameData` / `GameSave` / save-delete bridge and are intended for cache refresh, temporary index cleanup, or non-persistent state coordination. Complex persistence should still use `Saves`.
+
+Framework started/destroyed events do not mean a specific game save, planet, factory, or UI surface exists.
 
 ## Capability: CommonAPI Compatibility Query
 
@@ -76,7 +80,7 @@ is redirected to `DSPCore.Modules.TryGet(...)`. `CommonAPISubmoduleDependencyAtt
 
 ## Runtime Startup
 
-`DSPCorePlugin.Awake()` initializes DSPCore, registers legacy DSPModSave handlers, creates Harmony, assembles the currently implemented Proto, BuildBar, Saves, Achievements, Errors, Localization, Tabs, and GameEnums patches, then raises `Lifecycle.OnStarted`. `Update()` polls KeyBinds, picker surfaces, and `Lifecycle.OnUpdate`.
+`DSPCorePlugin.Awake()` initializes DSPCore, registers legacy DSPModSave handlers, creates Harmony, assembles the currently implemented Proto, BuildBar, Saves, Achievements, Errors, Localization, Tabs, and GameEnums patches, then raises `Lifecycle.OnStarted`. `Update()` polls KeyBinds, picker surfaces, and `Lifecycle.OnUpdate`. Save-chain events are forwarded by `SaveRuntime` from the corresponding `GameSave` / `GameData` patches.
 
 ## Examples
 

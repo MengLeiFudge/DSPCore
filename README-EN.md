@@ -35,7 +35,7 @@ The current version includes P0/P1 and first P2/P3 runtime bridges: BepInEx/Harm
 
 P0/P1 blocks are the current implementation target.
 
-- Feature lifecycle: declare capability blocks, dependencies, priority, and initialization, and use `Lifecycle` to register DSPCore started, update, and destroyed callbacks.
+- Feature lifecycle: declare capability blocks, dependencies, priority, and initialization, and use `Lifecycle` to register DSPCore started, update, destroyed, and common save-chain callbacks.
 - Data phases: `Data`, `DataUpdates`, and `DataFinalFixes`.
 - Proto capabilities: DataPhases owns the three phases; ProtoAccess owns second/third phase lookup and mutation of registered data; Items, Recipes, Techs, and Tutorials own typed proto registration; ProtoRegistration remains the low-level aggregate and compatibility entry.
 - Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot; row 1 writes to the vanilla build bar, row 2+ uses DSPCore extended buttons, and BuildBarTool compatibility entries remain available. Other authoring capabilities, such as item registration, should prefer `ItemProto.SetBuildBar(...)` after they have the item proto; BuildBar does not own proto creation.
@@ -56,7 +56,7 @@ P0/P1 blocks are the current implementation target.
 Implemented runtime bridges:
 
 - `DSPCorePlugin` starts from BepInEx and applies Harmony patches.
-- `Lifecycle` raises `OnStarted` after DSPCore runtime bridges are assembled, then raises `OnUpdate` / `OnDestroyed` during plugin update and destroy.
+- `Lifecycle` raises `OnStarted` after DSPCore runtime bridges are assembled, raises `OnUpdate` / `OnDestroyed` during plugin update and destroy, and forwards `OnNewGame`, `OnBeforeSave`, `OnBeforeLoad`, `OnAfterLoad`, and `OnSaveDeleted` from SaveRuntime.
 - Proto registration runs Factorio-like `Data`, `DataUpdates`, and `DataFinalFixes` callbacks. Runtime writes the resulting protos around `VFPreload.InvokeOnLoadWorkEnded`; DSPCore rebuilds `ProtoSet` indices and key derived caches after final fixes.
 - `BuildBarRegistry.BindQuickBar` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons. `BuildBar.SetPlayerOverride(...)` writes a player override layer to the `.dspcore` save, and runtime uses author defaults overlaid with player overrides. When no DSPCore BuildBar save data exists, DSPCore imports row-1 player configuration from RebindBuildBar's `CustomBarBind.cfg`.
 - `IconSetRegistry` can load Unity `Resources` sprites, local PNG files, or embedded PNG files from loaded assemblies, cache them, and apply them to target protos. Author-side short entries are `Icons.FromResources(...)`, `Icons.FromFile(...)`, `Icons.FromEmbedded(...)`, and `Icons.BindToProto(...)`.
@@ -167,6 +167,8 @@ Saves.Register(
     intoOtherSave: () => counter = 0);
 
 Lifecycle.OnStarted(InitializeAfterDspCore);
+Lifecycle.OnBeforeSave(saveName => FlushTransientCache(saveName));
+Lifecycle.OnAfterLoad(RebuildTransientCache);
 ```
 
 ## Example: Tabs And GridIndex

@@ -12,6 +12,11 @@ public static class Lifecycle
     private static readonly List<Action> StartedHandlers = new();
     private static readonly List<Action> UpdateHandlers = new();
     private static readonly List<Action> DestroyedHandlers = new();
+    private static readonly List<Action> NewGameHandlers = new();
+    private static readonly List<Action<string>> BeforeSaveHandlers = new();
+    private static readonly List<Action<string>> BeforeLoadHandlers = new();
+    private static readonly List<Action> AfterLoadHandlers = new();
+    private static readonly List<Action<string>> SaveDeletedHandlers = new();
     private static bool started;
 
     /// <summary>
@@ -65,6 +70,81 @@ public static class Lifecycle
         DestroyedHandlers.Add(handler);
     }
 
+    /// <summary>
+    /// 注册新游戏开始后的回调。
+    /// Registers a callback that runs after a new game starts.
+    /// </summary>
+    /// <param name="handler">新游戏回调。New-game callback.</param>
+    public static void OnNewGame(Action handler)
+    {
+        if (handler == null)
+        {
+            throw new ArgumentNullException(nameof(handler));
+        }
+
+        NewGameHandlers.Add(handler);
+    }
+
+    /// <summary>
+    /// 注册保存当前游戏前的回调。
+    /// Registers a callback that runs before the current game is saved.
+    /// </summary>
+    /// <param name="handler">保存前回调，参数是存档名。Before-save callback with the save name.</param>
+    public static void OnBeforeSave(Action<string> handler)
+    {
+        if (handler == null)
+        {
+            throw new ArgumentNullException(nameof(handler));
+        }
+
+        BeforeSaveHandlers.Add(handler);
+    }
+
+    /// <summary>
+    /// 注册读取当前游戏前的回调。
+    /// Registers a callback that runs before the current game is loaded.
+    /// </summary>
+    /// <param name="handler">读取前回调，参数是存档名。Before-load callback with the save name.</param>
+    public static void OnBeforeLoad(Action<string> handler)
+    {
+        if (handler == null)
+        {
+            throw new ArgumentNullException(nameof(handler));
+        }
+
+        BeforeLoadHandlers.Add(handler);
+    }
+
+    /// <summary>
+    /// 注册读取当前游戏后的回调。
+    /// Registers a callback that runs after the current game has loaded.
+    /// </summary>
+    /// <param name="handler">读取后回调。After-load callback.</param>
+    public static void OnAfterLoad(Action handler)
+    {
+        if (handler == null)
+        {
+            throw new ArgumentNullException(nameof(handler));
+        }
+
+        AfterLoadHandlers.Add(handler);
+    }
+
+    /// <summary>
+    /// 注册删除存档后的回调。
+    /// Registers a callback that runs after a save is deleted.
+    /// </summary>
+    /// <param name="handler">删除后回调，参数是存档名。After-delete callback with the save name.</param>
+    public static void OnSaveDeleted(Action<string> handler)
+    {
+        if (handler == null)
+        {
+            throw new ArgumentNullException(nameof(handler));
+        }
+
+        SaveDeletedHandlers.Add(handler);
+    }
+
     internal static void RaiseStarted()
     {
         started = true;
@@ -82,7 +162,37 @@ public static class Lifecycle
         InvokeAll(DestroyedHandlers);
         UpdateHandlers.Clear();
         DestroyedHandlers.Clear();
+        NewGameHandlers.Clear();
+        BeforeSaveHandlers.Clear();
+        BeforeLoadHandlers.Clear();
+        AfterLoadHandlers.Clear();
+        SaveDeletedHandlers.Clear();
         started = false;
+    }
+
+    internal static void RaiseNewGame()
+    {
+        InvokeAll(NewGameHandlers);
+    }
+
+    internal static void RaiseBeforeSave(string saveName)
+    {
+        InvokeAll(BeforeSaveHandlers, saveName);
+    }
+
+    internal static void RaiseBeforeLoad(string saveName)
+    {
+        InvokeAll(BeforeLoadHandlers, saveName);
+    }
+
+    internal static void RaiseAfterLoad()
+    {
+        InvokeAll(AfterLoadHandlers);
+    }
+
+    internal static void RaiseSaveDeleted(string saveName)
+    {
+        InvokeAll(SaveDeletedHandlers, saveName);
     }
 
     private static void InvokeAll(List<Action> handlers)
@@ -93,11 +203,32 @@ public static class Lifecycle
         }
     }
 
+    private static void InvokeAll<T>(List<Action<T>> handlers, T value)
+    {
+        foreach (var handler in handlers.ToArray())
+        {
+            InvokeSafely(handler, value);
+        }
+    }
+
     private static void InvokeSafely(Action handler)
     {
         try
         {
             handler();
+        }
+        catch (Exception ex)
+        {
+            DspCore.Errors.ReportException("DSPCore.Lifecycle", ex);
+            DspCore.Logger?.LogError($"DSPCore lifecycle handler failed: {ex}");
+        }
+    }
+
+    private static void InvokeSafely<T>(Action<T> handler, T value)
+    {
+        try
+        {
+            handler(value);
         }
         catch (Exception ex)
         {

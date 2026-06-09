@@ -35,7 +35,7 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 
 P0/P1 是当前实现目标。
 
-- 功能生命周期：声明能力块、依赖、优先级和初始化，并可通过 `Lifecycle` 注册 DSPCore 启动、更新和销毁回调。
+- 功能生命周期：声明能力块、依赖、优先级和初始化，并可通过 `Lifecycle` 注册 DSPCore 启动、更新、销毁和常见存档链路回调。
 - 数据阶段：`Data`、`DataUpdates` 和 `DataFinalFixes`。
 - 原型相关能力：DataPhases 提供三阶段；ProtoAccess 承接第二/第三阶段读取和修改他人注册数据；Items、Recipes、Techs、Tutorials 分别负责对应 proto 注册；ProtoRegistration 保留低层聚合和兼容入口。
 - 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位；第 1 行写入原版建造栏，第 2 行及以后使用 DSPCore 扩展按钮，并保留 BuildBarTool 兼容入口。其他作者能力，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.SetBuildBar(...)`；BuildBar 不承担 Proto 创建职责。
@@ -56,7 +56,7 @@ P0/P1 是当前实现目标。
 已接入运行时桥接：
 
 - `DSPCorePlugin` 通过 BepInEx 启动并应用 Harmony 补丁。
-- `Lifecycle` 会在 DSPCore 运行时桥接装配后触发 `OnStarted`，在插件更新和销毁时触发 `OnUpdate` / `OnDestroyed`。
+- `Lifecycle` 会在 DSPCore 运行时桥接装配后触发 `OnStarted`，在插件更新和销毁时触发 `OnUpdate` / `OnDestroyed`，并从 SaveRuntime 转发 `OnNewGame`、`OnBeforeSave`、`OnBeforeLoad`、`OnAfterLoad` 和 `OnSaveDeleted`。
 - 原型注册会按类似 Factorio 的 `Data`、`DataUpdates`、`DataFinalFixes` 三阶段执行回调；运行时在 `VFPreload.InvokeOnLoadWorkEnded` 前后写入对应 Proto，并在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
 - `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。`BuildBar.SetPlayerOverride(...)` 会写入玩家覆盖层并保存到 `.dspcore`，运行时总是用作者默认绑定叠加玩家覆盖后的有效绑定。没有 DSPCore BuildBar 存档数据时，DSPCore 会从 RebindBuildBar 的 `CustomBarBind.cfg` 导入第 1 行玩家配置。
 - `IconSetRegistry` 可以加载 Unity `Resources` sprite、本地 PNG 文件或已加载 assembly 中的嵌入 PNG，缓存后写入目标 Proto；作者侧短入口是 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)` 和 `Icons.BindToProto(...)`。
@@ -168,6 +168,8 @@ Saves.Register(
     intoOtherSave: () => counter = 0);
 
 Lifecycle.OnStarted(InitializeAfterDspCore);
+Lifecycle.OnBeforeSave(saveName => FlushTransientCache(saveName));
+Lifecycle.OnAfterLoad(RebuildTransientCache);
 ```
 
 ## 示例：分页和 GridIndex

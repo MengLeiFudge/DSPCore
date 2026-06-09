@@ -50,6 +50,7 @@ internal static class SaveRuntime
 
     public static void OnNewGame()
     {
+        Lifecycle.RaiseNewGame();
         foreach (var registration in OrderedRegistrations())
         {
             SafeIntoOtherSave(registration);
@@ -58,6 +59,7 @@ internal static class SaveRuntime
 
     public static void OnSave(string saveName)
     {
+        Lifecycle.RaiseBeforeSave(saveName);
         var registrations = OrderedRegistrations().ToArray();
         if (registrations.Length == 0)
         {
@@ -129,6 +131,7 @@ internal static class SaveRuntime
 
     public static void OnPreLoad(string saveName)
     {
+        Lifecycle.RaiseBeforeLoad(saveName);
         CloseLoadStream();
         saveEntries.Clear();
 
@@ -166,6 +169,7 @@ internal static class SaveRuntime
                 SafeIntoOtherSave(registration);
             }
 
+            Lifecycle.RaiseAfterLoad();
             return;
         }
 
@@ -181,6 +185,7 @@ internal static class SaveRuntime
         finally
         {
             CloseLoadStream();
+            Lifecycle.RaiseAfterLoad();
         }
     }
 
@@ -191,6 +196,8 @@ internal static class SaveRuntime
         {
             File.Delete(path);
         }
+
+        Lifecycle.RaiseSaveDeleted(saveName);
     }
 
     private static IEnumerable<SaveRegistration> OrderedRegistrations()
