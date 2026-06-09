@@ -57,11 +57,11 @@ ProtoRegistration.Register(typeof(ItemProto), itemProto, "com.example.my-mod", C
 If the item or recipe should appear on a DSPCore custom page, register the page through Tabs first, then generate the `GridIndex` from the returned `TabSlot`:
 
 ```csharp
-TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
-    Id: "example-machines",
-    OwnerModGuid: "com.example.my-mod",
-    Title: "ExampleMachines",
-    IconId: "example-machines-icon"));
+TabSlot machinesTab = Tabs.AddTab(
+    id: "example-machines",
+    ownerModGuid: "com.example.my-mod",
+    title: "ExampleMachines",
+    iconId: "example-machines-icon");
 
 itemProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
 recipeProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
