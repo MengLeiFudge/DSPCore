@@ -43,8 +43,13 @@ internal static class ErrorRuntime
             return;
         }
 
-        EnsureButton(tip, "DSPCoreCopyButton", "Copy", -90f, _ => GUIUtility.systemCopyBuffer = tip.errorLogText?.text ?? string.Empty);
+        EnsureButton(tip, "DSPCoreCopyButton", "Copy", -90f, _ => GUIUtility.systemCopyBuffer = BuildFatalWindowDiagnosticText(tip));
         EnsureButton(tip, "DSPCoreCloseButton", "Close", -180f, _ => tip._Close());
+    }
+
+    private static string BuildFatalWindowDiagnosticText(UIFatalErrorTip tip)
+    {
+        return DspCore.Errors.BuildDiagnosticText(tip.errorLogText?.text ?? string.Empty);
     }
 
     private static void OnLogMessageReceivedThreaded(string condition, string stackTrace, LogType type)

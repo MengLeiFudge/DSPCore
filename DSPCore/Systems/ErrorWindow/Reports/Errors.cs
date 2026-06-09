@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DSPCore;
 
@@ -34,5 +35,25 @@ public static class Errors
     public static IReadOnlyList<ErrorReport> GetReports()
     {
         return DspCore.Errors.GetReports();
+    }
+
+    /// <summary>
+    /// 生成包含错误报告、作者声明和 Harmony 补丁概览的诊断文本。
+    /// Builds diagnostic text containing error reports, author declarations, and a Harmony patch overview.
+    /// </summary>
+    public static string BuildDiagnosticText(string? focalText = null, int maxReports = 20, int maxPatchedMethods = 80)
+    {
+        return DspCore.Errors.BuildDiagnosticText(focalText, maxReports, maxPatchedMethods);
+    }
+
+    /// <summary>
+    /// 生成诊断文本并复制到系统剪贴板。
+    /// Builds diagnostic text and copies it to the system clipboard.
+    /// </summary>
+    public static string CopyDiagnosticText(string? focalText = null, int maxReports = 20, int maxPatchedMethods = 80)
+    {
+        string text = BuildDiagnosticText(focalText, maxReports, maxPatchedMethods);
+        GUIUtility.systemCopyBuffer = text;
+        return text;
     }
 }

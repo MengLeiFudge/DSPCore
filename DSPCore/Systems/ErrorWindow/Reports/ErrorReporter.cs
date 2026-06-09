@@ -44,4 +44,17 @@ public sealed class ErrorReporter
     {
         return reports.ToArray();
     }
+
+    /// <summary>
+    /// 生成包含错误报告、作者声明和 Harmony 补丁概览的诊断文本。
+    /// Builds diagnostic text containing error reports, author declarations, and a Harmony patch overview.
+    /// </summary>
+    /// <param name="focalText">可选当前错误文本。Optional current error text.</param>
+    /// <param name="maxReports">最多包含的最近报告数量。Maximum recent reports to include.</param>
+    /// <param name="maxPatchedMethods">最多包含的 Harmony patched method 数量。Maximum Harmony patched methods to include.</param>
+    /// <returns>可复制的诊断文本。Copyable diagnostic text.</returns>
+    public string BuildDiagnosticText(string? focalText = null, int maxReports = 20, int maxPatchedMethods = 80)
+    {
+        return ErrorDiagnosticText.Build(focalText ?? string.Empty, maxReports, maxPatchedMethods);
+    }
 }
