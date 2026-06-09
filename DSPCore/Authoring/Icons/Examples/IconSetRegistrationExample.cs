@@ -18,34 +18,34 @@ public static class IconSetRegistrationExample
 {
     public static void Register()
     {
+        var pack = ModResources.Pack(
+            ownerModGuid: "com.example.my-mod",
+            rootPath: "assets/icons",
+            assembly: Assembly.GetExecutingAssembly());
+
         // Id 是 DSPCore 内部查找图标的稳定键。
         // Id is the stable key used by DSPCore and other capabilities.
-        Icons.FromResources(
+        pack.IconFromResources(
             id: "default-machine",
-            ownerModGuid: "com.example.my-mod",
-            resourcesPath: "icons/default-machine");
+            resourcesPath: "default-machine");
 
-        Icons.FromEmbedded(
+        pack.IconFromEmbedded(
             id: "embedded-machine",
-            ownerModGuid: "com.example.my-mod",
-            assembly: Assembly.GetExecutingAssembly(),
             resourceName: "ExampleMod.Assets.embedded-machine.png",
             fallbackIconId: "default-machine");
 
-        Icons.FromAssetBundle(
+        pack.IconFromAssetBundle(
             id: "bundle-machine",
-            ownerModGuid: "com.example.my-mod",
-            bundlePath: "assets/icons/example-icons",
+            bundlePath: "example-icons",
             assetName: "example-machine",
             fallbackIconId: "default-machine");
 
-        Icons.BindToProto(
+        pack.BindIconToProto(
             id: "example-machine",
-            ownerModGuid: "com.example.my-mod",
 
             // assetPath 可以指向本地 PNG，也可以按后续资源规则指向 Unity 资源。
             // assetPath may point to a local PNG or a Unity resource path.
-            assetPath: "assets/icons/example-machine.png",
+            assetPath: "example-machine.png",
 
             // TargetKind/TargetProtoId 表示加载成功后写入哪个 Proto。
             // TargetKind/TargetProtoId select the proto that receives the icon.

@@ -16,22 +16,14 @@ public static class ResourceRegistrationExample
 {
     public static void Register()
     {
-        ModResources.Root(
-            id: "example-icons",
+        var pack = ModResources.Pack(
             ownerModGuid: "com.example.my-mod",
-            keyword: "icons",
-            rootPath: "assets/icons");
+            rootPath: "assets",
+            assembly: typeof(ResourceRegistrationExample).Assembly);
 
-        ModResources.Text(
-            key: "ExampleMachines",
-            language: "zhCN",
-            value: "示例机器",
-            ownerModGuid: "com.example.my-mod");
+        pack.Root(id: "example-assets", keyword: "assets");
 
-        ModResources.Text(
-            key: "ExampleMachines",
-            language: "enUS",
-            value: "Example Machines",
-            ownerModGuid: "com.example.my-mod");
+        pack.Text("ExampleMachines", "zhCN", "示例机器");
+        pack.Text("ExampleMachines", "enUS", "Example Machines");
     }
 }

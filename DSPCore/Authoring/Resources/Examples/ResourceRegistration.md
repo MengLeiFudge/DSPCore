@@ -4,7 +4,7 @@
 
 ## 适用时机
 
-- 多个功能块需要引用同一组资源路径。
+- 多个功能块需要引用同一组资源路径，且不想在每次调用中重复传 owner 和根路径。
 - UI、分页、Proto 名称或提示文本需要由 DSPCore 统一写入本地化表。
 
 ## 关键参数
@@ -13,6 +13,7 @@
 - `ownerModGuid`：资源或文本归属模组。
 - `keyword`：资源分类关键字，例如 `icons` 或 `ui`。
 - `rootPath`：资源根路径。
+- `ModResources.Pack(...)`：创建复用 owner、资源根和默认 assembly 的资源包短入口。
 - `key` / `language` / `value`：本地化 key、语言和文本。
 
 ## 运行时前提
@@ -22,6 +23,7 @@
 ## 常见误用
 
 - 不要把 ModResources 当成图标加载器；图标 sprite 加载属于 Icons。
+- 不要把 `rootPath` 当成嵌入资源命名空间；嵌入资源仍需要完整 manifest resource name。
 - 不要把临时文件路径作为稳定资源 ID。
 
 代码示例见 `ResourceRegistrationExample.cs`。

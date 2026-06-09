@@ -39,7 +39,7 @@ P0/P1 是当前实现目标。
 - 数据阶段：`Data`、`DataUpdates` 和 `DataFinalFixes`。
 - 原型相关能力：DataPhases 提供三阶段；ProtoAccess 通过 `ProtoPhaseContext.FindItem(...)` / `FindRecipe(...)` 和 `data.Access` 承接第二/第三阶段读取和修改他人注册数据；Items、Recipes、Techs、Tutorials 分别负责对应 proto 注册；ProtoRegistration 保留低层聚合和兼容入口。
 - 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位；第 1 行写入原版建造栏，第 2 行及以后使用 DSPCore 扩展按钮，并保留 BuildBarTool 兼容入口。其他作者能力，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.SetBuildBar(...)`；BuildBar 不承担 Proto 创建职责。
-- 资源、图标和本地化：通过 `ModResources` 登记资源根和翻译条目，通过 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)`、`Icons.FromAssetBundle(...)` 或 `Icons.BindToProto(...)` 注册图标。
+- 资源、图标和本地化：通过 `ModResources` 登记资源根和翻译条目；同一模组可用 `ModResources.Pack(...)` 复用 owner、资源根和 assembly；通过 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)`、`Icons.FromAssetBundle(...)` 或 `Icons.BindToProto(...)` 注册图标。
 - 分页：作者可以声明自定义页面并取得 `TabSlot`，再用 `TabSlot` 生成物品/配方 `GridIndex`。选择器 surface 属于 DSPCore 系统实现。
 - 游戏枚举：`GameEnums.RegisterRecipeType(...)` 声明自定义配方类型限制，`ItemProto.SetCustomItemType()` 标记 DSPCore 预留的自定义物品类型；运行时代码使用 `GameEnums.CustomRecipeTypeValue` / `CustomItemTypeValue` 避免直接编译期依赖 Preloader 注入字段。
 - 存档：`Saves.Auto(...)` 自动 schema、委托式简单存档处理器、原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
@@ -60,7 +60,7 @@ P0/P1 是当前实现目标。
 - `Lifecycle` 会在 DSPCore 运行时桥接装配后触发 `OnStarted`，在插件更新和销毁时触发 `OnUpdate` / `OnDestroyed`，并从 SaveRuntime 转发 `OnNewGame`、`OnBeforeSave`、`OnBeforeLoad`、`OnAfterLoad` 和 `OnSaveDeleted`。
 - 原型注册会按类似 Factorio 的 `Data`、`DataUpdates`、`DataFinalFixes` 三阶段执行回调；阶段上下文提供当前可见 Proto 查询和修改入口；运行时在 `VFPreload.InvokeOnLoadWorkEnded` 前后写入对应 Proto，并在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
 - `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。`BuildBar.SetPlayerOverride(...)` 会写入玩家覆盖层并保存到 `.dspcore`，运行时总是用作者默认绑定叠加玩家覆盖后的有效绑定。没有 DSPCore BuildBar 存档数据时，DSPCore 会从 RebindBuildBar 的 `CustomBarBind.cfg` 导入第 1 行玩家配置。
-- `IconSetRegistry` 可以加载 Unity `Resources` sprite、本地 PNG 文件、已加载 assembly 中的嵌入 PNG 或 AssetBundle 中的 `Sprite` / `Texture2D`，缓存后写入目标 Proto；作者侧短入口是 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)`、`Icons.FromAssetBundle(...)` 和 `Icons.BindToProto(...)`。
+- `IconSetRegistry` 可以加载 Unity `Resources` sprite、本地 PNG 文件、已加载 assembly 中的嵌入 PNG 或 AssetBundle 中的 `Sprite` / `Texture2D`，缓存后写入目标 Proto；作者侧短入口是 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)`、`Icons.FromAssetBundle(...)` 和 `Icons.BindToProto(...)`。同一模组有统一资源根时，可先创建 `ModResources.Pack(...)`，再用 pack 上的图标方法减少重复参数。
 - `TabRegistry` 会为稳定页面 ID 分配 `TabSlot`，并通过现有 GridIndex 分类流程把自定义页面投射到物品选择器、配方选择器、制造器界面、信号选择器和标签图标选择器。
 - `PickerSurfaces` 会处理物品、配方和信号选择器 surface，实时网格会应用过滤、重复 `GridIndex` 兜底和动态行列扩容。
 - `GameEnums.RegisterRecipeType(...)` 当前会把声明的配方标记为自定义配方类型，并在制作器配方列表打开前隐藏当前机器不能使用的配方；`ItemProto.SetCustomItemType()` 会把已有物品标记为 DSPCore 预留的自定义物品类型；`RecipeTypes` 保留为旧别名，`AssemblerComponent.SetRecipe` 仍保留最终保护。
@@ -68,7 +68,7 @@ P0/P1 是当前实现目标。
 - `SaveRegistry` 会写入 `.dspcore` 独立存档，并按 `CoreLoadOrder` 导入处理器。
 - `AchievementPolicyRegistry` 汇总每个模组的成就禁用声明；不声明或声明 `disableAchievements: false` 不会请求禁用，任意模组声明 true 时全局阻断成就变更、Milky Way / 排行榜上传和平台成就/元数据调用。没有 true 声明时，DSPCore 会屏蔽原版异常检查并保持成就可用。
 - `ErrorWindow` 会接收 Unity fatal/error 日志和错误窗口事件，并生成包含当前游戏状态、可选星球/实体上下文、最近错误、候选插件文本命中、DSPCore 声明和 Harmony patch map 概览的可复制诊断文本。
-- `ResourceRegistry.RegisterLocalization` 会写入 DSP 本地化 key 和语言字符串；作者侧短入口是 `ModResources.Root(...)` 和 `ModResources.Text(...)`。
+- `ResourceRegistry.RegisterLocalization` 会写入 DSP 本地化 key 和语言字符串；作者侧短入口是 `ModResources.Root(...)`、`ModResources.Text(...)` 和 `ModResources.Pack(...)`。
 - `UiWindowManager` 会在 `UIRoot` 打开、更新和销毁时转发 DSPCore 窗口生命周期；具体窗口由模组自己创建和打开。
 - `Components` 会在 `PlanetFactory.CreateEntityLogicComponents` 后按描述创建组件，并在实体移除、电力 tick、工厂 tick 和后置阶段转发回调；组件数据写入 `.dspcore`，未加载星球的数据会延迟到 `GameData.GetOrCreateFactory` 后恢复。
 - `Planets` 会在 `GameData.GetOrCreateFactory` 后为每个 `PlanetFactory` 创建星球系统，并转发本地星球绘制、电力 tick、工厂 tick 和后置阶段。
@@ -148,10 +148,15 @@ int maxRows = Options.IntRange("Example", "MaxRows", 3, "Maximum rows.", minimum
 // Open from a button, key bind, or custom UI callback after UIRoot is ready.
 Options.OpenWindow();
 
-ModResources.Text("ExampleMachines", "zhCN", "示例机器", "com.example.my-mod");
-Icons.FromEmbedded("example-embedded", "com.example.my-mod", typeof(MyPlugin).Assembly, "ExampleMod.Assets.example.png");
-Icons.FromAssetBundle("example-bundle", "com.example.my-mod", "assets/icons/example-icons", "example-machine");
-Icons.BindToProto("example-machine", "com.example.my-mod", "assets/icons/example.png", ProtoKind.Item, 9554);
+var pack = ModResources.Pack(
+    ownerModGuid: "com.example.my-mod",
+    rootPath: "assets/icons",
+    assembly: typeof(MyPlugin).Assembly);
+
+pack.Text("ExampleMachines", "zhCN", "示例机器");
+pack.IconFromEmbedded("example-embedded", "ExampleMod.Assets.example.png");
+pack.IconFromAssetBundle("example-bundle", "example-icons", "example-machine");
+pack.BindIconToProto("example-machine", "example.png", ProtoKind.Item, 9554);
 ```
 
 ## 示例：自动存档、委托式存档和生命周期

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace DSPCore;
 
@@ -8,6 +10,20 @@ namespace DSPCore;
 /// </summary>
 public static class ModResources
 {
+    /// <summary>
+    /// 创建一个复用模组 GUID、资源根和程序集的资源包短入口。
+    /// Creates a resource-pack short entry that reuses the mod GUID, root path, and assembly.
+    /// </summary>
+    /// <param name="ownerModGuid">所属模组 GUID。Owner mod GUID.</param>
+    /// <param name="rootPath">资源根路径。Resource root path.</param>
+    /// <param name="assembly">默认嵌入资源程序集。Default embedded-resource assembly.</param>
+    /// <returns>资源包短入口。Resource-pack short entry.</returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static ModResourcePack Pack(string ownerModGuid, string rootPath = "", Assembly? assembly = null)
+    {
+        return new ModResourcePack(ownerModGuid, rootPath, assembly ?? Assembly.GetCallingAssembly());
+    }
+
     /// <summary>
     /// 注册一个模组资源根。
     /// Registers a mod resource root.

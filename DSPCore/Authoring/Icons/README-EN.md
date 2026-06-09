@@ -5,11 +5,28 @@ The Icons block lets a mod register icon resources by stable id and apply them t
 ## What This Block Gives You
 
 - You do not need to repeat PNG loading, Unity Resources / AssetBundle loading, sprite caching, and fallback logic in every capability.
+- If one mod has a shared resource root, `ModResources.Pack(...)` can register icons without repeating `ownerModGuid` and path prefixes.
 - Other modules can reference a stable `IconId` instead of depending directly on file paths.
 - Icons can declare a target Proto, and DSPCore resolves the target and writes `_iconSprite` at runtime.
 - Load failures and missing targets are logged centrally.
 
-## Capability: Register Shared Icons
+## Capability: Register Shared Icons Through A Resource Pack
+
+```csharp
+var pack = ModResources.Pack(
+    ownerModGuid: "com.example.my-mod",
+    rootPath: "assets/icons",
+    assembly: typeof(MyPlugin).Assembly);
+
+pack.IconFromFile("example-file-icon", "example-icon.png", fallbackIconId: "default-machine");
+pack.IconFromEmbedded("example-embedded-icon", "ExampleMod.Assets.example-icon.png");
+pack.IconFromAssetBundle("example-bundle-icon", "example-icons", "example-machine");
+pack.BindIconToProto("example-machine", "example-machine.png", ProtoKind.Item, 9554);
+```
+
+The pack resolves relative paths under `RootPath`, so `"example-machine.png"` becomes `"assets/icons/example-machine.png"`. Embedded resource names are not combined with the root because they must be assembly manifest resource names.
+
+## Capability: Register Independent Shared Icons
 
 ```csharp
 Icons.FromResources(
@@ -55,6 +72,7 @@ Icons.BindToProto(
 ## What DSPCore Does After The Call
 
 - Registration only stores the icon descriptor; if the same `Id` is registered more than once, the later registration replaces the earlier one.
+- `ModResourcePack` only fills owner and relative paths; the final registration is still a normal `IconDescriptor`.
 - Icon resolution recognizes internal `embedded://` and `assetbundle://` paths. Normal paths first try `Resources.Load<Sprite>`, then read a PNG file path.
 - `FromEmbedded` uses an internal `embedded://` path convention. Runtime reads the manifest resource stream from an assembly already loaded into the current AppDomain.
 - `FromAssetBundle` uses an internal `assetbundle://` path convention. Runtime caches the AssetBundle, loads a `Sprite` by asset name, and falls back to `Texture2D`.
