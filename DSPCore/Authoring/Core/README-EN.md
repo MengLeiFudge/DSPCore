@@ -32,14 +32,22 @@ Examples should usually use short entries such as `ProtoRegistration.RegisterIte
 ## Capability: Declare Features And Modules
 
 ```csharp
-Modules.Register(new ModuleDescriptor(
-    Id: "example.module",
-    DisplayName: "Example Module",
-    Initialize: InitializeModule,
-    Dependencies: null));
+Features.Register(
+    id: "com.example.my-mod.machines",
+    displayName: "Example Machines",
+    initialize: InitializeMachines,
+    priority: 100);
+
+Modules.Register(
+    id: "com.example.my-mod.compat.target-plugin",
+    displayName: "Target Plugin Compatibility",
+    initialize: InitializeCompatibility,
+    dependencies: new[] { "com.example.my-mod.machines" });
 ```
 
 `Features.Register(...)` is for feature-block-level capabilities. `Modules.Register(...)` is for internal or cross-mod module metadata. If the same ID is registered more than once, the later registration replaces the earlier one.
+
+`FeatureDescriptor` and `ModuleDescriptor` can still be passed directly to the corresponding `Register(...)` methods for batch construction, configuration-driven registration, or advanced flows that need to keep descriptor objects.
 
 During initialization, DSPCore initializes features by priority and ID. Modules currently initialize in registry enumeration order and do not use dependency topological sorting.
 
@@ -108,5 +116,7 @@ is redirected to `DSPCore.Modules.TryGet(...)`. `CommonAPISubmoduleDependencyAtt
 
 - `Examples/Lifecycle.md`
 - `Examples/LifecycleExample.cs`
+- `Examples/ModuleDeclaration.md`
+- `Examples/ModuleDeclarationExample.cs`
 - `Examples/PatchPlatform.md`
 - `Examples/PatchPlatformExample.cs`

@@ -211,6 +211,9 @@ DSPCore.sln
 - Lifecycle owns only BepInEx startup and cross-system patch assembly. Concrete runtime bridges belong in their corresponding `DSPCore/Systems/` directories.
 - Lifecycle 只负责 BepInEx 启动和跨系统 patch 装配。具体运行时桥接必须放在对应的 `DSPCore/Systems/` 目录。
 
+- Core feature and module declarations should prefer `Features.Register(id, displayName, initialize, priority, dependencies)` and `Modules.Register(id, displayName, initialize, dependencies)` in new examples; descriptor objects remain the advanced construction path.
+- Core 功能块和模块声明的新示例应优先使用 `Features.Register(id, displayName, initialize, priority, dependencies)` 与 `Modules.Register(id, displayName, initialize, dependencies)`；descriptor 对象保留为高级构造路径。
+
 - ProtoRegistration owns the author-facing data lifecycle. New examples should prefer `ProtoRegistration.Data(...)`, `ProtoRegistration.DataUpdates(...)`, and `ProtoRegistration.DataFinalFixes(...)` callbacks with `ProtoPhaseContext`; direct `RegisterItem(..., phase)` remains available as a lower-level and compatibility entry.
 - ProtoRegistration 负责作者侧数据生命周期。新示例应优先使用 `ProtoRegistration.Data(...)`、`ProtoRegistration.DataUpdates(...)` 和 `ProtoRegistration.DataFinalFixes(...)` 回调，并通过 `ProtoPhaseContext` 注册物品、配方、科技和指引；直接 `RegisterItem(..., phase)` 继续作为低层和兼容入口保留。
 

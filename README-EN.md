@@ -241,6 +241,8 @@ The old call is accepted, but it is marked obsolete. New mods should prefer `Ite
 - Capability examples use paired `Examples/<Scenario>.md` + `Examples/<Scenario>Example.cs` files. `.cs` examples are documentation artifacts and are excluded from compilation.
 - `DSPCore/Authoring/Core/Examples/LifecycleExample.cs`
 - `DSPCore/Authoring/Core/Examples/Lifecycle.md`
+- `DSPCore/Authoring/Core/Examples/ModuleDeclarationExample.cs`
+- `DSPCore/Authoring/Core/Examples/ModuleDeclaration.md`
 - `DSPCore/Authoring/Core/Examples/PatchPlatformExample.cs`
 - `DSPCore/Authoring/Core/Examples/PatchPlatform.md`
 - `DSPCore/Authoring/Achievements/Examples/AchievementPolicyExample.cs`

@@ -242,6 +242,8 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 - 能力示例采用 `Examples/<Scenario>.md` + `Examples/<Scenario>Example.cs` 成对文件；`.cs` 示例只作为文档产物，不参与编译。
 - `DSPCore/Authoring/Core/Examples/LifecycleExample.cs`
 - `DSPCore/Authoring/Core/Examples/Lifecycle.md`
+- `DSPCore/Authoring/Core/Examples/ModuleDeclarationExample.cs`
+- `DSPCore/Authoring/Core/Examples/ModuleDeclaration.md`
 - `DSPCore/Authoring/Core/Examples/PatchPlatformExample.cs`
 - `DSPCore/Authoring/Core/Examples/PatchPlatform.md`
 - `DSPCore/Authoring/Achievements/Examples/AchievementPolicyExample.cs`

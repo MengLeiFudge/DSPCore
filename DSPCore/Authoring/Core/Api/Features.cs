@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace DSPCore;
@@ -8,6 +9,25 @@ namespace DSPCore;
 /// </summary>
 public static class Features
 {
+    /// <summary>
+    /// 注册一个功能块。
+    /// Registers a feature block.
+    /// </summary>
+    /// <param name="id">功能块 ID。Feature block id.</param>
+    /// <param name="displayName">显示名称。Display name.</param>
+    /// <param name="initialize">初始化回调。Initialization callback.</param>
+    /// <param name="priority">初始化优先级，数值越小越早。Initialization priority; lower values run earlier.</param>
+    /// <param name="dependencies">依赖的功能块 ID。Dependent feature block ids.</param>
+    public static void Register(
+        string id,
+        string displayName,
+        Action initialize,
+        int priority = 0,
+        IReadOnlyList<string>? dependencies = null)
+    {
+        Register(new FeatureDescriptor(id, displayName, priority, initialize, dependencies));
+    }
+
     /// <summary>
     /// 注册一个功能块。
     /// Registers a feature block.
