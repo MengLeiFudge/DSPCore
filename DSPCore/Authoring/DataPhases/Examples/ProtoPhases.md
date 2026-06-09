@@ -13,7 +13,7 @@
 - `ownerModGuid`：归属模组 GUID。
 - `configure`：阶段回调，DSPCore 在对应阶段执行并传入 `ProtoPhaseContext`。
 - `priority`：同一阶段内的执行顺序，数值越小越早；相同 priority 保持注册顺序。
-- `ProtoPhaseContext`：当前阶段上下文，提供 `RegisterItem`、`RegisterRecipe`、`RegisterTech`、`RegisterTutorial` 和通用 `Register`。
+- `ProtoPhaseContext`：当前阶段上下文，提供 `RegisterItem`、`RegisterRecipe`、`RegisterTech`、`RegisterTutorial` 和通用 `Register`；类型化注册会返回原 proto，便于链式继续配置。
 - `purpose`：阶段回调或 Proto 注册目的说明。
 
 ## 运行时前提

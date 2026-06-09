@@ -93,6 +93,26 @@ public sealed class ProtoPhaseContext
     /// 在当前阶段注册一个物品原型。
     /// Registers an item proto in the current phase.
     /// </summary>
+    /// <param name="proto">物品原型。Item proto.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    /// <returns>原物品原型，便于链式调用。The original item proto for chaining.</returns>
+    public ItemProto RegisterItem(ItemProto proto, string? purpose = null)
+    {
+        if (proto == null)
+        {
+            throw new ArgumentNullException(nameof(proto));
+        }
+
+        RegisterItem((object)proto, purpose);
+        return proto;
+    }
+
+    /// <summary>
+    /// 在当前阶段注册一个物品原型对象。
+    /// Registers an item proto object in the current phase.
+    /// </summary>
+    /// <param name="proto">物品原型对象。Item proto object.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
     public void RegisterItem(object proto, string? purpose = null)
     {
         registryFacade.RegisterItem(proto, OwnerModGuid, Phase, purpose);
@@ -102,6 +122,26 @@ public sealed class ProtoPhaseContext
     /// 在当前阶段注册一个配方原型。
     /// Registers a recipe proto in the current phase.
     /// </summary>
+    /// <param name="proto">配方原型。Recipe proto.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    /// <returns>原配方原型，便于链式调用。The original recipe proto for chaining.</returns>
+    public RecipeProto RegisterRecipe(RecipeProto proto, string? purpose = null)
+    {
+        if (proto == null)
+        {
+            throw new ArgumentNullException(nameof(proto));
+        }
+
+        RegisterRecipe((object)proto, purpose);
+        return proto;
+    }
+
+    /// <summary>
+    /// 在当前阶段注册一个配方原型对象。
+    /// Registers a recipe proto object in the current phase.
+    /// </summary>
+    /// <param name="proto">配方原型对象。Recipe proto object.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
     public void RegisterRecipe(object proto, string? purpose = null)
     {
         registryFacade.RegisterRecipe(proto, OwnerModGuid, Phase, purpose);
@@ -111,6 +151,26 @@ public sealed class ProtoPhaseContext
     /// 在当前阶段注册一个科技原型。
     /// Registers a tech proto in the current phase.
     /// </summary>
+    /// <param name="proto">科技原型。Tech proto.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    /// <returns>原科技原型，便于链式调用。The original tech proto for chaining.</returns>
+    public TechProto RegisterTech(TechProto proto, string? purpose = null)
+    {
+        if (proto == null)
+        {
+            throw new ArgumentNullException(nameof(proto));
+        }
+
+        RegisterTech((object)proto, purpose);
+        return proto;
+    }
+
+    /// <summary>
+    /// 在当前阶段注册一个科技原型对象。
+    /// Registers a tech proto object in the current phase.
+    /// </summary>
+    /// <param name="proto">科技原型对象。Tech proto object.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
     public void RegisterTech(object proto, string? purpose = null)
     {
         registryFacade.RegisterTech(proto, OwnerModGuid, Phase, purpose);
@@ -120,6 +180,26 @@ public sealed class ProtoPhaseContext
     /// 在当前阶段注册一个指引或教程原型。
     /// Registers a guide or tutorial proto in the current phase.
     /// </summary>
+    /// <param name="proto">教程原型。Tutorial proto.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    /// <returns>原教程原型，便于链式调用。The original tutorial proto for chaining.</returns>
+    public TutorialProto RegisterTutorial(TutorialProto proto, string? purpose = null)
+    {
+        if (proto == null)
+        {
+            throw new ArgumentNullException(nameof(proto));
+        }
+
+        RegisterTutorial((object)proto, purpose);
+        return proto;
+    }
+
+    /// <summary>
+    /// 在当前阶段注册一个指引或教程原型对象。
+    /// Registers a guide or tutorial proto object in the current phase.
+    /// </summary>
+    /// <param name="proto">教程原型对象。Tutorial proto object.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
     public void RegisterTutorial(object proto, string? purpose = null)
     {
         registryFacade.RegisterTutorial(proto, OwnerModGuid, Phase, purpose);

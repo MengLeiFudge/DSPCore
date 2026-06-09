@@ -98,16 +98,17 @@ using DSPCore;
 
 ProtoRegistration.Data("com.example.my-mod", data =>
 {
-    itemProto
-        .SetGridIndex(tab: 3, row: 1, index: 5)
-        .RegisterItem("com.example.my-mod", purpose: "Declare base item");
+    data.RegisterItem(
+            itemProto.SetGridIndex(tab: 3, row: 1, index: 5),
+            "Declare base item")
+        .SetBuildBar(tab: 3, row: 1, index: 5);
 });
 
 ProtoRegistration.DataUpdates("com.example.my-mod", data =>
 {
-    recipeProto
-        .SetGridIndex(tab: 3, row: 1, index: 6)
-        .RegisterRecipe("com.example.my-mod", CoreDataPhase.DataUpdates, "Attach recipe after item declarations");
+    data.RegisterRecipe(
+        recipeProto.SetGridIndex(tab: 3, row: 1, index: 6),
+        "Attach recipe after item declarations");
 
     ItemProto baseItem = data.FindItem(1001);
     if (baseItem != null)

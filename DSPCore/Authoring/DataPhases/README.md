@@ -6,4 +6,6 @@ DataPhases 负责作者侧三阶段生命周期：`Data`、`DataUpdates`、`Data
 - `DataUpdates`：跨模组调整，可以通过 `ProtoPhaseContext.FindItem(...)` / `FindRecipe(...)` 或 `data.Access` 读取和修改前面阶段已注册的数据。
 - `DataFinalFixes`：最终修正，在系统写入和缓存重建前做收口。
 
+`ProtoPhaseContext.RegisterItem(ItemProto)`、`RegisterRecipe(RecipeProto)`、`RegisterTech(TechProto)` 和 `RegisterTutorial(TutorialProto)` 会返回传入的原对象，便于在阶段回调内继续链式设置图标、建造栏或其他作者侧元数据。`object` 版本继续作为低层兼容入口保留。
+
 具体 proto 类型注册应优先看 Items、Recipes、Techs、Tutorials；跨模组读取和修改看 ProtoAccess；底层兼容和聚合入口仍保留在 ProtoRegistration。

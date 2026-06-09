@@ -26,14 +26,19 @@ public static class ProtoPhasesExample
         // Base item declarations usually belong in Data.
         ProtoRegistration.Data("com.example.my-mod", data =>
         {
-            data.RegisterItem(itemProto, "Declare the base item");
+            data.RegisterItem(
+                    itemProto.SetGridIndex(tab: 3, row: 1, index: 5),
+                    "Declare the base item")
+                .SetBuildBar(tab: 3, row: 1, index: 5);
         });
 
         // 配方依赖物品 ID，因此放在 DataUpdates 更直观。
         // Recipe proto objects depend on item ids, so DataUpdates is clearer.
         ProtoRegistration.DataUpdates("com.example.my-mod", data =>
         {
-            data.RegisterRecipe(recipeProto, "Attach recipe after item declarations");
+            data.RegisterRecipe(
+                recipeProto.SetGridIndex(tab: 3, row: 1, index: 6),
+                "Attach recipe after item declarations");
         });
 
         // Tutorial 或跨模组最终链路修正适合 DataFinalFixes。
