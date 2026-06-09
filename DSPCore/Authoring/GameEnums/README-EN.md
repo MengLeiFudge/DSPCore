@@ -25,7 +25,7 @@ GameEnums.RegisterRecipeType(
 
 `RecipeIds` points to existing recipes in this type. If `AssemblerItemIds` is empty or null, current runtime does not restrict machines. If it is non-empty, only assemblers whose item proto id is listed may use this recipe type.
 
-Existing `RecipeTypes.Register(...)` remains as the old short entry. New documentation and examples prefer `GameEnums.RegisterRecipeType(...)` so the GameEnums capability does not stay narrowed to the RecipeTypes concept.
+Existing `RecipeTypes.Register(...)` remains as the old short entry, supports the same parameter overload, and forwards to `GameEnums.RegisterRecipeType(...)`. New documentation and examples still prefer `GameEnums.RegisterRecipeType(...)` so the GameEnums capability does not stay narrowed to the RecipeTypes concept.
 
 ## Current Capability: Mark Custom Item Type
 

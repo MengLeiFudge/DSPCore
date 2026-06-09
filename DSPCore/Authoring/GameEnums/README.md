@@ -25,7 +25,7 @@ GameEnums.RegisterRecipeType(
 
 `RecipeIds` 指属于该类型的已有配方。`AssemblerItemIds` 为空或 null 时，当前运行时不会限制机器；非空时，只有这些机器物品 ID 对应的制作器可以使用该类型配方。
 
-已有 `RecipeTypes.Register(...)` 继续保留为旧短入口；新文档和示例主推 `GameEnums.RegisterRecipeType(...)`，避免把 GameEnums 能力继续收窄成单一 RecipeTypes 概念。
+已有 `RecipeTypes.Register(...)` 继续保留为旧短入口，也支持同一组参数重载并转发到 `GameEnums.RegisterRecipeType(...)`。新文档和示例仍主推 `GameEnums.RegisterRecipeType(...)`，避免把 GameEnums 能力继续收窄成单一 RecipeTypes 概念。
 
 ## 当前能力：标记自定义物品类型
 
