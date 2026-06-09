@@ -1,0 +1,171 @@
+#nullable disable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace DSPCore;
+
+internal sealed class OptionsWindow : UiWindow
+{
+    private const float PageHeaderHeight = 30f;
+    private const float OptionRowHeight = 46f;
+    private const float EmptyRowHeight = 42f;
+    private const float LabelWidth = 230f;
+    private const float DescriptionWidth = 360f;
+    private const float Gap = 12f;
+
+    protected override void _OnCreate()
+    {
+        base._OnCreate();
+        var root = GetComponent<RectTransform>();
+        var groups = BuildGroups();
+        var rows = BuildRows(groups);
+        float contentHeight = Math.Max(160f, rows.Sum(row => row.Height) + Math.Max(0, rows.Count - 1) * 8f);
+
+        var layout = GridDsl.Grid(
+            rows: [GridDsl.Px(72f), GridDsl.Fr(1f), GridDsl.Px(56f)],
+            cols: [GridDsl.Fr(1f)],
+            rowGap: UiPageLayout.Gap,
+            children:
+            [
+                GridDsl.Header("DSPCore Settings", "Unified options registered by mods.", row: 0, col: 0),
+                GridDsl.ScrollableContentCard(
+                    contentHeight: contentHeight,
+                    row: 1,
+                    col: 0,
+                    rows: rows.Select(row => GridDsl.Px(row.Height)).ToArray(),
+                    cols: [GridDsl.Fr(1f)],
+                    rowGap: 8f,
+                    children: rows.Select((row, index) => row.Node(index)).ToArray()),
+                GridDsl.FooterCard(
+                    row: 2,
+                    col: 0,
+                    cols: [GridDsl.Fr(1f), GridDsl.Px(120f)],
+                    children:
+                    [
+                        GridDsl.TextNode("Changes are written to the DSPCore BepInEx config.", row: 0, col: 0),
+                        GridDsl.ButtonNode("Close", Close, row: 0, col: 1)
+                    ])
+            ]);
+
+        GridDsl.BuildLayout(this, root, layout);
+    }
+
+    private static List<OptionGroup> BuildGroups()
+    {
+        var pages = DspCore.Options.GetPages()
+            .OrderBy(page => page.Order)
+            .ThenBy(page => page.PageId, StringComparer.Ordinal)
+            .ToDictionary(page => page.PageId, page => page, StringComparer.Ordinal);
+
+        return DspCore.Options.GetAll()
+            .OrderBy(option => pages.TryGetValue(option.PageId ?? string.Empty, out var page) ? page.Order : int.MaxValue)
+            .ThenBy(option => option.PageId ?? string.Empty, StringComparer.Ordinal)
+            .ThenBy(option => option.Section, StringComparer.Ordinal)
+            .ThenBy(option => option.Key, StringComparer.Ordinal)
+            .GroupBy(option => option.PageId ?? string.Empty, StringComparer.Ordinal)
+            .Select(group =>
+            {
+                pages.TryGetValue(group.Key, out var page);
+                return new OptionGroup(page?.Title ?? "General", group.ToList());
+            })
+            .ToList();
+    }
+
+    private static List<RowModel> BuildRows(List<OptionGroup> groups)
+    {
+        var rows = new List<RowModel>();
+        if (groups.Count == 0)
+        {
+            rows.Add(new EmptyRowModel());
+            return rows;
+        }
+
+        foreach (var group in groups)
+        {
+            rows.Add(new PageRowModel(group.Title));
+            rows.AddRange(group.Options.Select(option => new OptionRowModel(option)));
+        }
+
+        return rows;
+    }
+
+    private static void BuildOptionRow(UiWindow window, RectTransform root, OptionDescriptor option)
+    {
+        float height = root.sizeDelta.y;
+        float controlX = LabelWidth + DescriptionWidth + Gap * 2f;
+        float controlWidth = Math.Max(160f, root.sizeDelta.x - controlX);
+        window.AddText2(0f, height / 2f, root, option.Key, UiPageLayout.BodyFontSize);
+        window.AddText2(LabelWidth + Gap, height / 2f, root, option.Description, UiPageLayout.BodyFontSize);
+
+        if (option.Kind == OptionValueKind.Bool)
+        {
+            bool current = DspCore.Options.GetBool(option.Section, option.Key, bool.TryParse(option.DefaultValue, out var fallback) && fallback);
+            var checkBox = UiCheckBox.CreateCheckBox(controlX, height / 2f, root, current, string.Empty, UiPageLayout.BodyFontSize);
+            checkBox.OnChecked += () => OptionRuntime.SetString(option.Section, option.Key, checkBox.Checked.ToString());
+            return;
+        }
+
+        var input = window.AddInputField(
+            controlX,
+            height / 2f,
+            root,
+            DspCore.Options.GetString(option.Section, option.Key),
+            UiPageLayout.BodyFontSize);
+        input.GetComponent<RectTransform>().sizeDelta = new Vector2(controlWidth, input.GetComponent<RectTransform>().sizeDelta.y);
+        input.onEndEdit.AddListener(value =>
+        {
+            if (!IsValid(option.Kind, value))
+            {
+                input.text = DspCore.Options.GetString(option.Section, option.Key);
+                return;
+            }
+
+            OptionRuntime.SetString(option.Section, option.Key, value);
+        });
+    }
+
+    private static bool IsValid(OptionValueKind kind, string value)
+    {
+        return kind switch
+        {
+            OptionValueKind.Int => int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out _),
+            OptionValueKind.Float => float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out _),
+            _ => true
+        };
+    }
+
+    private abstract record RowModel(float Height)
+    {
+        public abstract LayoutNode Node(int row);
+    }
+
+    private sealed record EmptyRowModel() : RowModel(EmptyRowHeight)
+    {
+        public override LayoutNode Node(int row)
+        {
+            return GridDsl.TextNode("No options registered.", row: row, col: 0);
+        }
+    }
+
+    private sealed record PageRowModel(string Title) : RowModel(PageHeaderHeight)
+    {
+        public override LayoutNode Node(int row)
+        {
+            return GridDsl.CardTitleNode(Title, row: row, col: 0);
+        }
+    }
+
+    private sealed record OptionRowModel(OptionDescriptor Option) : RowModel(OptionRowHeight)
+    {
+        public override LayoutNode Node(int row)
+        {
+            return GridDsl.Node(row: row, col: 0, build: (window, root) => BuildOptionRow(window, root, Option));
+        }
+    }
+
+    private sealed record OptionGroup(string Title, IReadOnlyList<OptionDescriptor> Options);
+}

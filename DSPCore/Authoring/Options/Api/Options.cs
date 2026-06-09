@@ -36,7 +36,7 @@ public static class Options
     /// <returns>当前布尔值。Current boolean value.</returns>
     public static bool Bool(string section, string key, bool defaultValue, string description, string? pageId = null)
     {
-        Register(section, key, defaultValue.ToString(), description, pageId);
+        Register(section, key, defaultValue.ToString(), description, pageId, OptionValueKind.Bool);
         return GetBool(section, key, defaultValue);
     }
 
@@ -52,7 +52,7 @@ public static class Options
     /// <returns>当前整数值。Current integer value.</returns>
     public static int Int(string section, string key, int defaultValue, string description, string? pageId = null)
     {
-        Register(section, key, defaultValue.ToString(CultureInfo.InvariantCulture), description, pageId);
+        Register(section, key, defaultValue.ToString(CultureInfo.InvariantCulture), description, pageId, OptionValueKind.Int);
         return GetInt(section, key, defaultValue);
     }
 
@@ -68,7 +68,7 @@ public static class Options
     /// <returns>当前浮点值。Current floating-point value.</returns>
     public static float Float(string section, string key, float defaultValue, string description, string? pageId = null)
     {
-        Register(section, key, defaultValue.ToString(CultureInfo.InvariantCulture), description, pageId);
+        Register(section, key, defaultValue.ToString(CultureInfo.InvariantCulture), description, pageId, OptionValueKind.Float);
         return GetFloat(section, key, defaultValue);
     }
 
@@ -81,9 +81,25 @@ public static class Options
     /// <param name="defaultValue">默认值。Default value.</param>
     /// <param name="description">配置说明。Config description.</param>
     /// <param name="pageId">可选设置页面 ID。Optional settings page ID.</param>
-    public static void Register(string section, string key, string defaultValue, string description, string? pageId = null)
+    /// <param name="kind">基础控件类型。Basic control type.</param>
+    public static void Register(
+        string section,
+        string key,
+        string defaultValue,
+        string description,
+        string? pageId = null,
+        OptionValueKind kind = OptionValueKind.String)
     {
-        DspCore.Options.Register(new OptionDescriptor(section, key, defaultValue, description, pageId));
+        DspCore.Options.Register(new OptionDescriptor(section, key, defaultValue, description, pageId, kind));
+    }
+
+    /// <summary>
+    /// 打开 DSPCore 统一设置窗口。
+    /// Opens the DSPCore unified settings window.
+    /// </summary>
+    public static void OpenWindow()
+    {
+        OptionRuntime.OpenWindow();
     }
 
     /// <summary>

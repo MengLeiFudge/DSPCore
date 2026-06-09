@@ -9,4 +9,11 @@ namespace DSPCore;
 /// <param name="DefaultValue">默认值。Default value.</param>
 /// <param name="Description">配置说明。Config description.</param>
 /// <param name="PageId">可选设置页面 ID。Optional settings page ID.</param>
-public sealed record OptionDescriptor(string Section, string Key, string DefaultValue, string Description, string? PageId = null);
+/// <param name="Kind">基础控件类型。Basic control type.</param>
+public sealed record OptionDescriptor(
+    string Section,
+    string Key,
+    string DefaultValue,
+    string Description,
+    string? PageId = null,
+    OptionValueKind Kind = OptionValueKind.String);

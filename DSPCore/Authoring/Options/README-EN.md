@@ -1,6 +1,6 @@
 # Options
 
-The Options module lets mods declare simple options that DSPCore binds to the BepInEx `ConfigFile`. The public surface includes `String`, `Bool`, `Int`, and `Float` short entries, lower-level string registration, option page descriptors, and settings version descriptors.
+The Options module lets mods declare simple options that DSPCore binds to the BepInEx `ConfigFile`, and provides a DSPCore-owned unified settings window. The public surface includes `String`, `Bool`, `Int`, and `Float` short entries, lower-level string registration, option page descriptors, settings version descriptors, and `Options.OpenWindow()`.
 
 ## What This Module Provides
 
@@ -8,7 +8,7 @@ The Options module lets mods declare simple options that DSPCore binds to the Be
 - Simple options can use short entries such as `Options.Bool(...)` and `Options.Int(...)` to register and read in one call.
 - DSPCore binds options registered before startup, and also binds options registered after startup.
 - If the DSPCore runtime has not bound the config file yet, short entries return the descriptor default instead of an empty string.
-- A settings UI can be generated from `OptionPageDescriptor` and `OptionDescriptor` values with `PageId`.
+- The DSPCore unified settings window groups options by `OptionPageDescriptor` and `OptionDescriptor.PageId`.
 - Multiplayer or save compatibility checks can read `OptionVersionDescriptor` values.
 
 ## Capability: Short Register-And-Read Entries
@@ -22,10 +22,19 @@ string mode = Options.String("Example", "Mode", "Normal", "Example mode.");
 
 These methods register the option first, then return the current value. Use them for ordinary toggles, numbers, and text settings.
 
+## Capability: Open The Unified Settings Window
+
+```csharp
+Options.OpenWindow();
+```
+
+The unified settings window displays all registered options. `Bool` uses a checkbox, while `String`, `Int`, and `Float` use input fields that write back to the DSPCore BepInEx config when editing ends. The window must be opened after `UIRoot` is initialized, usually from a mod button, key bind, or custom UI callback.
+
 ## Boundaries
 
 - The underlying BepInEx values are still strings. Boolean, integer, and floating-point read helpers exist, while enums are parsed by authors.
-- This module does not create concrete settings pages directly.
+- The current window is DSPCore-owned and does not inject into the vanilla option page.
+- Invalid `Int` / `Float` input is reverted to the current config value.
 - Config keys should stay stable so player configuration remains valid.
 
 ## Examples

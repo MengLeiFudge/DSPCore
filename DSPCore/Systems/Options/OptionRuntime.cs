@@ -7,6 +7,7 @@ internal static class OptionRuntime
 {
     private static readonly Dictionary<string, ConfigEntry<string>> Entries = new();
     private static ConfigFile? configFile;
+    private static OptionsWindow? window;
 
     public static void Initialize(ConfigFile config)
     {
@@ -43,5 +44,31 @@ internal static class OptionRuntime
 
         value = string.Empty;
         return false;
+    }
+
+    public static void SetString(string section, string key, string value)
+    {
+        if (Entries.TryGetValue(OptionRegistry.KeyOf(section, key), out var entry))
+        {
+            entry.Value = value;
+        }
+    }
+
+    public static void OpenWindow()
+    {
+        if (!UiWindowManager.Initialized || !UIRoot.instance)
+        {
+            DspCore.Logger?.LogWarning("DSPCore options window cannot open before UIRoot is initialized.");
+            return;
+        }
+
+        if (window != null)
+        {
+            UiWindowManager.DestroyWindow(window);
+            window = null;
+        }
+
+        window = UiWindowManager.CreateWindow<OptionsWindow>("dspcore-options-window", "DSPCore Settings");
+        window.Open();
     }
 }
