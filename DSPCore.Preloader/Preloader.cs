@@ -38,7 +38,8 @@ public static class Preloader
         var changed = false;
         changed |= AddEntityDataFields(assembly);
         changed |= AddPrefabDescFields(assembly);
-        changed |= AddRecipeTypeCustom(assembly);
+        changed |= AddEnumLiteral(assembly, "ERecipeType", "Custom", 20);
+        changed |= AddEnumLiteral(assembly, "EItemType", "Custom", 100);
         logger?.LogInfo(changed
             ? $"DSPCore preloader patched {assembly.Name.Name}."
             : $"DSPCore preloader found no missing fields in {assembly.Name.Name}.");
@@ -70,19 +71,19 @@ public static class Preloader
         return AddField(prefabDesc, "customData", DictionaryStringObject(assembly));
     }
 
-    private static bool AddRecipeTypeCustom(AssemblyDefinition assembly)
+    private static bool AddEnumLiteral(AssemblyDefinition assembly, string enumTypeName, string fieldName, int value)
     {
-        var recipeType = FindType(assembly, "ERecipeType");
-        if (recipeType == null || recipeType.Fields.Any(field => field.Name == "Custom"))
+        var enumType = FindType(assembly, enumTypeName);
+        if (enumType == null || enumType.Fields.Any(field => field.Name == fieldName))
         {
             return false;
         }
 
-        var field = new FieldDefinition("Custom", FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.Literal | FieldAttributes.HasDefault, recipeType)
+        var field = new FieldDefinition(fieldName, FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.Literal | FieldAttributes.HasDefault, enumType)
         {
-            Constant = 20
+            Constant = value
         };
-        recipeType.Fields.Add(field);
+        enumType.Fields.Add(field);
         return true;
     }
 

@@ -9,6 +9,18 @@ namespace DSPCore;
 public static class GameEnums
 {
     /// <summary>
+    /// DSPCore 预留的自定义配方类型枚举值。
+    /// Reserved custom recipe type enum value injected by DSPCore.
+    /// </summary>
+    public const int CustomRecipeTypeValue = 20;
+
+    /// <summary>
+    /// DSPCore 预留的自定义物品类型枚举值。
+    /// Reserved custom item type enum value injected by DSPCore.
+    /// </summary>
+    public const int CustomItemTypeValue = 100;
+
+    /// <summary>
     /// 注册一个自定义配方类型。
     /// Registers a custom recipe type.
     /// </summary>
@@ -68,5 +80,29 @@ public static class GameEnums
     public static bool CanAssemblerUseRecipe(int assemblerEntityId, int recipeId)
     {
         return RecipeTypeRuntime.CanAssemblerUseRecipe(assemblerEntityId, recipeId);
+    }
+
+    /// <summary>
+    /// 把物品原型标记为 DSPCore 自定义物品类型。
+    /// Marks an item proto as the DSPCore custom item type.
+    /// </summary>
+    /// <param name="item">物品原型。Item proto.</param>
+    public static void SetCustomItemType(ItemProto item)
+    {
+        if (item != null)
+        {
+            item.Type = (EItemType)CustomItemTypeValue;
+        }
+    }
+
+    /// <summary>
+    /// 判断物品原型是否使用 DSPCore 自定义物品类型。
+    /// Checks whether an item proto uses the DSPCore custom item type.
+    /// </summary>
+    /// <param name="item">物品原型。Item proto.</param>
+    /// <returns>使用自定义物品类型时返回 true。Returns true when the item uses the custom item type.</returns>
+    public static bool IsCustomItemType(ItemProto item)
+    {
+        return item != null && (int)item.Type == CustomItemTypeValue;
     }
 }

@@ -29,7 +29,7 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 - 提供 `xiaoye97.LDBTool`、`crecheng.DSPModSave`、`CommonAPI` 和 `BuildBarTool` 的旧 API 兼容层；兼容代码按所属作者能力放入 `Authoring/<Capability>/Compat/`，不再使用集中式 `Legacy/` 目录。
 - 公开 API 提供中英文 XML summary。
 
-当前版本已接入 P0/P1 和第一批 P2/P3 运行时桥接：BepInEx/Harmony 启动、Preloader 字段注入、Proto 写入、多行建造栏绑定、玩家覆盖、RebindBuildBar 配置导入、资源/图标加载、物品/配方/制造器/信号/标签图标分页、选择器弹窗和实时过滤、自定义配方类型选择前过滤、按键回调、DSPCore 独立存档、旧 DSPModSave 处理器桥接、实体组件生命周期、星球/恒星/银河系统生命周期、蓝图参数块、模型和预制体克隆、配置项绑定、可选联机软桥、网络查询适配器、补丁平台、成就/异常/平台策略补丁、错误报告、带游戏/实体上下文的可复制诊断文本、错误窗口复制/关闭按钮、本地化条目和通用 UI 窗口生命周期转发。
+当前版本已接入 P0/P1 和第一批 P2/P3 运行时桥接：BepInEx/Harmony 启动、Preloader 字段和枚举预留槽注入、Proto 写入、多行建造栏绑定、玩家覆盖、RebindBuildBar 配置导入、资源/图标加载、物品/配方/制造器/信号/标签图标分页、选择器弹窗和实时过滤、自定义配方类型选择前过滤、自定义物品类型标记入口、按键回调、DSPCore 独立存档、旧 DSPModSave 处理器桥接、实体组件生命周期、星球/恒星/银河系统生命周期、蓝图参数块、模型和预制体克隆、配置项绑定、可选联机软桥、网络查询适配器、补丁平台、成就/异常/平台策略补丁、错误报告、带游戏/实体上下文的可复制诊断文本、错误窗口复制/关闭按钮、本地化条目和通用 UI 窗口生命周期转发。
 
 ## 功能块
 
@@ -41,6 +41,7 @@ P0/P1 是当前实现目标。
 - 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位；第 1 行写入原版建造栏，第 2 行及以后使用 DSPCore 扩展按钮，并保留 BuildBarTool 兼容入口。其他作者能力，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.SetBuildBar(...)`；BuildBar 不承担 Proto 创建职责。
 - 资源、图标和本地化：通过 `ModResources` 登记资源根和翻译条目，通过 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)`、`Icons.FromAssetBundle(...)` 或 `Icons.BindToProto(...)` 注册图标。
 - 分页：作者可以声明自定义页面并取得 `TabSlot`，再用 `TabSlot` 生成物品/配方 `GridIndex`。选择器 surface 属于 DSPCore 系统实现。
+- 游戏枚举：`GameEnums.RegisterRecipeType(...)` 声明自定义配方类型限制，`ItemProto.SetCustomItemType()` 标记 DSPCore 预留的自定义物品类型；运行时代码使用 `GameEnums.CustomRecipeTypeValue` / `CustomItemTypeValue` 避免直接编译期依赖 Preloader 注入字段。
 - 存档：`Saves.Auto(...)` 自动 schema、委托式简单存档处理器、原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
 - 成就策略：声明是否影响银河系/排行榜上传等策略。错误窗口和错误收集属于 DSPCore 系统实现。
 - UI 框架：窗口生命周期、标签页窗口、基础控件、声明式网格布局、主题卡片辅助，以及标准表单、列表、详情区和状态页脚脚手架；不包含具体业务页面。
@@ -62,7 +63,7 @@ P0/P1 是当前实现目标。
 - `IconSetRegistry` 可以加载 Unity `Resources` sprite、本地 PNG 文件、已加载 assembly 中的嵌入 PNG 或 AssetBundle 中的 `Sprite` / `Texture2D`，缓存后写入目标 Proto；作者侧短入口是 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)`、`Icons.FromAssetBundle(...)` 和 `Icons.BindToProto(...)`。
 - `TabRegistry` 会为稳定页面 ID 分配 `TabSlot`，并通过现有 GridIndex 分类流程把自定义页面投射到物品选择器、配方选择器、制造器界面、信号选择器和标签图标选择器。
 - `PickerSurfaces` 会处理物品、配方和信号选择器 surface，实时网格会应用过滤、重复 `GridIndex` 兜底和动态行列扩容。
-- `GameEnums.RegisterRecipeType(...)` 当前会把声明的配方标记为自定义配方类型，并在制作器配方列表打开前隐藏当前机器不能使用的配方；`RecipeTypes` 保留为旧别名，`AssemblerComponent.SetRecipe` 仍保留最终保护。
+- `GameEnums.RegisterRecipeType(...)` 当前会把声明的配方标记为自定义配方类型，并在制作器配方列表打开前隐藏当前机器不能使用的配方；`ItemProto.SetCustomItemType()` 会把已有物品标记为 DSPCore 预留的自定义物品类型；`RecipeTypes` 保留为旧别名，`AssemblerComponent.SetRecipe` 仍保留最终保护。
 - `KeyBindRegistry` 会轮询已注册按键并调用回调，支持简单的 `Ctrl`/`Alt`/`Shift` 修饰键组合；`CanOverride=true` 的按键会进入 DSPCore 统一设置窗口，运行时优先读取玩家配置，配置为空或非法时回落默认键。
 - `SaveRegistry` 会写入 `.dspcore` 独立存档，并按 `CoreLoadOrder` 导入处理器。
 - `AchievementPolicyRegistry` 汇总每个模组的成就禁用声明；不声明或声明 `disableAchievements: false` 不会请求禁用，任意模组声明 true 时全局阻断成就变更、Milky Way / 排行榜上传和平台成就/元数据调用。没有 true 声明时，DSPCore 会屏蔽原版异常检查并保持成就可用。
