@@ -50,7 +50,7 @@ P0/P1 blocks are the current implementation target.
 - Blueprint parameters: use `Blueprints.Register(blockId, ownerModGuid, copy, paste, ...)` to register integer-payload tagged blocks so multiple mods do not compete for fixed `BuildingParameters.parameters` slots; use descriptors for complex block handling.
 - Models and prefabs: clone existing `ModelProto` entries, configure independent `PrefabDesc` instances, and rebuild model derived caches.
 - Options, multiplayer, and networks: provide `Options.String/Bool/Int/Float/Enum/IntRange/FloatRange` short entries, same-name overloads with `OptionUi` for page, display, in-page order, and Reset button metadata, BepInEx config binding, a DSPCore unified settings window, option page and settings version descriptors, option import/export, Nebula soft detection, packet/host relay/planet data/client save declarations, adapter snapshot/query entries, and the `Networks.Register(...)` short entry for factory network query adapters.
-- Patch platform: centralize conditional patch declarations, required plugin GUID/version checks, disabled reasons, and apply failure reporting.
+- Patch platform: use `Patches.Register(...)` / `RegisterForPlugin(...)` to centralize conditional patch declarations, required plugin GUID/version checks, disabled reasons, and apply failure reporting; descriptors remain the advanced path.
 
 ## Runtime Status
 
@@ -78,7 +78,7 @@ Implemented runtime bridges:
 - `Multiplayer` currently detects whether Nebula is loaded, stores packet, host relay, planet data request, and client missing-save declarations, and exposes adapter snapshot/query entries. Actual Nebula sending belongs to a dedicated adapter.
 - `Networks` provides the `Register(...)` adapter short entry plus the `TryGetCommonNetwork(...)` and `IsConnectedToNetwork(...)` query surfaces; concrete scanning is supplied by registered adapters.
 - `Galaxy` creates star and galaxy systems after galaxy data exists; parameterless systems can be registered through `GalaxySystems.RegisterStar<TSystem>(...)` / `RegisterGalaxy<TSystem>(...)` short entries. Runtime forwards `SpaceSector.GameTick` updates and sidecar saves.
-- `PatchRuntime` applies conditional `PatchDescriptor` declarations and records disabled reasons or apply failures.
+- `PatchRuntime` applies conditional patches declared through `Patches.Register(...)` or `PatchDescriptor` and records disabled reasons or apply failures.
 
 Current runtime limits:
 
@@ -187,6 +187,28 @@ Lifecycle.OnBeforeSave(saveName => FlushTransientCache(saveName));
 Lifecycle.OnAfterLoad(RebuildTransientCache);
 ```
 
+## Example: Conditional Patches
+
+```csharp
+using DSPCore;
+
+Patches.Register(
+    id: "example.core-patch",
+    ownerModGuid: "com.example.my-mod",
+    apply: ApplyCorePatch,
+    description: "Apply example runtime patch.",
+    isEnabled: IsFeatureEnabled,
+    getDisabledReason: () => "example feature is disabled");
+
+Patches.RegisterForPlugin(
+    id: "example.target-plugin-integration",
+    ownerModGuid: "com.example.my-mod",
+    requiredPluginGuid: "com.example.target-plugin",
+    apply: ApplyTargetPluginIntegration,
+    description: "Enable integration when the target plugin is loaded.",
+    minimumPluginVersion: "1.2.0");
+```
+
 ## Example: Tabs And GridIndex
 
 ```csharp
@@ -219,6 +241,8 @@ The old call is accepted, but it is marked obsolete. New mods should prefer `Ite
 - Capability examples use paired `Examples/<Scenario>.md` + `Examples/<Scenario>Example.cs` files. `.cs` examples are documentation artifacts and are excluded from compilation.
 - `DSPCore/Authoring/Core/Examples/LifecycleExample.cs`
 - `DSPCore/Authoring/Core/Examples/Lifecycle.md`
+- `DSPCore/Authoring/Core/Examples/PatchPlatformExample.cs`
+- `DSPCore/Authoring/Core/Examples/PatchPlatform.md`
 - `DSPCore/Authoring/Achievements/Examples/AchievementPolicyExample.cs`
 - `DSPCore/Authoring/Achievements/Examples/AchievementPolicy.md`
 - `DSPCore/Authoring/BuildBar/Examples/QuickBarBindingExample.cs`

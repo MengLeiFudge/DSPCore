@@ -50,7 +50,7 @@ P0/P1 是当前实现目标。
 - 蓝图参数：用 `Blueprints.Register(blockId, ownerModGuid, copy, paste, ...)` 注册整数负载 tagged block，避免多个模组抢 `BuildingParameters.parameters` 固定槽位；复杂 block 处理再使用 descriptor。
 - 模型和预制体：从已有 `ModelProto` 克隆新模型，配置独立 `PrefabDesc`，并重建模型派生缓存。
 - 配置、联机和网络：提供 `Options.String/Bool/Int/Float/Enum/IntRange/FloatRange` 短入口，支持同名方法加 `OptionUi` 设置页面、显示名、同页排序和 Reset 按钮，提供 BepInEx 配置绑定、DSPCore 统一设置窗口、设置页面、设置版本描述、配置导入/导出、Nebula 软检测、packet/host relay/planet data/client save 声明、adapter snapshot/query 入口，以及 `Networks.Register(...)` 工厂网络查询适配器短入口。
-- 补丁平台：集中声明条件补丁、必需插件 GUID/version、禁用原因和应用失败报告。
+- 补丁平台：通过 `Patches.Register(...)` / `RegisterForPlugin(...)` 集中声明条件补丁、必需插件 GUID/version、禁用原因和应用失败报告；descriptor 保留为高级路径。
 
 ## 运行时状态
 
@@ -78,7 +78,7 @@ P0/P1 是当前实现目标。
 - `Multiplayer` 当前检测 Nebula 是否加载，保存 packet、host relay、planet data request 和 client missing-save 声明，并提供 adapter snapshot/query 入口；真实 Nebula 发送由专门适配器接入。
 - `Networks` 提供 `Register(...)` 适配器短入口，以及 `TryGetCommonNetwork(...)` 和 `IsConnectedToNetwork(...)` 查询表面；具体网络扫描由注册适配器提供。
 - `Galaxy` 会在银河数据存在后创建恒星/银河系统；无参构造系统可用 `GalaxySystems.RegisterStar<TSystem>(...)` / `RegisterGalaxy<TSystem>(...)` 短入口注册。运行时在 `SpaceSector.GameTick` 转发更新和 sidecar 存档。
-- `PatchRuntime` 会应用 `PatchDescriptor` 声明的条件补丁，记录禁用原因和失败异常。
+- `PatchRuntime` 会应用 `Patches.Register(...)` 或 `PatchDescriptor` 声明的条件补丁，记录禁用原因和失败异常。
 
 当前运行时限制：
 
@@ -188,6 +188,28 @@ Lifecycle.OnBeforeSave(saveName => FlushTransientCache(saveName));
 Lifecycle.OnAfterLoad(RebuildTransientCache);
 ```
 
+## 示例：条件补丁
+
+```csharp
+using DSPCore;
+
+Patches.Register(
+    id: "example.core-patch",
+    ownerModGuid: "com.example.my-mod",
+    apply: ApplyCorePatch,
+    description: "Apply example runtime patch.",
+    isEnabled: IsFeatureEnabled,
+    getDisabledReason: () => "example feature is disabled");
+
+Patches.RegisterForPlugin(
+    id: "example.target-plugin-integration",
+    ownerModGuid: "com.example.my-mod",
+    requiredPluginGuid: "com.example.target-plugin",
+    apply: ApplyTargetPluginIntegration,
+    description: "Enable integration when the target plugin is loaded.",
+    minimumPluginVersion: "1.2.0");
+```
+
 ## 示例：分页和 GridIndex
 
 ```csharp
@@ -220,6 +242,8 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 - 能力示例采用 `Examples/<Scenario>.md` + `Examples/<Scenario>Example.cs` 成对文件；`.cs` 示例只作为文档产物，不参与编译。
 - `DSPCore/Authoring/Core/Examples/LifecycleExample.cs`
 - `DSPCore/Authoring/Core/Examples/Lifecycle.md`
+- `DSPCore/Authoring/Core/Examples/PatchPlatformExample.cs`
+- `DSPCore/Authoring/Core/Examples/PatchPlatform.md`
 - `DSPCore/Authoring/Achievements/Examples/AchievementPolicyExample.cs`
 - `DSPCore/Authoring/Achievements/Examples/AchievementPolicy.md`
 - `DSPCore/Authoring/BuildBar/Examples/QuickBarBindingExample.cs`
