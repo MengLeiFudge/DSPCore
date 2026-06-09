@@ -49,7 +49,7 @@ P0/P1 是当前实现目标。
 - 星球/恒星/银河系统：用 `PlanetSystems.Register<TSystem>(...)`、`GalaxySystems.RegisterStar<TSystem>(...)` 或 `RegisterGalaxy<TSystem>(...)` 注册系统，按 `PlanetFactory`、`StarData` 或 `GalaxyData` 创建实例并转发生命周期；复杂构造再使用 descriptor。
 - 蓝图参数：用 `Blueprints.Register(blockId, ownerModGuid, copy, paste, ...)` 注册整数负载 tagged block，避免多个模组抢 `BuildingParameters.parameters` 固定槽位；复杂 block 处理再使用 descriptor。
 - 模型和预制体：从已有 `ModelProto` 克隆新模型，配置独立 `PrefabDesc`，并重建模型派生缓存；调用方已有来源对象时优先使用 `ModelProto.CloneAsModel(...)`，只有来源 model index 时再使用 `Models.CloneModel(...)`。
-- 配置、联机和网络：提供 `Options.String/Bool/Int/Float/Enum/IntRange/FloatRange` 短入口，支持同名方法加 `OptionUi` 设置页面、显示名、同页排序和 Reset 按钮，提供 BepInEx 配置绑定、DSPCore 统一设置窗口、设置页面、设置版本描述、配置导入/导出、Nebula 软检测、packet/host relay/planet data/client save 声明、adapter snapshot/query 入口，以及 `Networks.Register(...)` 工厂网络查询适配器短入口。
+- 配置、联机和网络：提供 `Options.String/Bool/Int/Float/Enum/IntRange/FloatRange` 短入口，支持同名方法加 `OptionUi` 设置页面、显示名、同页排序和 Reset 按钮，提供 BepInEx 配置绑定、DSPCore 统一设置窗口、设置页面、设置版本描述、配置导入/导出、Nebula 软检测、packet/host relay/planet data/client save 声明、adapter snapshot/query 入口、联机 descriptor 高级重载，以及 `Networks.Register(...)` 工厂网络查询适配器短入口。
 - 补丁平台：通过 `Patches.Register(...)` / `RegisterForPlugin(...)` 集中声明条件补丁、必需插件 GUID/version、禁用原因和应用失败报告；descriptor 保留为高级路径。
 
 ## 运行时状态
@@ -75,7 +75,7 @@ P0/P1 是当前实现目标。
 - `Blueprints` 会把作者参数块编码到 `BuildingParameters` 参数数组尾部，在复制、蓝图、粘贴和预建筑落地链路中保持 block ID；简单参数块可用 `Blueprints.Register(...)` 直接处理 `int[]` 负载。
 - `Models` 会在最终 Proto 派生缓存重建前克隆 `ModelProto` 和 `PrefabDesc`，然后重建 `ModelProto` 索引和 `PlanetFactory.PrefabDescByModelIndex`。
 - `Options` 会把作者声明的字符串配置项绑定到 DSPCore 的 BepInEx 配置文件，并保存设置页面和设置版本描述；`String`、`Bool`、`Int`、`Float`、`Enum`、`IntRange` 和 `FloatRange` 会注册配置并返回当前值，需要页面、显示名、排序或 Reset 按钮时可给同名短入口传入 `OptionUi`；`ExportValues` / `ExportText` 与 `ImportValues` / `ImportText` 提供配置快照导入导出；`Options.OpenWindow()` 会打开 DSPCore 自有统一设置窗口。
-- `Multiplayer` 当前检测 Nebula 是否加载，保存 packet、host relay、planet data request 和 client missing-save 声明，并提供 adapter snapshot/query 入口；真实 Nebula 发送由专门适配器接入。
+- `Multiplayer` 当前检测 Nebula 是否加载，保存 packet、host relay、planet data request 和 client missing-save 声明，并提供 adapter snapshot/query 入口和 descriptor 高级重载；真实 Nebula 发送由专门适配器接入。
 - `Networks` 提供 `Register(...)` 适配器短入口，以及 `TryGetCommonNetwork(...)` 和 `IsConnectedToNetwork(...)` 查询表面；具体网络扫描由注册适配器提供。
 - `Galaxy` 会在银河数据存在后创建恒星/银河系统；无参构造系统可用 `GalaxySystems.RegisterStar<TSystem>(...)` / `RegisterGalaxy<TSystem>(...)` 短入口注册。运行时在 `SpaceSector.GameTick` 转发更新和 sidecar 存档。
 - `PatchRuntime` 会应用 `Patches.Register(...)` 或 `PatchDescriptor` 声明的条件补丁，记录禁用原因和失败异常。

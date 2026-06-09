@@ -23,7 +23,17 @@ public static class Multiplayer
     /// <param name="handler">处理回调。Handler callback.</param>
     public static void RegisterPacket(string packetId, string ownerModGuid, Action<byte[]> handler)
     {
-        DspCore.Multiplayer.RegisterPacket(new MultiplayerPacketDescriptor(packetId, ownerModGuid, handler));
+        RegisterPacket(new MultiplayerPacketDescriptor(packetId, ownerModGuid, handler));
+    }
+
+    /// <summary>
+    /// 注册一个软 packet 描述。
+    /// Registers a soft packet descriptor.
+    /// </summary>
+    /// <param name="descriptor">packet 描述。Packet descriptor.</param>
+    public static void RegisterPacket(MultiplayerPacketDescriptor descriptor)
+    {
+        DspCore.Multiplayer.RegisterPacket(descriptor);
     }
 
     /// <summary>
@@ -35,7 +45,17 @@ public static class Multiplayer
     /// <param name="handleOnHost">主机处理回调。Host handler callback.</param>
     public static void RegisterHostRelay(string packetId, string ownerModGuid, Action<byte[]> handleOnHost)
     {
-        DspCore.Multiplayer.RegisterRelay(new MultiplayerRelayDescriptor(packetId, ownerModGuid, handleOnHost));
+        RegisterHostRelay(new MultiplayerRelayDescriptor(packetId, ownerModGuid, handleOnHost));
+    }
+
+    /// <summary>
+    /// 注册一个主机转发 packet 描述。
+    /// Registers a host relay packet descriptor.
+    /// </summary>
+    /// <param name="descriptor">转发描述。Relay descriptor.</param>
+    public static void RegisterHostRelay(MultiplayerRelayDescriptor descriptor)
+    {
+        DspCore.Multiplayer.RegisterRelay(descriptor);
     }
 
     /// <summary>
@@ -52,7 +72,17 @@ public static class Multiplayer
         Func<int, byte[]> exportPlanetData,
         Action<int, byte[]> importPlanetData)
     {
-        DspCore.Multiplayer.RegisterPlanetData(new MultiplayerPlanetDataDescriptor(requestId, ownerModGuid, exportPlanetData, importPlanetData));
+        RegisterPlanetData(new MultiplayerPlanetDataDescriptor(requestId, ownerModGuid, exportPlanetData, importPlanetData));
+    }
+
+    /// <summary>
+    /// 注册一个星球数据请求描述。
+    /// Registers a planet data request descriptor.
+    /// </summary>
+    /// <param name="descriptor">星球数据描述。Planet data descriptor.</param>
+    public static void RegisterPlanetData(MultiplayerPlanetDataDescriptor descriptor)
+    {
+        DspCore.Multiplayer.RegisterPlanetData(descriptor);
     }
 
     /// <summary>
@@ -63,7 +93,17 @@ public static class Multiplayer
     /// <param name="intoOtherSave">初始化回调。Initialization callback.</param>
     public static void RegisterClientIntoOtherSave(string ownerModGuid, Action intoOtherSave)
     {
-        DspCore.Multiplayer.RegisterClientIntoOtherSave(new MultiplayerClientSaveDescriptor(ownerModGuid, intoOtherSave));
+        RegisterClientIntoOtherSave(new MultiplayerClientSaveDescriptor(ownerModGuid, intoOtherSave));
+    }
+
+    /// <summary>
+    /// 注册客户端缺失联机存档数据时的初始化描述。
+    /// Registers a client missing-save initialization descriptor.
+    /// </summary>
+    /// <param name="descriptor">客户端存档描述。Client save descriptor.</param>
+    public static void RegisterClientIntoOtherSave(MultiplayerClientSaveDescriptor descriptor)
+    {
+        DspCore.Multiplayer.RegisterClientIntoOtherSave(descriptor);
     }
 
     /// <summary>
@@ -106,6 +146,15 @@ public static class Multiplayer
     public static bool TryGetPlanetDataRequest(string requestId, out MultiplayerPlanetDataDescriptor descriptor)
     {
         return DspCore.Multiplayer.TryGetPlanetDataRequest(requestId, out descriptor);
+    }
+
+    /// <summary>
+    /// 尝试获取指定客户端存档初始化描述。
+    /// Tries to get a client save initializer descriptor by owner mod GUID.
+    /// </summary>
+    public static bool TryGetClientSaveInitializer(string ownerModGuid, out MultiplayerClientSaveDescriptor descriptor)
+    {
+        return DspCore.Multiplayer.TryGetClientSaveInitializer(ownerModGuid, out descriptor);
     }
 
     /// <summary>

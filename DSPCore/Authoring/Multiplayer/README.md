@@ -10,8 +10,24 @@ Multiplayer 模块提供软联机声明，不让 DSPCore 主项目硬依赖 Nebu
 - `RegisterHostRelay(...)` 描述需要主机处理并转发的 packet。
 - `RegisterPlanetData(...)` 描述客户端向主机请求某个星球数据的导出/导入边界。
 - `RegisterClientIntoOtherSave(...)` 描述客户端缺失联机存档数据时的初始化回调。
-- `GetAdapterSnapshot()`、`TryGetPacket(...)`、`TryGetHostRelay(...)` 和 `TryGetPlanetDataRequest(...)` 让独立联机适配器不用直接读取内部 registry 细节。
+- `GetAdapterSnapshot()`、`TryGetPacket(...)`、`TryGetHostRelay(...)`、`TryGetPlanetDataRequest(...)` 和 `TryGetClientSaveInitializer(...)` 让独立联机适配器不用直接读取内部 registry 细节。
 - `ApplyClientIntoOtherSaveInitializers()` 可由适配器在客户端缺失联机存档数据时调用。
+
+## 功能：声明联机边界
+
+```csharp
+Multiplayer.RegisterPacket(
+    packetId: "com.example.sync-mode",
+    ownerModGuid: "com.example.my-mod",
+    handler: HandlePacket);
+
+Multiplayer.RegisterHostRelay(
+    packetId: "com.example.sync-mode",
+    ownerModGuid: "com.example.my-mod",
+    handleOnHost: HandleOnHost);
+```
+
+普通模组应优先使用参数短入口。`MultiplayerPacketDescriptor`、`MultiplayerRelayDescriptor`、`MultiplayerPlanetDataDescriptor` 和 `MultiplayerClientSaveDescriptor` 也可以直接传给对应 `Register...(...)`，适合配置驱动或批量构造。
 
 ## 功能：适配器读取声明
 
@@ -23,7 +39,7 @@ foreach (MultiplayerPacketDescriptor packet in snapshot.Packets)
 }
 ```
 
-适配器也可以用 `TryGetPacket(...)`、`TryGetHostRelay(...)` 或 `TryGetPlanetDataRequest(...)` 按稳定 ID 查询单个声明。
+适配器也可以用 `TryGetPacket(...)`、`TryGetHostRelay(...)`、`TryGetPlanetDataRequest(...)` 按稳定 ID 查询单个声明，或用 `TryGetClientSaveInitializer(...)` 按 owner GUID 查询客户端缺失存档初始化声明。
 
 ## 边界
 

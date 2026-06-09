@@ -10,8 +10,24 @@ The Multiplayer module provides soft multiplayer declarations without making the
 - `RegisterHostRelay(...)` describes packets that should be handled and relayed by the host.
 - `RegisterPlanetData(...)` describes export/import boundaries for client planet data requests.
 - `RegisterClientIntoOtherSave(...)` describes initialization when a client has no multiplayer save data.
-- `GetAdapterSnapshot()`, `TryGetPacket(...)`, `TryGetHostRelay(...)`, and `TryGetPlanetDataRequest(...)` let standalone multiplayer adapters read declarations without depending on registry internals.
+- `GetAdapterSnapshot()`, `TryGetPacket(...)`, `TryGetHostRelay(...)`, `TryGetPlanetDataRequest(...)`, and `TryGetClientSaveInitializer(...)` let standalone multiplayer adapters read declarations without depending on registry internals.
 - `ApplyClientIntoOtherSaveInitializers()` can be called by adapters when a client has no multiplayer save data.
+
+## Capability: Declare Multiplayer Boundaries
+
+```csharp
+Multiplayer.RegisterPacket(
+    packetId: "com.example.sync-mode",
+    ownerModGuid: "com.example.my-mod",
+    handler: HandlePacket);
+
+Multiplayer.RegisterHostRelay(
+    packetId: "com.example.sync-mode",
+    ownerModGuid: "com.example.my-mod",
+    handleOnHost: HandleOnHost);
+```
+
+Mods should prefer the parameter short entries for ordinary declarations. `MultiplayerPacketDescriptor`, `MultiplayerRelayDescriptor`, `MultiplayerPlanetDataDescriptor`, and `MultiplayerClientSaveDescriptor` can also be passed directly to the corresponding `Register...(...)` method for configuration-driven or batch construction.
 
 ## Capability: Adapter Declaration Reads
 
@@ -23,7 +39,7 @@ foreach (MultiplayerPacketDescriptor packet in snapshot.Packets)
 }
 ```
 
-Adapters can also use `TryGetPacket(...)`, `TryGetHostRelay(...)`, or `TryGetPlanetDataRequest(...)` to query one declaration by stable id.
+Adapters can also use `TryGetPacket(...)`, `TryGetHostRelay(...)`, and `TryGetPlanetDataRequest(...)` to query one declaration by stable id, or `TryGetClientSaveInitializer(...)` to query a client missing-save initializer by owner GUID.
 
 ## Boundaries
 
