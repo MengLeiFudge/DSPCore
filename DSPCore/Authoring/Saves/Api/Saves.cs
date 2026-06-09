@@ -11,6 +11,28 @@ namespace DSPCore;
 public static class Saves
 {
     /// <summary>
+    /// 创建并用自动 schema 注册一个简单状态对象。
+    /// Creates and registers a simple state object with an automatic schema.
+    /// </summary>
+    /// <typeparam name="TState">状态对象类型。State object type.</typeparam>
+    /// <param name="modGuid">模组 GUID。Mod GUID.</param>
+    /// <param name="version">schema 版本。Schema version.</param>
+    /// <param name="migrate">导入旧版本后的迁移回调。Migration callback after importing an older version.</param>
+    /// <param name="intoOtherSave">没有对应数据时的初始化回调。Initialization callback when no matching data exists.</param>
+    /// <param name="loadOrder">加载顺序。Load order.</param>
+    /// <returns>创建的状态对象，便于内联保存。The created state object for inline storage.</returns>
+    public static TState Auto<TState>(
+        string modGuid,
+        int version = 1,
+        Action<int, TState>? migrate = null,
+        Action<TState>? intoOtherSave = null,
+        CoreLoadOrder loadOrder = CoreLoadOrder.Postload)
+        where TState : class, new()
+    {
+        return Auto(modGuid, new TState(), version, migrate, intoOtherSave, loadOrder);
+    }
+
+    /// <summary>
     /// 用自动 schema 注册一个简单状态对象。
     /// Registers a simple state object with an automatic schema.
     /// </summary>

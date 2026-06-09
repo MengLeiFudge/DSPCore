@@ -18,7 +18,7 @@ namespace ExampleMod;
 // - IntoOtherSave 用于“加载了其他存档但没有本模组数据”的初始化。
 public sealed class SaveHandlerExample : ICoreSaveHandler
 {
-    private static readonly ExampleState State = Saves.Auto("com.example.auto-mod", new ExampleState());
+    private static readonly ExampleState State = Saves.Auto<ExampleState>("com.example.auto-mod");
     private static int counter;
 
     public static void Register()

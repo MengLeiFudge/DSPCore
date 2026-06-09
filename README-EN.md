@@ -42,7 +42,7 @@ P0/P1 blocks are the current implementation target.
 - Resources, icons, and localization: register resource roots and translation entries through `ModResources`; one mod can use `ModResources.Pack(...)` to reuse owner, root path, and assembly; register icons through `Icons.FromResources(...)`, `Icons.FromFile(...)`, `Icons.FromEmbedded(...)`, `Icons.FromAssetBundle(...)`, or `Icons.BindToProto(...)`.
 - Tabs: authors can declare custom pages, receive a `TabSlot`, and use that slot to generate item/recipe `GridIndex` values. Picker surfaces are DSPCore system implementation.
 - Game enums: `GameEnums.RegisterRecipeType(...)` declares custom recipe type restrictions, and `ItemProto.SetCustomItemType()` marks an item with DSPCore's reserved custom item type. Runtime code should use `GameEnums.CustomRecipeTypeValue` / `CustomItemTypeValue` instead of compiling directly against Preloader-injected enum members.
-- Saves: `Saves.Auto(...)` automatic schemas, delegate-based simple save handlers, raw `BinaryReader`/`BinaryWriter` handlers, and tagged block helpers.
+- Saves: `Saves.Auto<TState>(...)` creates parameterless state objects and registers automatic schemas, `Saves.Auto(modGuid, state)` supports existing instances, and delegate-based simple save handlers, raw `BinaryReader`/`BinaryWriter` handlers, and tagged block helpers remain available.
 - Achievement policies: declare policy effects such as Milky Way / leaderboard upload blocking. Error window and error collection belong to DSPCore systems.
 - UI framework: window lifecycle helpers, tabbed windows, base controls, declarative grid layout, theme/card helpers, and standard form, list, detail, and status-footer scaffolds; concrete business pages are not included.
 - Entity components: use `Components.Register<TComponent>(...)` to attach custom components to entities by item id, model index, or `PrefabDesc`, then forward removal, ticks, and saves; use descriptors for complex construction.
@@ -174,7 +174,7 @@ private sealed class ExampleState
     public int Counter { get; set; }
 }
 
-private static readonly ExampleState State = Saves.Auto("com.example.auto-mod", new ExampleState());
+private static readonly ExampleState State = Saves.Auto<ExampleState>("com.example.auto-mod");
 
 Saves.Register(
     modGuid: "com.example.my-mod",

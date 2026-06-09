@@ -42,7 +42,7 @@ P0/P1 是当前实现目标。
 - 资源、图标和本地化：通过 `ModResources` 登记资源根和翻译条目；同一模组可用 `ModResources.Pack(...)` 复用 owner、资源根和 assembly；通过 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)`、`Icons.FromAssetBundle(...)` 或 `Icons.BindToProto(...)` 注册图标。
 - 分页：作者可以声明自定义页面并取得 `TabSlot`，再用 `TabSlot` 生成物品/配方 `GridIndex`。选择器 surface 属于 DSPCore 系统实现。
 - 游戏枚举：`GameEnums.RegisterRecipeType(...)` 声明自定义配方类型限制，`ItemProto.SetCustomItemType()` 标记 DSPCore 预留的自定义物品类型；运行时代码使用 `GameEnums.CustomRecipeTypeValue` / `CustomItemTypeValue` 避免直接编译期依赖 Preloader 注入字段。
-- 存档：`Saves.Auto(...)` 自动 schema、委托式简单存档处理器、原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
+- 存档：`Saves.Auto<TState>(...)` 自动创建无参状态对象并注册 schema，`Saves.Auto(modGuid, state)` 支持已有实例，另有委托式简单存档处理器、原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
 - 成就策略：声明是否影响银河系/排行榜上传等策略。错误窗口和错误收集属于 DSPCore 系统实现。
 - UI 框架：窗口生命周期、标签页窗口、基础控件、声明式网格布局、主题卡片辅助，以及标准表单、列表、详情区和状态页脚脚手架；不包含具体业务页面。
 - 实体组件：用 `Components.Register<TComponent>(...)` 按 item id、model index 或 `PrefabDesc` 条件给实体挂自定义组件，转发移除、tick 和存档；复杂构造再使用 descriptor。
@@ -175,7 +175,7 @@ private sealed class ExampleState
     public int Counter { get; set; }
 }
 
-private static readonly ExampleState State = Saves.Auto("com.example.auto-mod", new ExampleState());
+private static readonly ExampleState State = Saves.Auto<ExampleState>("com.example.auto-mod");
 
 Saves.Register(
     modGuid: "com.example.my-mod",
