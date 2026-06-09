@@ -5,7 +5,7 @@ Options 模块让模组声明简单配置项，由 DSPCore 统一绑定到 BepIn
 ## 这个模块带来什么便利
 
 - 模组可以在作者侧声明配置项，不需要拿到 DSPCore 插件实例。
-- 简单配置可以用 `Options.Bool(...)`、`Options.IntRange(...)`、`Options.Enum(...)` 这类短入口一次完成注册和读取。
+- 简单配置可以用 `Options.Bool(...)`、`Options.IntRange(...)`、`Options.Enum(...)` 这类短入口一次完成注册和读取；需要显示名或页面分组时，用同名方法传入 `OptionUi`。
 - DSPCore 启动后会绑定已注册配置项；启动后新增的配置项也会立即绑定。
 - DSPCore 运行时尚未绑定配置文件时，短入口会返回 descriptor 默认值，不会给作者返回空字符串。
 - DSPCore 统一设置窗口会按 `OptionPageDescriptor` 和带 `PageId` 的 `OptionDescriptor` 分组展示配置项。
@@ -24,6 +24,19 @@ float opacity = Options.FloatRange("Example", "Opacity", 0.8f, "Panel opacity.",
 ```
 
 这些方法会先注册配置项，再返回当前值。适合普通开关、数字、文本、枚举下拉和范围滑条配置。
+
+需要更细展示控制时，仍使用同名短入口，只额外传入 `OptionUi`：
+
+```csharp
+bool enabled = Options.Bool(
+    "Example",
+    "Enabled",
+    true,
+    "Enable example feature.",
+    new OptionUi(PageId: "com.example.settings", DisplayName: "Enable Example"));
+```
+
+`OptionUi.PageId` 控制统一设置窗口里的分组；`OptionUi.DisplayName` 控制玩家看到的行标题。没有这些需求时继续使用最短重载。
 
 ## 功能：打开统一设置窗口
 

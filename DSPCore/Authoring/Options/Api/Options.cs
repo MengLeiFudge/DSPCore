@@ -27,6 +27,23 @@ public static class Options
     }
 
     /// <summary>
+    /// 注册并读取一个带展示元数据的字符串配置项。
+    /// Registers and reads a string option with presentation metadata.
+    /// </summary>
+    /// <param name="section">配置分区。Config section.</param>
+    /// <param name="key">配置键。Config key.</param>
+    /// <param name="defaultValue">默认值。Default value.</param>
+    /// <param name="description">配置说明。Config description.</param>
+    /// <param name="ui">展示元数据。Presentation metadata.</param>
+    /// <returns>当前字符串值。Current string value.</returns>
+    public static string String(string section, string key, string defaultValue, string description, OptionUi? ui)
+    {
+        var metadata = ui ?? OptionUi.Empty;
+        Register(section, key, defaultValue, description, metadata.PageId, displayName: metadata.DisplayName);
+        return GetString(section, key);
+    }
+
+    /// <summary>
     /// 注册并读取一个布尔配置项。
     /// Registers and reads a boolean option.
     /// </summary>
@@ -39,6 +56,23 @@ public static class Options
     public static bool Bool(string section, string key, bool defaultValue, string description, string? pageId = null)
     {
         Register(section, key, defaultValue.ToString(), description, pageId, OptionValueKind.Bool);
+        return GetBool(section, key, defaultValue);
+    }
+
+    /// <summary>
+    /// 注册并读取一个带展示元数据的布尔配置项。
+    /// Registers and reads a boolean option with presentation metadata.
+    /// </summary>
+    /// <param name="section">配置分区。Config section.</param>
+    /// <param name="key">配置键。Config key.</param>
+    /// <param name="defaultValue">默认值。Default value.</param>
+    /// <param name="description">配置说明。Config description.</param>
+    /// <param name="ui">展示元数据。Presentation metadata.</param>
+    /// <returns>当前布尔值。Current boolean value.</returns>
+    public static bool Bool(string section, string key, bool defaultValue, string description, OptionUi? ui)
+    {
+        var metadata = ui ?? OptionUi.Empty;
+        Register(section, key, defaultValue.ToString(), description, metadata.PageId, OptionValueKind.Bool, metadata.DisplayName);
         return GetBool(section, key, defaultValue);
     }
 
@@ -59,6 +93,23 @@ public static class Options
     }
 
     /// <summary>
+    /// 注册并读取一个带展示元数据的整数配置项。
+    /// Registers and reads an integer option with presentation metadata.
+    /// </summary>
+    /// <param name="section">配置分区。Config section.</param>
+    /// <param name="key">配置键。Config key.</param>
+    /// <param name="defaultValue">默认值。Default value.</param>
+    /// <param name="description">配置说明。Config description.</param>
+    /// <param name="ui">展示元数据。Presentation metadata.</param>
+    /// <returns>当前整数值。Current integer value.</returns>
+    public static int Int(string section, string key, int defaultValue, string description, OptionUi? ui)
+    {
+        var metadata = ui ?? OptionUi.Empty;
+        Register(section, key, defaultValue.ToString(CultureInfo.InvariantCulture), description, metadata.PageId, OptionValueKind.Int, metadata.DisplayName);
+        return GetInt(section, key, defaultValue);
+    }
+
+    /// <summary>
     /// 注册并读取一个浮点配置项。
     /// Registers and reads a floating-point option.
     /// </summary>
@@ -71,6 +122,23 @@ public static class Options
     public static float Float(string section, string key, float defaultValue, string description, string? pageId = null)
     {
         Register(section, key, defaultValue.ToString(CultureInfo.InvariantCulture), description, pageId, OptionValueKind.Float);
+        return GetFloat(section, key, defaultValue);
+    }
+
+    /// <summary>
+    /// 注册并读取一个带展示元数据的浮点配置项。
+    /// Registers and reads a floating-point option with presentation metadata.
+    /// </summary>
+    /// <param name="section">配置分区。Config section.</param>
+    /// <param name="key">配置键。Config key.</param>
+    /// <param name="defaultValue">默认值。Default value.</param>
+    /// <param name="description">配置说明。Config description.</param>
+    /// <param name="ui">展示元数据。Presentation metadata.</param>
+    /// <returns>当前浮点值。Current floating-point value.</returns>
+    public static float Float(string section, string key, float defaultValue, string description, OptionUi? ui)
+    {
+        var metadata = ui ?? OptionUi.Empty;
+        Register(section, key, defaultValue.ToString(CultureInfo.InvariantCulture), description, metadata.PageId, OptionValueKind.Float, metadata.DisplayName);
         return GetFloat(section, key, defaultValue);
     }
 
@@ -96,6 +164,33 @@ public static class Options
             pageId,
             OptionValueKind.Enum,
             choices: System.Enum.GetNames(typeof(TEnum)));
+        return GetEnum(section, key, defaultValue);
+    }
+
+    /// <summary>
+    /// 注册并读取一个带展示元数据的枚举配置项。
+    /// Registers and reads an enumeration option with presentation metadata.
+    /// </summary>
+    /// <typeparam name="TEnum">枚举类型。Enumeration type.</typeparam>
+    /// <param name="section">配置分区。Config section.</param>
+    /// <param name="key">配置键。Config key.</param>
+    /// <param name="defaultValue">默认值。Default value.</param>
+    /// <param name="description">配置说明。Config description.</param>
+    /// <param name="ui">展示元数据。Presentation metadata.</param>
+    /// <returns>当前枚举值。Current enumeration value.</returns>
+    public static TEnum Enum<TEnum>(string section, string key, TEnum defaultValue, string description, OptionUi? ui)
+        where TEnum : struct, System.Enum
+    {
+        var metadata = ui ?? OptionUi.Empty;
+        Register(
+            section,
+            key,
+            defaultValue.ToString(),
+            description,
+            metadata.PageId,
+            OptionValueKind.Enum,
+            metadata.DisplayName,
+            System.Enum.GetNames(typeof(TEnum)));
         return GetEnum(section, key, defaultValue);
     }
 
@@ -136,6 +231,44 @@ public static class Options
     }
 
     /// <summary>
+    /// 注册并读取一个带展示元数据的整数范围配置项。
+    /// Registers and reads an integer range option with presentation metadata.
+    /// </summary>
+    /// <param name="section">配置分区。Config section.</param>
+    /// <param name="key">配置键。Config key.</param>
+    /// <param name="defaultValue">默认值。Default value.</param>
+    /// <param name="description">配置说明。Config description.</param>
+    /// <param name="minimum">最小值。Minimum value.</param>
+    /// <param name="maximum">最大值。Maximum value.</param>
+    /// <param name="ui">展示元数据。Presentation metadata.</param>
+    /// <param name="step">步进值。Step value.</param>
+    /// <returns>当前整数值。Current integer value.</returns>
+    public static int IntRange(
+        string section,
+        string key,
+        int defaultValue,
+        string description,
+        int minimum,
+        int maximum,
+        OptionUi? ui,
+        int step = 1)
+    {
+        var metadata = ui ?? OptionUi.Empty;
+        Register(
+            section,
+            key,
+            defaultValue.ToString(CultureInfo.InvariantCulture),
+            description,
+            metadata.PageId,
+            OptionValueKind.IntRange,
+            metadata.DisplayName,
+            minimum: minimum,
+            maximum: maximum,
+            step: Math.Max(1, step));
+        return Math.Min(maximum, Math.Max(minimum, GetInt(section, key, defaultValue)));
+    }
+
+    /// <summary>
     /// 注册并读取一个浮点范围配置项。
     /// Registers and reads a floating-point range option.
     /// </summary>
@@ -165,6 +298,44 @@ public static class Options
             description,
             pageId,
             OptionValueKind.FloatRange,
+            minimum: minimum,
+            maximum: maximum,
+            step: step);
+        return Math.Min(maximum, Math.Max(minimum, GetFloat(section, key, defaultValue)));
+    }
+
+    /// <summary>
+    /// 注册并读取一个带展示元数据的浮点范围配置项。
+    /// Registers and reads a floating-point range option with presentation metadata.
+    /// </summary>
+    /// <param name="section">配置分区。Config section.</param>
+    /// <param name="key">配置键。Config key.</param>
+    /// <param name="defaultValue">默认值。Default value.</param>
+    /// <param name="description">配置说明。Config description.</param>
+    /// <param name="minimum">最小值。Minimum value.</param>
+    /// <param name="maximum">最大值。Maximum value.</param>
+    /// <param name="ui">展示元数据。Presentation metadata.</param>
+    /// <param name="step">步进值。Step value.</param>
+    /// <returns>当前浮点值。Current floating-point value.</returns>
+    public static float FloatRange(
+        string section,
+        string key,
+        float defaultValue,
+        string description,
+        float minimum,
+        float maximum,
+        OptionUi? ui,
+        float step = 0f)
+    {
+        var metadata = ui ?? OptionUi.Empty;
+        Register(
+            section,
+            key,
+            defaultValue.ToString(CultureInfo.InvariantCulture),
+            description,
+            metadata.PageId,
+            OptionValueKind.FloatRange,
+            metadata.DisplayName,
             minimum: minimum,
             maximum: maximum,
             step: step);

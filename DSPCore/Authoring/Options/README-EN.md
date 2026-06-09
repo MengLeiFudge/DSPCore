@@ -5,7 +5,7 @@ The Options module lets mods declare simple options that DSPCore binds to the Be
 ## What This Module Provides
 
 - Mods can declare options from authoring code without holding the DSPCore plugin instance.
-- Simple options can use short entries such as `Options.Bool(...)`, `Options.IntRange(...)`, and `Options.Enum(...)` to register and read in one call.
+- Simple options can use short entries such as `Options.Bool(...)`, `Options.IntRange(...)`, and `Options.Enum(...)` to register and read in one call. When display names or page grouping are needed, pass `OptionUi` to the same method name.
 - DSPCore binds options registered before startup, and also binds options registered after startup.
 - If the DSPCore runtime has not bound the config file yet, short entries return the descriptor default instead of an empty string.
 - The DSPCore unified settings window groups options by `OptionPageDescriptor` and `OptionDescriptor.PageId`.
@@ -24,6 +24,19 @@ float opacity = Options.FloatRange("Example", "Opacity", 0.8f, "Panel opacity.",
 ```
 
 These methods register the option first, then return the current value. Use them for ordinary toggles, numbers, text settings, enum dropdowns, and range sliders.
+
+When the row needs presentation metadata, keep the same short entry and pass `OptionUi`:
+
+```csharp
+bool enabled = Options.Bool(
+    "Example",
+    "Enabled",
+    true,
+    "Enable example feature.",
+    new OptionUi(PageId: "com.example.settings", DisplayName: "Enable Example"));
+```
+
+`OptionUi.PageId` controls grouping in the unified settings window. `OptionUi.DisplayName` controls the row title shown to players. Use the shortest overload when those are not needed.
 
 ## Capability: Open The Unified Settings Window
 
