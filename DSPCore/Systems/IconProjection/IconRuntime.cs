@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using HarmonyLib;
 using UnityEngine;
 
@@ -65,6 +66,11 @@ internal static class IconRuntime
             return null;
         }
 
+        if (IconAssetPaths.TryParseEmbedded(assetPath, out var assemblyName, out var resourceName))
+        {
+            return LoadEmbeddedSprite(assemblyName, resourceName);
+        }
+
         var sprite = Resources.Load<Sprite>(assetPath);
         if (sprite != null)
         {
@@ -76,8 +82,35 @@ internal static class IconRuntime
             return null;
         }
 
+        return LoadPngSprite(File.ReadAllBytes(assetPath));
+    }
+
+    private static Sprite? LoadEmbeddedSprite(string assemblyName, string resourceName)
+    {
+        var assembly = AppDomain.CurrentDomain.GetAssemblies()
+            .FirstOrDefault(item => string.Equals(item.GetName().Name, assemblyName, StringComparison.Ordinal));
+        if (assembly == null)
+        {
+            DspCore.Logger?.LogWarning($"Embedded icon assembly {assemblyName} is not loaded.");
+            return null;
+        }
+
+        using var stream = assembly.GetManifestResourceStream(resourceName);
+        if (stream == null)
+        {
+            DspCore.Logger?.LogWarning($"Embedded icon resource {resourceName} was not found in {assemblyName}.");
+            return null;
+        }
+
+        using var buffer = new MemoryStream();
+        stream.CopyTo(buffer);
+        return LoadPngSprite(buffer.ToArray());
+    }
+
+    private static Sprite? LoadPngSprite(byte[] data)
+    {
         var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-        if (!ImageConversion.LoadImage(texture, File.ReadAllBytes(assetPath)))
+        if (!ImageConversion.LoadImage(texture, data))
         {
             UnityEngine.Object.Destroy(texture);
             return null;

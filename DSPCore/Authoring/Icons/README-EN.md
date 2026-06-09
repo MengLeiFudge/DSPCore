@@ -22,9 +22,15 @@ Icons.FromFile(
     ownerModGuid: "com.example.my-mod",
     filePath: "assets/example-icon.png",
     fallbackIconId: "example-icon");
+
+Icons.FromEmbedded(
+    id: "example-embedded-icon",
+    ownerModGuid: "com.example.my-mod",
+    assembly: typeof(MyPlugin).Assembly,
+    resourceName: "ExampleMod.Assets.example-icon.png");
 ```
 
-`AssetPath` can be a Unity `Resources` sprite path or a local PNG file path. Keep `Id` stable so Tabs, ProtoRegistration, or your own module code can reference it.
+`AssetPath` can be a Unity `Resources` sprite path, a local PNG file path, or an embedded PNG in a loaded assembly through `FromEmbedded`. Keep `Id` stable so Tabs, ProtoRegistration, or your own module code can reference it.
 
 ## Capability: Apply Icons To Target Proto Objects
 
@@ -44,6 +50,7 @@ Icons.BindToProto(
 
 - Registration only stores the icon descriptor; if the same `Id` is registered more than once, the later registration replaces the earlier one.
 - Icon resolution first tries `Resources.Load<Sprite>`, then reads a PNG file path.
+- `FromEmbedded` uses an internal `embedded://` path convention. Runtime reads the manifest resource stream from an assembly already loaded into the current AppDomain.
 - If the primary icon fails and `FallbackIconId` is set, DSPCore recursively resolves the fallback icon.
 - Successfully resolved sprites are cached by `Id`.
 - During proto derived-cache rebuild, DSPCore applies icons that declare target protos and writes the target `_iconSprite`.
@@ -53,6 +60,7 @@ Icons.BindToProto(
 - It does not create protos; target items, recipes, techs, and other protos must already exist.
 - It does not own localization text; use Resources for text.
 - It does not make external PNG paths stable across machines; published mods should use deterministic resource paths.
+- It does not actively load resource DLLs. If you use a resource DLL, your mod or loader must load that assembly into the current AppDomain first.
 - It does not handle icon art quality, dimensions, or transparent edges for you.
 
 ## Examples

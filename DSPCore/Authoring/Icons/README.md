@@ -22,9 +22,15 @@ Icons.FromFile(
     ownerModGuid: "com.example.my-mod",
     filePath: "assets/example-icon.png",
     fallbackIconId: "example-icon");
+
+Icons.FromEmbedded(
+    id: "example-embedded-icon",
+    ownerModGuid: "com.example.my-mod",
+    assembly: typeof(MyPlugin).Assembly,
+    resourceName: "ExampleMod.Assets.example-icon.png");
 ```
 
-`AssetPath` 可以是 Unity `Resources` sprite 路径，也可以是本地 PNG 文件路径。`Id` 应保持稳定，供 Tabs、ProtoRegistration 或你的模块代码引用。
+`AssetPath` 可以是 Unity `Resources` sprite 路径、本地 PNG 文件路径，也可以通过 `FromEmbedded` 指向已加载程序集里的嵌入 PNG。`Id` 应保持稳定，供 Tabs、ProtoRegistration 或你的模块代码引用。
 
 ## 功能：把图标应用到目标 Proto
 
@@ -44,6 +50,7 @@ Icons.BindToProto(
 
 - 注册阶段只保存图标 descriptor；同一个 `Id` 后一次注册会覆盖前一次。
 - 图标解析时优先从 Unity `Resources.Load<Sprite>` 加载；失败后再按文件路径读取 PNG。
+- `FromEmbedded` 使用内部 `embedded://` 路径约定，运行时会在当前 AppDomain 已加载 assembly 中读取 manifest resource stream。
 - 如果主图标加载失败且设置了 `FallbackIconId`，DSPCore 会递归解析 fallback 图标。
 - 成功解析的 sprite 会按 `Id` 缓存。
 - Proto 派生缓存重建时，DSPCore 会处理带目标 Proto 的图标并写入目标 `_iconSprite`。
@@ -53,6 +60,7 @@ Icons.BindToProto(
 - 不创建 Proto；目标物品、配方、科技等必须已经存在。
 - 不负责本地化文本；文本属于 Resources。
 - 不保证外部 PNG 路径跨机器稳定；发布模组时应使用确定的资源路径。
+- 不会主动加载资源 DLL；如果使用资源 DLL，必须先由你的模组或加载器把该 assembly 加载进当前 AppDomain。
 - 不替你处理图标尺寸、美术风格或透明边缘。
 
 ## 示例

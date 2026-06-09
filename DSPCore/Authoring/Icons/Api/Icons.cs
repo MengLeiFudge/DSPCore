@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace DSPCore;
 
@@ -35,6 +36,25 @@ public static class Icons
     }
 
     /// <summary>
+    /// 从程序集嵌入 PNG 资源注册一个图标。
+    /// Registers an icon from an embedded PNG resource in an assembly.
+    /// </summary>
+    /// <param name="id">图标 ID。Icon id.</param>
+    /// <param name="ownerModGuid">所属模组 GUID。Owner mod GUID.</param>
+    /// <param name="assembly">包含资源的程序集。Assembly containing the resource.</param>
+    /// <param name="resourceName">manifest resource name。Manifest resource name.</param>
+    /// <param name="fallbackIconId">可选 fallback 图标 ID。Optional fallback icon id.</param>
+    public static void FromEmbedded(
+        string id,
+        string ownerModGuid,
+        Assembly assembly,
+        string resourceName,
+        string? fallbackIconId = null)
+    {
+        Register(new IconDescriptor(id, ownerModGuid, IconAssetPaths.Embedded(assembly, resourceName), fallbackIconId));
+    }
+
+    /// <summary>
     /// 注册一个图标并绑定到目标 Proto。
     /// Registers an icon and binds it to a target proto.
     /// </summary>
@@ -53,6 +73,35 @@ public static class Icons
         string? fallbackIconId = null)
     {
         Register(new IconDescriptor(id, ownerModGuid, assetPath, fallbackIconId, targetKind, targetProtoId));
+    }
+
+    /// <summary>
+    /// 注册一个嵌入 PNG 图标并绑定到目标 Proto。
+    /// Registers an embedded PNG icon and binds it to a target proto.
+    /// </summary>
+    /// <param name="id">图标 ID。Icon id.</param>
+    /// <param name="ownerModGuid">所属模组 GUID。Owner mod GUID.</param>
+    /// <param name="assembly">包含资源的程序集。Assembly containing the resource.</param>
+    /// <param name="resourceName">manifest resource name。Manifest resource name.</param>
+    /// <param name="targetKind">目标 Proto 类型。Target proto kind.</param>
+    /// <param name="targetProtoId">目标 Proto ID。Target proto id.</param>
+    /// <param name="fallbackIconId">可选 fallback 图标 ID。Optional fallback icon id.</param>
+    public static void BindEmbeddedToProto(
+        string id,
+        string ownerModGuid,
+        Assembly assembly,
+        string resourceName,
+        ProtoKind targetKind,
+        int targetProtoId,
+        string? fallbackIconId = null)
+    {
+        Register(new IconDescriptor(
+            id,
+            ownerModGuid,
+            IconAssetPaths.Embedded(assembly, resourceName),
+            fallbackIconId,
+            targetKind,
+            targetProtoId));
     }
 
     /// <summary>

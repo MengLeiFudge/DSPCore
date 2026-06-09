@@ -39,7 +39,7 @@ P0/P1 blocks are the current implementation target.
 - Data phases: `Data`, `DataUpdates`, and `DataFinalFixes`.
 - Proto capabilities: DataPhases owns the three phases; ProtoAccess owns second/third phase lookup and mutation of registered data; Items, Recipes, Techs, and Tutorials own typed proto registration; ProtoRegistration remains the low-level aggregate and compatibility entry.
 - Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot; row 1 writes to the vanilla build bar, row 2+ uses DSPCore extended buttons, and BuildBarTool compatibility entries remain available. Other authoring capabilities, such as item registration, should prefer `ItemProto.SetBuildBar(...)` after they have the item proto; BuildBar does not own proto creation.
-- Resources, icons, and localization: register resource roots and translation entries through `ModResources`, and register icons through `Icons.FromResources(...)`, `Icons.FromFile(...)`, or `Icons.BindToProto(...)`.
+- Resources, icons, and localization: register resource roots and translation entries through `ModResources`, and register icons through `Icons.FromResources(...)`, `Icons.FromFile(...)`, `Icons.FromEmbedded(...)`, or `Icons.BindToProto(...)`.
 - Tabs: authors can declare custom pages, receive a `TabSlot`, and use that slot to generate item/recipe `GridIndex` values. Picker surfaces are DSPCore system implementation.
 - Saves: `Saves.Auto(...)` automatic schemas, delegate-based simple save handlers, raw `BinaryReader`/`BinaryWriter` handlers, and tagged block helpers.
 - Achievement policies: declare policy effects such as Milky Way / leaderboard upload blocking. Error window and error collection belong to DSPCore systems.
@@ -59,7 +59,7 @@ Implemented runtime bridges:
 - `Lifecycle` raises `OnStarted` after DSPCore runtime bridges are assembled, then raises `OnUpdate` / `OnDestroyed` during plugin update and destroy.
 - Proto registration runs Factorio-like `Data`, `DataUpdates`, and `DataFinalFixes` callbacks. Runtime writes the resulting protos around `VFPreload.InvokeOnLoadWorkEnded`; DSPCore rebuilds `ProtoSet` indices and key derived caches after final fixes.
 - `BuildBarRegistry.BindQuickBar` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons. `BuildBar.SetPlayerOverride(...)` writes a player override layer to the `.dspcore` save, and runtime uses author defaults overlaid with player overrides. When no DSPCore BuildBar save data exists, DSPCore imports row-1 player configuration from RebindBuildBar's `CustomBarBind.cfg`.
-- `IconSetRegistry` can load Unity `Resources` sprites or local PNG files, cache them, and apply them to target protos. Author-side short entries are `Icons.FromResources(...)`, `Icons.FromFile(...)`, and `Icons.BindToProto(...)`.
+- `IconSetRegistry` can load Unity `Resources` sprites, local PNG files, or embedded PNG files from loaded assemblies, cache them, and apply them to target protos. Author-side short entries are `Icons.FromResources(...)`, `Icons.FromFile(...)`, `Icons.FromEmbedded(...)`, and `Icons.BindToProto(...)`.
 - `TabRegistry` assigns a `TabSlot` for each stable page id and projects custom pages to item picker, recipe picker, replicator, signal picker, and tag-icon picker surfaces through the existing GridIndex category flow.
 - `PickerSurfaces` handles item, recipe, and signal picker surfaces. Live grids apply filters, duplicate `GridIndex` fallbacks, and dynamic row/column expansion.
 - `GameEnums` currently marks declared recipes as custom recipe types and hides recipes unsupported by the current assembler before the recipe picker selection; `AssemblerComponent.SetRecipe` remains the final guard.
@@ -141,6 +141,7 @@ bool enabled = Options.Bool("Example", "Enabled", true, "Enable example feature.
 int rows = Options.Int("Example", "Rows", 2, "Example row count.");
 
 ModResources.Text("ExampleMachines", "enUS", "Example Machines", "com.example.my-mod");
+Icons.FromEmbedded("example-embedded", "com.example.my-mod", typeof(MyPlugin).Assembly, "ExampleMod.Assets.example.png");
 Icons.BindToProto("example-machine", "com.example.my-mod", "assets/icons/example.png", ProtoKind.Item, 9554);
 ```
 

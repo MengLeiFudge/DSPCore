@@ -39,7 +39,7 @@ P0/P1 是当前实现目标。
 - 数据阶段：`Data`、`DataUpdates` 和 `DataFinalFixes`。
 - 原型相关能力：DataPhases 提供三阶段；ProtoAccess 承接第二/第三阶段读取和修改他人注册数据；Items、Recipes、Techs、Tutorials 分别负责对应 proto 注册；ProtoRegistration 保留低层聚合和兼容入口。
 - 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位；第 1 行写入原版建造栏，第 2 行及以后使用 DSPCore 扩展按钮，并保留 BuildBarTool 兼容入口。其他作者能力，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.SetBuildBar(...)`；BuildBar 不承担 Proto 创建职责。
-- 资源、图标和本地化：通过 `ModResources` 登记资源根和翻译条目，通过 `Icons.FromResources(...)`、`Icons.FromFile(...)` 或 `Icons.BindToProto(...)` 注册图标。
+- 资源、图标和本地化：通过 `ModResources` 登记资源根和翻译条目，通过 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)` 或 `Icons.BindToProto(...)` 注册图标。
 - 分页：作者可以声明自定义页面并取得 `TabSlot`，再用 `TabSlot` 生成物品/配方 `GridIndex`。选择器 surface 属于 DSPCore 系统实现。
 - 存档：`Saves.Auto(...)` 自动 schema、委托式简单存档处理器、原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
 - 成就策略：声明是否影响银河系/排行榜上传等策略。错误窗口和错误收集属于 DSPCore 系统实现。
@@ -59,7 +59,7 @@ P0/P1 是当前实现目标。
 - `Lifecycle` 会在 DSPCore 运行时桥接装配后触发 `OnStarted`，在插件更新和销毁时触发 `OnUpdate` / `OnDestroyed`。
 - 原型注册会按类似 Factorio 的 `Data`、`DataUpdates`、`DataFinalFixes` 三阶段执行回调；运行时在 `VFPreload.InvokeOnLoadWorkEnded` 前后写入对应 Proto，并在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
 - `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。`BuildBar.SetPlayerOverride(...)` 会写入玩家覆盖层并保存到 `.dspcore`，运行时总是用作者默认绑定叠加玩家覆盖后的有效绑定。没有 DSPCore BuildBar 存档数据时，DSPCore 会从 RebindBuildBar 的 `CustomBarBind.cfg` 导入第 1 行玩家配置。
-- `IconSetRegistry` 可以加载 Unity `Resources` sprite 或本地 PNG 文件，缓存后写入目标 Proto；作者侧短入口是 `Icons.FromResources(...)`、`Icons.FromFile(...)` 和 `Icons.BindToProto(...)`。
+- `IconSetRegistry` 可以加载 Unity `Resources` sprite、本地 PNG 文件或已加载 assembly 中的嵌入 PNG，缓存后写入目标 Proto；作者侧短入口是 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)` 和 `Icons.BindToProto(...)`。
 - `TabRegistry` 会为稳定页面 ID 分配 `TabSlot`，并通过现有 GridIndex 分类流程把自定义页面投射到物品选择器、配方选择器、制造器界面、信号选择器和标签图标选择器。
 - `PickerSurfaces` 会处理物品、配方和信号选择器 surface，实时网格会应用过滤、重复 `GridIndex` 兜底和动态行列扩容。
 - `GameEnums` 当前会把声明的配方标记为自定义配方类型，并在制作器配方列表打开前隐藏当前机器不能使用的配方；`AssemblerComponent.SetRecipe` 仍保留最终保护。
@@ -141,6 +141,7 @@ bool enabled = Options.Bool("Example", "Enabled", true, "Enable example feature.
 int rows = Options.Int("Example", "Rows", 2, "Example row count.");
 
 ModResources.Text("ExampleMachines", "zhCN", "示例机器", "com.example.my-mod");
+Icons.FromEmbedded("example-embedded", "com.example.my-mod", typeof(MyPlugin).Assembly, "ExampleMod.Assets.example.png");
 Icons.BindToProto("example-machine", "com.example.my-mod", "assets/icons/example.png", ProtoKind.Item, 9554);
 ```
 

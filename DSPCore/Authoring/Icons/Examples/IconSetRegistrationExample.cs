@@ -1,3 +1,4 @@
+using System.Reflection;
 using DSPCore;
 
 namespace ExampleMod;
@@ -23,6 +24,13 @@ public static class IconSetRegistrationExample
             id: "default-machine",
             ownerModGuid: "com.example.my-mod",
             resourcesPath: "icons/default-machine");
+
+        Icons.FromEmbedded(
+            id: "embedded-machine",
+            ownerModGuid: "com.example.my-mod",
+            assembly: Assembly.GetExecutingAssembly(),
+            resourceName: "ExampleMod.Assets.embedded-machine.png",
+            fallbackIconId: "default-machine");
 
         Icons.BindToProto(
             id: "example-machine",

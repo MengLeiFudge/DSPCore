@@ -12,12 +12,13 @@
 - `Id`：图标稳定 ID。
 - `OwnerModGuid`：图标归属模组。
 - `AssetPath`：PNG 或资源路径。
+- `assembly` / `resourceName`：嵌入 PNG 所在程序集和 manifest resource name。
 - `FallbackIconId`：加载失败时使用的备用图标。
 - `TargetKind` / `TargetProtoId`：可选目标 Proto。
 
 ## 运行时前提
 
-在图标运行时桥接应用资源前完成注册。图标功能块不创建 Proto；需要目标 Proto 时先通过 ProtoRegistration 注册。
+在图标运行时桥接应用资源前完成注册。图标功能块不创建 Proto；需要目标 Proto 时先通过 ProtoRegistration 注册。使用资源 DLL 时，该 assembly 必须已经加载到当前 AppDomain。
 
 ## 常见误用
 
