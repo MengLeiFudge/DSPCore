@@ -55,6 +55,25 @@ public static class Icons
     }
 
     /// <summary>
+    /// 从 AssetBundle 中的 Sprite 或 Texture2D 注册一个图标。
+    /// Registers an icon from a Sprite or Texture2D inside an AssetBundle.
+    /// </summary>
+    /// <param name="id">图标 ID。Icon id.</param>
+    /// <param name="ownerModGuid">所属模组 GUID。Owner mod GUID.</param>
+    /// <param name="bundlePath">AssetBundle 文件路径。AssetBundle file path.</param>
+    /// <param name="assetName">AssetBundle 内资源名。Asset name inside the AssetBundle.</param>
+    /// <param name="fallbackIconId">可选 fallback 图标 ID。Optional fallback icon id.</param>
+    public static void FromAssetBundle(
+        string id,
+        string ownerModGuid,
+        string bundlePath,
+        string assetName,
+        string? fallbackIconId = null)
+    {
+        Register(new IconDescriptor(id, ownerModGuid, IconAssetPaths.AssetBundle(bundlePath, assetName), fallbackIconId));
+    }
+
+    /// <summary>
     /// 注册一个图标并绑定到目标 Proto。
     /// Registers an icon and binds it to a target proto.
     /// </summary>
@@ -99,6 +118,35 @@ public static class Icons
             id,
             ownerModGuid,
             IconAssetPaths.Embedded(assembly, resourceName),
+            fallbackIconId,
+            targetKind,
+            targetProtoId));
+    }
+
+    /// <summary>
+    /// 注册一个 AssetBundle 图标并绑定到目标 Proto。
+    /// Registers an AssetBundle icon and binds it to a target proto.
+    /// </summary>
+    /// <param name="id">图标 ID。Icon id.</param>
+    /// <param name="ownerModGuid">所属模组 GUID。Owner mod GUID.</param>
+    /// <param name="bundlePath">AssetBundle 文件路径。AssetBundle file path.</param>
+    /// <param name="assetName">AssetBundle 内资源名。Asset name inside the AssetBundle.</param>
+    /// <param name="targetKind">目标 Proto 类型。Target proto kind.</param>
+    /// <param name="targetProtoId">目标 Proto ID。Target proto id.</param>
+    /// <param name="fallbackIconId">可选 fallback 图标 ID。Optional fallback icon id.</param>
+    public static void BindAssetBundleToProto(
+        string id,
+        string ownerModGuid,
+        string bundlePath,
+        string assetName,
+        ProtoKind targetKind,
+        int targetProtoId,
+        string? fallbackIconId = null)
+    {
+        Register(new IconDescriptor(
+            id,
+            ownerModGuid,
+            IconAssetPaths.AssetBundle(bundlePath, assetName),
             fallbackIconId,
             targetKind,
             targetProtoId));

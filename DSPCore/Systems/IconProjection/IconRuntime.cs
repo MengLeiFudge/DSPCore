@@ -10,6 +10,7 @@ namespace DSPCore;
 internal static class IconRuntime
 {
     private static readonly Dictionary<string, Sprite> SpriteCache = new(StringComparer.Ordinal);
+    private static readonly Dictionary<string, AssetBundle> AssetBundleCache = new(StringComparer.Ordinal);
 
     public static void ApplyIcons()
     {
@@ -71,6 +72,11 @@ internal static class IconRuntime
             return LoadEmbeddedSprite(assemblyName, resourceName);
         }
 
+        if (IconAssetPaths.TryParseAssetBundle(assetPath, out var bundlePath, out var assetName))
+        {
+            return LoadAssetBundleSprite(bundlePath, assetName);
+        }
+
         var sprite = Resources.Load<Sprite>(assetPath);
         if (sprite != null)
         {
@@ -105,6 +111,42 @@ internal static class IconRuntime
         using var buffer = new MemoryStream();
         stream.CopyTo(buffer);
         return LoadPngSprite(buffer.ToArray());
+    }
+
+    private static Sprite? LoadAssetBundleSprite(string bundlePath, string assetName)
+    {
+        if (!AssetBundleCache.TryGetValue(bundlePath, out var bundle) || bundle == null)
+        {
+            if (!File.Exists(bundlePath))
+            {
+                DspCore.Logger?.LogWarning($"AssetBundle icon bundle {bundlePath} does not exist.");
+                return null;
+            }
+
+            bundle = AssetBundle.LoadFromFile(bundlePath);
+            if (bundle == null)
+            {
+                DspCore.Logger?.LogWarning($"AssetBundle icon bundle {bundlePath} could not be loaded.");
+                return null;
+            }
+
+            AssetBundleCache[bundlePath] = bundle;
+        }
+
+        var sprite = bundle.LoadAsset<Sprite>(assetName);
+        if (sprite != null)
+        {
+            return sprite;
+        }
+
+        var texture = bundle.LoadAsset<Texture2D>(assetName);
+        if (texture != null)
+        {
+            return Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
+        }
+
+        DspCore.Logger?.LogWarning($"AssetBundle icon asset {assetName} was not found in {bundlePath}.");
+        return null;
     }
 
     private static Sprite? LoadPngSprite(byte[] data)

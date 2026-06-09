@@ -50,6 +50,10 @@
       <HintPath>$(DSPManagedDir)/UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>$(DSPManagedDir)/UnityEngine.AssetBundleModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>$(DSPManagedDir)/UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>false</Private>
@@ -68,6 +72,7 @@
     <Error Condition="'$(DumpedAssembliesDir)' == '' or !Exists('$(DumpedAssembliesDir)/UnityEngine.UI.dll')" Text="未找到 UnityEngine.UI.dll；请检查 ProfileDir 的 BepInEx/DumpedAssemblies/DSPGAME。" />
     <Error Condition="'$(DSPManagedDir)' == '' or !Exists('$(DSPManagedDir)/UnityEngine.IMGUIModule.dll')" Text="未找到 UnityEngine.IMGUIModule.dll；请检查 DSPGameDir 的 DSPGAME_Data/Managed。" />
     <Error Condition="'$(DSPManagedDir)' == '' or !Exists('$(DSPManagedDir)/UnityEngine.ImageConversionModule.dll')" Text="未找到 UnityEngine.ImageConversionModule.dll；请检查 DSPGameDir 的 DSPGAME_Data/Managed。" />
+    <Error Condition="'$(DSPManagedDir)' == '' or !Exists('$(DSPManagedDir)/UnityEngine.AssetBundleModule.dll')" Text="未找到 UnityEngine.AssetBundleModule.dll；请检查 DSPGameDir 的 DSPGAME_Data/Managed。" />
     <Error Condition="'$(DSPManagedDir)' == '' or !Exists('$(DSPManagedDir)/UnityEngine.InputLegacyModule.dll')" Text="未找到 UnityEngine.InputLegacyModule.dll；请检查 DSPGameDir 的 DSPGAME_Data/Managed。" />
     <Error Condition="'$(DSPManagedDir)' == '' or !Exists('$(DSPManagedDir)/UnityEngine.TextRenderingModule.dll')" Text="未找到 UnityEngine.TextRenderingModule.dll；请检查 DSPGameDir 的 DSPGAME_Data/Managed。" />
   </Target>
