@@ -1,6 +1,6 @@
 # KeyBinds
 
-The KeyBinds block lets a mod declare a default key binding, trigger timing, and callback. DSPCore polls the binding at runtime and invokes your logic.
+The KeyBinds block lets a mod declare a default key binding, trigger timing, and callback. DSPCore polls the binding at runtime and invokes your logic. Ordinary bindings use `KeyBinds.Register(id, ownerModGuid, displayName, defaultKey, callback, ...)`; use `KeyBindDescriptor` when code needs to pass full descriptor objects around.
 
 ## What This Block Gives You
 
@@ -14,17 +14,17 @@ The KeyBinds block lets a mod declare a default key binding, trigger timing, and
 ## Capability: Register Key Bindings
 
 ```csharp
-KeyBinds.Register(new KeyBindDescriptor(
-    Id: "example-toggle",
-    OwnerModGuid: "com.example.my-mod",
-    DisplayName: "ExampleToggle",
-    DefaultKey: "Ctrl+K",
-    Action: CoreKeyAction.Press,
-    ConflictGroup: 100,
-    Callback: TogglePanel));
+KeyBinds.Register(
+    id: "example-toggle",
+    ownerModGuid: "com.example.my-mod",
+    displayName: "ExampleToggle",
+    defaultKey: "Ctrl+K",
+    callback: TogglePanel,
+    action: CoreKeyAction.Press,
+    conflictGroup: 100);
 ```
 
-`DefaultKey` uses Unity `KeyCode` names and may include simple `Ctrl`, `Alt`, or `Shift` modifiers. `Action` can be `Press`, `Hold`, or `Release`. `ConflictGroup` value 0 opts out of conflict checks; non-zero groups are checked in the unified settings window after key text normalization.
+`DefaultKey` uses Unity `KeyCode` names and may include simple `Ctrl`, `Alt`, or `Shift` modifiers. `Action` can be `Press`, `Hold`, or `Release`. `ConflictGroup` value 0 opts out of conflict checks; non-zero groups are checked in the unified settings window after key text normalization. Use `KeyBinds.Register(new KeyBindDescriptor(...))` when code needs to construct or cache the full declaration first.
 
 ## What DSPCore Does After The Call
 

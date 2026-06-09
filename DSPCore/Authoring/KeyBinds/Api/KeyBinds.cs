@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,6 +11,39 @@ namespace DSPCore;
 public static class KeyBinds
 {
     internal const string OptionsPageId = "dspcore.keybinds";
+
+    /// <summary>
+    /// 注册一个可重绑定按键。
+    /// Registers a rebindable key binding.
+    /// </summary>
+    /// <param name="id">按键 ID。Key binding id.</param>
+    /// <param name="ownerModGuid">声明方模组 GUID。Declaring mod GUID.</param>
+    /// <param name="displayName">显示名称本地化键或文本。Display name localization key or text.</param>
+    /// <param name="defaultKey">默认按键文本。Default key text.</param>
+    /// <param name="callback">触发回调。Trigger callback.</param>
+    /// <param name="action">触发方式。Trigger action.</param>
+    /// <param name="conflictGroup">冲突组。Conflict group.</param>
+    /// <param name="canOverride">玩家是否可以重绑定。Whether players can rebind it.</param>
+    public static void Register(
+        string id,
+        string ownerModGuid,
+        string displayName,
+        string defaultKey,
+        Action callback,
+        CoreKeyAction action = CoreKeyAction.Press,
+        int conflictGroup = 0,
+        bool canOverride = true)
+    {
+        Register(new KeyBindDescriptor(
+            id,
+            ownerModGuid,
+            displayName,
+            defaultKey,
+            action,
+            conflictGroup,
+            canOverride,
+            callback));
+    }
 
     /// <summary>
     /// 注册一个可重绑定按键。

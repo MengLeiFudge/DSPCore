@@ -1,6 +1,6 @@
 # 按键
 
-KeyBinds 模块让模组声明默认快捷键、触发时机和回调，由 DSPCore 在运行时轮询并调用你的逻辑。
+KeyBinds 模块让模组声明默认快捷键、触发时机和回调，由 DSPCore 在运行时轮询并调用你的逻辑。普通快捷键用 `KeyBinds.Register(id, ownerModGuid, displayName, defaultKey, callback, ...)`；需要传递完整描述对象时再使用 `KeyBindDescriptor`。
 
 ## 这个模块带来什么便利
 
@@ -14,17 +14,17 @@ KeyBinds 模块让模组声明默认快捷键、触发时机和回调，由 DSPC
 ## 功能：注册按键绑定
 
 ```csharp
-KeyBinds.Register(new KeyBindDescriptor(
-    Id: "example-toggle",
-    OwnerModGuid: "com.example.my-mod",
-    DisplayName: "ExampleToggle",
-    DefaultKey: "Ctrl+K",
-    Action: CoreKeyAction.Press,
-    ConflictGroup: 100,
-    Callback: TogglePanel));
+KeyBinds.Register(
+    id: "example-toggle",
+    ownerModGuid: "com.example.my-mod",
+    displayName: "ExampleToggle",
+    defaultKey: "Ctrl+K",
+    callback: TogglePanel,
+    action: CoreKeyAction.Press,
+    conflictGroup: 100);
 ```
 
-`DefaultKey` 使用 Unity `KeyCode` 名称，可带简单 `Ctrl`、`Alt`、`Shift` 修饰。`Action` 可以是 `Press`、`Hold` 或 `Release`。`ConflictGroup` 为 0 时不参与冲突检测；非 0 时，同组按键会在统一设置窗口中按规范化后的按键文本检测冲突。
+`DefaultKey` 使用 Unity `KeyCode` 名称，可带简单 `Ctrl`、`Alt`、`Shift` 修饰。`Action` 可以是 `Press`、`Hold` 或 `Release`。`ConflictGroup` 为 0 时不参与冲突检测；非 0 时，同组按键会在统一设置窗口中按规范化后的按键文本检测冲突。需要先构造或缓存完整声明时，仍可使用 `KeyBinds.Register(new KeyBindDescriptor(...))`。
 
 ## 调用后 DSPCore 会怎么处理
 

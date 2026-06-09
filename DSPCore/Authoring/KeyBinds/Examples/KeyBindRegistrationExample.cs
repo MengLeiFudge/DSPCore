@@ -19,20 +19,20 @@ public static class KeyBindRegistrationExample
 {
     public static void Register()
     {
-        KeyBinds.Register(new KeyBindDescriptor(
+        KeyBinds.Register(
             // Id 应稳定，通常使用 mod 前缀。
             // Use a stable id, normally prefixed by your mod id.
-            Id: "example.toggle-panel",
-            OwnerModGuid: "com.example.my-mod",
-            DisplayName: "Toggle Example Panel",
+            id: "example.toggle-panel",
+            ownerModGuid: "com.example.my-mod",
+            displayName: "Toggle Example Panel",
 
             // 当前格式支持类似 Ctrl+E、Alt+E、Shift+E 或单键 E。
             // Current format supports Ctrl+E, Alt+E, Shift+E, or a single key.
-            DefaultKey: "Ctrl+E",
-            Action: CoreKeyAction.Press,
-            ConflictGroup: 2,
-            CanOverride: true,
-            Callback: ToggleExamplePanel));
+            defaultKey: "Ctrl+E",
+            callback: ToggleExamplePanel,
+            action: CoreKeyAction.Press,
+            conflictGroup: 2,
+            canOverride: true);
     }
 
     private static void ToggleExamplePanel()
