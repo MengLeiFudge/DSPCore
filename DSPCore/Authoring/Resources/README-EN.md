@@ -6,6 +6,7 @@ The Resources block records shared resource declarations and applies localizatio
 
 - You can centralize resource ownership, paths, and keywords instead of scattering paths across capabilities.
 - One mod can create `ModResources.Pack(...)` first, then register text, icons, and proto icon bindings without repeating `ownerModGuid` and root paths.
+- When the target proto kind is already clear, use `pack.ItemIcon(...)`, `RecipeIcon(...)`, `TechIcon(...)`, `TutorialIcon(...)`, or `SignalIcon(...)` without writing `ProtoKind` manually.
 - Localization entries are applied to DSP key indices and language string arrays, so each mod does not need to reflect into `Localization` itself.
 - Multilingual text can be maintained separately from UI, Proto, and Tabs declarations, reducing hardcoded strings.
 
@@ -20,9 +21,10 @@ var pack = ModResources.Pack(
 pack.Root(id: "example-assets", keyword: "assets");
 pack.Text("ExampleMachines", "zhCN", "示例机器");
 pack.Text("ExampleMachines", "enUS", "Example Machines");
+pack.ItemIcon("example-machine-icon", "icons/example-machine.png", itemId: 9554);
 ```
 
-`ModResourcePack` reuses the same owner, resource root, and default assembly. It fits a mod that registers multiple localization entries, icons, or proto icon bindings around the same resources.
+`ModResourcePack` reuses the same owner, resource root, and default assembly. It fits a mod that registers multiple localization entries, icons, or proto icon bindings around the same resources. `ItemIcon` / `RecipeIcon` typed helpers resolve relative paths under `RootPath` and fix the target kind to the `ProtoKind` named by the method.
 
 ## Capability: Register Resource Descriptors
 
@@ -62,6 +64,7 @@ ModResources.Text(
 
 - It does not load icon sprites; icon loading belongs to Icons.
 - It does not create protos or UI; it only provides resource and text data.
+- `ItemIcon` typed helpers only register icon descriptors and target bindings; they do not create target protos.
 - It does not automatically resolve same-key conflicts between mods; later writes for the same key and language decide the final text in the array.
 - It does not validate resource paths by itself; consuming capabilities or systems must handle load failures.
 - It does not actively load resource DLLs; `Pack(..., assembly: ...)` only records the default assembly, and resource DLLs must already be loaded into the current AppDomain.

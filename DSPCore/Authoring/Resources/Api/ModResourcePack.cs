@@ -120,6 +120,71 @@ public sealed class ModResourcePack
     }
 
     /// <summary>
+    /// 注册这个资源包下的图标并绑定到物品 Proto。
+    /// Registers an icon under this pack and binds it to an item proto.
+    /// </summary>
+    /// <param name="id">图标 ID。Icon id.</param>
+    /// <param name="assetPath">资源路径。Asset path.</param>
+    /// <param name="itemId">物品 ID。Item id.</param>
+    /// <param name="fallbackIconId">可选 fallback 图标 ID。Optional fallback icon id.</param>
+    public void ItemIcon(string id, string assetPath, int itemId, string? fallbackIconId = null)
+    {
+        BindIconToProto(id, assetPath, ProtoKind.Item, itemId, fallbackIconId);
+    }
+
+    /// <summary>
+    /// 注册这个资源包下的图标并绑定到配方 Proto。
+    /// Registers an icon under this pack and binds it to a recipe proto.
+    /// </summary>
+    /// <param name="id">图标 ID。Icon id.</param>
+    /// <param name="assetPath">资源路径。Asset path.</param>
+    /// <param name="recipeId">配方 ID。Recipe id.</param>
+    /// <param name="fallbackIconId">可选 fallback 图标 ID。Optional fallback icon id.</param>
+    public void RecipeIcon(string id, string assetPath, int recipeId, string? fallbackIconId = null)
+    {
+        BindIconToProto(id, assetPath, ProtoKind.Recipe, recipeId, fallbackIconId);
+    }
+
+    /// <summary>
+    /// 注册这个资源包下的图标并绑定到科技 Proto。
+    /// Registers an icon under this pack and binds it to a tech proto.
+    /// </summary>
+    /// <param name="id">图标 ID。Icon id.</param>
+    /// <param name="assetPath">资源路径。Asset path.</param>
+    /// <param name="techId">科技 ID。Tech id.</param>
+    /// <param name="fallbackIconId">可选 fallback 图标 ID。Optional fallback icon id.</param>
+    public void TechIcon(string id, string assetPath, int techId, string? fallbackIconId = null)
+    {
+        BindIconToProto(id, assetPath, ProtoKind.Tech, techId, fallbackIconId);
+    }
+
+    /// <summary>
+    /// 注册这个资源包下的图标并绑定到指引或教程 Proto。
+    /// Registers an icon under this pack and binds it to a tutorial or guide proto.
+    /// </summary>
+    /// <param name="id">图标 ID。Icon id.</param>
+    /// <param name="assetPath">资源路径。Asset path.</param>
+    /// <param name="tutorialId">指引或教程 ID。Tutorial or guide id.</param>
+    /// <param name="fallbackIconId">可选 fallback 图标 ID。Optional fallback icon id.</param>
+    public void TutorialIcon(string id, string assetPath, int tutorialId, string? fallbackIconId = null)
+    {
+        BindIconToProto(id, assetPath, ProtoKind.Tutorial, tutorialId, fallbackIconId);
+    }
+
+    /// <summary>
+    /// 注册这个资源包下的图标并绑定到信号 Proto。
+    /// Registers an icon under this pack and binds it to a signal proto.
+    /// </summary>
+    /// <param name="id">图标 ID。Icon id.</param>
+    /// <param name="assetPath">资源路径。Asset path.</param>
+    /// <param name="signalId">信号 ID。Signal id.</param>
+    /// <param name="fallbackIconId">可选 fallback 图标 ID。Optional fallback icon id.</param>
+    public void SignalIcon(string id, string assetPath, int signalId, string? fallbackIconId = null)
+    {
+        BindIconToProto(id, assetPath, ProtoKind.Signal, signalId, fallbackIconId);
+    }
+
+    /// <summary>
     /// 注册这个资源包默认程序集中的嵌入 PNG 图标并绑定到目标 Proto。
     /// Registers an embedded PNG icon from this pack's default assembly and binds it to a target proto.
     /// </summary>

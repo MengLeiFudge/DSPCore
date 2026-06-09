@@ -40,17 +40,16 @@ public static class IconSetRegistrationExample
             assetName: "example-machine",
             fallbackIconId: "default-machine");
 
-        pack.BindIconToProto(
+        pack.ItemIcon(
             id: "example-machine",
 
             // assetPath 可以指向本地 PNG，也可以按后续资源规则指向 Unity 资源。
             // assetPath may point to a local PNG or a Unity resource path.
             assetPath: "example-machine.png",
 
-            // TargetKind/TargetProtoId 表示加载成功后写入哪个 Proto。
-            // TargetKind/TargetProtoId select the proto that receives the icon.
-            targetKind: ProtoKind.Item,
-            targetProtoId: 9554,
+            // ItemIcon 已经表达目标类型，只需要给物品 ID。
+            // ItemIcon already names the target kind; only the item id is needed.
+            itemId: 9554,
             fallbackIconId: "default-machine");
     }
 }

@@ -6,6 +6,7 @@ Resources 模块记录模组共享资源声明，并把本地化条目写入 DSP
 
 - 你可以把资源归属、路径和关键字集中登记，避免每个功能块各自维护散落路径。
 - 同一模组可以先创建 `ModResources.Pack(...)`，之后注册文本、图标和 Proto 图标绑定时不再重复传 `ownerModGuid` 和根路径。
+- 已知目标 Proto 类型时，可以直接用 `pack.ItemIcon(...)`、`RecipeIcon(...)`、`TechIcon(...)`、`TutorialIcon(...)` 或 `SignalIcon(...)`，不用再手写 `ProtoKind`。
 - 本地化条目会统一写入 DSP 的 key 索引和语言字符串数组，不需要每个模组自己反射 `Localization`。
 - 中英文或多语言文本可以和功能声明分开维护，减少 UI、Proto、Tabs 里硬编码字符串。
 
@@ -20,9 +21,10 @@ var pack = ModResources.Pack(
 pack.Root(id: "example-assets", keyword: "assets");
 pack.Text("ExampleMachines", "zhCN", "示例机器");
 pack.Text("ExampleMachines", "enUS", "Example Machines");
+pack.ItemIcon("example-machine-icon", "icons/example-machine.png", itemId: 9554);
 ```
 
-`ModResourcePack` 会复用同一个 owner、资源根和默认 assembly。它适合一个模组围绕同一组资源注册多条本地化、图标或 Proto 图标绑定。
+`ModResourcePack` 会复用同一个 owner、资源根和默认 assembly。它适合一个模组围绕同一组资源注册多条本地化、图标或 Proto 图标绑定。`ItemIcon` / `RecipeIcon` 等 typed helper 会把相对路径拼到 `RootPath` 下，并把目标类型固定到方法名对应的 `ProtoKind`。
 
 ## 功能：登记资源描述
 
@@ -62,6 +64,7 @@ ModResources.Text(
 
 - 不加载图标 sprite；图标加载属于 Icons。
 - 不创建 Proto 或 UI；它只提供资源和文本数据。
+- `ItemIcon` 等 typed helper 只登记图标和目标绑定，不创建目标 Proto。
 - 不自动处理同一个 key 的多模组冲突；后写入同语言同 key 的值会覆盖数组中的最终文本。
 - 不验证资源路径是否真的存在；使用资源的功能块需要处理加载失败。
 - 不会主动加载资源 DLL；`Pack(..., assembly: ...)` 只记录默认 assembly，资源 DLL 仍必须已经加载到当前 AppDomain。

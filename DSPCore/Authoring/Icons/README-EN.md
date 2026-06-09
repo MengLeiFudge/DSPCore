@@ -6,6 +6,7 @@ The Icons block lets a mod register icon resources by stable id and apply them t
 
 - You do not need to repeat PNG loading, Unity Resources / AssetBundle loading, sprite caching, and fallback logic in every capability.
 - If one mod has a shared resource root, `ModResources.Pack(...)` can register icons without repeating `ownerModGuid` and path prefixes.
+- When the target kind is clear, use `pack.ItemIcon(...)`, `RecipeIcon(...)`, `TechIcon(...)`, `TutorialIcon(...)`, or `SignalIcon(...)` without repeating `ProtoKind`.
 - Other modules can reference a stable `IconId` instead of depending directly on file paths.
 - Icons can declare a target Proto, and DSPCore resolves the target and writes `_iconSprite` at runtime.
 - Load failures and missing targets are logged centrally.
@@ -21,10 +22,10 @@ var pack = ModResources.Pack(
 pack.IconFromFile("example-file-icon", "example-icon.png", fallbackIconId: "default-machine");
 pack.IconFromEmbedded("example-embedded-icon", "ExampleMod.Assets.example-icon.png");
 pack.IconFromAssetBundle("example-bundle-icon", "example-icons", "example-machine");
-pack.BindIconToProto("example-machine", "example-machine.png", ProtoKind.Item, 9554);
+pack.ItemIcon("example-machine", "example-machine.png", itemId: 9554);
 ```
 
-The pack resolves relative paths under `RootPath`, so `"example-machine.png"` becomes `"assets/icons/example-machine.png"`. Embedded resource names are not combined with the root because they must be assembly manifest resource names.
+The pack resolves relative paths under `RootPath`, so `"example-machine.png"` becomes `"assets/icons/example-machine.png"`. `ItemIcon` / `RecipeIcon` typed helpers automatically select the target `ProtoKind`. Embedded resource names are not combined with the root because they must be assembly manifest resource names.
 
 ## Capability: Register Independent Shared Icons
 
@@ -52,6 +53,8 @@ Icons.FromAssetBundle(
     bundlePath: "assets/example-icons",
     assetName: "example-machine");
 ```
+
+The pack typed helpers are short forms of this advanced entry. `pack.ItemIcon(...)` reuses the pack owner/root and fixes `targetKind` to `ProtoKind.Item`.
 
 `AssetPath` can be a Unity `Resources` sprite path, a local PNG file path, an embedded PNG in a loaded assembly through `FromEmbedded`, or a `Sprite` / `Texture2D` inside an AssetBundle through `FromAssetBundle`. Keep `Id` stable so Tabs, ProtoRegistration, or your own module code can reference it.
 
@@ -85,6 +88,7 @@ Icons.BindToProto(
 - It does not create protos; target items, recipes, techs, and other protos must already exist.
 - It does not own localization text; use Resources for text.
 - It does not make external PNG paths stable across machines; published mods should use deterministic resource paths.
+- Typed bindings for embedded resources and AssetBundles are not expanded separately yet. Use `BindEmbeddedIconToProto(...)` or `BindAssetBundleIconToProto(...)` for complex sources.
 - AssetBundle unloading is not owned here; mods that need finer lifecycle control should manage separate bundles themselves.
 - It does not actively load resource DLLs. If you use a resource DLL, your mod or loader must load that assembly into the current AppDomain first.
 - It does not handle icon art quality, dimensions, or transparent edges for you.

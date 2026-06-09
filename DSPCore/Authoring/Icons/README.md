@@ -6,6 +6,7 @@ Icons 模块让模组用稳定 ID 注册图标资源，并在 Proto 缓存重建
 
 - 你不需要在每个功能块里重复写 PNG 加载、Unity Resources / AssetBundle 加载、sprite 缓存和 fallback 逻辑。
 - 如果同一模组有统一资源根，可以通过 `ModResources.Pack(...)` 注册图标，避免每次重复传 `ownerModGuid` 和路径前缀。
+- 目标类型明确时，可以用 `pack.ItemIcon(...)`、`RecipeIcon(...)`、`TechIcon(...)`、`TutorialIcon(...)` 或 `SignalIcon(...)`，不再重复写 `ProtoKind`。
 - 其他模块可以用稳定 `IconId` 引用图标，而不是直接依赖文件路径。
 - 图标可以声明目标 Proto，DSPCore 会在运行时解析目标并写入 `_iconSprite`。
 - 加载失败和目标缺失会写日志，不需要每个模组自己加同样的诊断。
@@ -21,10 +22,10 @@ var pack = ModResources.Pack(
 pack.IconFromFile("example-file-icon", "example-icon.png", fallbackIconId: "default-machine");
 pack.IconFromEmbedded("example-embedded-icon", "ExampleMod.Assets.example-icon.png");
 pack.IconFromAssetBundle("example-bundle-icon", "example-icons", "example-machine");
-pack.BindIconToProto("example-machine", "example-machine.png", ProtoKind.Item, 9554);
+pack.ItemIcon("example-machine", "example-machine.png", itemId: 9554);
 ```
 
-资源包会把相对路径拼到 `RootPath` 下，例如 `"example-machine.png"` 会解析为 `"assets/icons/example-machine.png"`。嵌入资源名不拼接 root，因为它必须是 assembly 的 manifest resource name。
+资源包会把相对路径拼到 `RootPath` 下，例如 `"example-machine.png"` 会解析为 `"assets/icons/example-machine.png"`。`ItemIcon` / `RecipeIcon` 等 typed helper 会自动选择目标 `ProtoKind`。嵌入资源名不拼接 root，因为它必须是 assembly 的 manifest resource name。
 
 ## 功能：注册独立共享图标
 
@@ -69,6 +70,8 @@ Icons.BindToProto(
     fallbackIconId: "example-icon");
 ```
 
+资源包上的 typed helper 是这个高级入口的短写：`pack.ItemIcon(...)` 等价于复用 pack 的 owner/root，并把 `targetKind` 固定为 `ProtoKind.Item`。
+
 ## 调用后 DSPCore 会怎么处理
 
 - 注册阶段只保存图标 descriptor；同一个 `Id` 后一次注册会覆盖前一次。
@@ -85,6 +88,7 @@ Icons.BindToProto(
 - 不创建 Proto；目标物品、配方、科技等必须已经存在。
 - 不负责本地化文本；文本属于 Resources。
 - 不保证外部 PNG 路径跨机器稳定；发布模组时应使用确定的资源路径。
+- 嵌入资源和 AssetBundle 的 typed 绑定暂未单独展开；复杂来源继续使用 `BindEmbeddedIconToProto(...)` 或 `BindAssetBundleIconToProto(...)`。
 - 不负责卸载 AssetBundle；如果需要更细的生命周期控制，模组应自己管理独立 bundle。
 - 不会主动加载资源 DLL；如果使用资源 DLL，必须先由你的模组或加载器把该 assembly 加载进当前 AppDomain。
 - 不替你处理图标尺寸、美术风格或透明边缘。

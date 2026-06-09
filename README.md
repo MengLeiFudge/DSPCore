@@ -39,7 +39,7 @@ P0/P1 是当前实现目标。
 - 数据阶段：`Data`、`DataUpdates` 和 `DataFinalFixes`。
 - 原型相关能力：DataPhases 提供三阶段；ProtoAccess 通过 `ProtoPhaseContext.FindItem(...)` / `FindRecipe(...)` 和 `data.Access` 承接第二/第三阶段读取和修改他人注册数据；Items、Recipes、Techs、Tutorials 分别负责对应 proto 注册；`ItemProto` / `RecipeProto` 可用对象短入口设置 `GridIndex`、绑定图标并注册，`TechProto` / `TutorialProto` 可用对象短入口直接注册；ProtoRegistration 保留低层聚合和兼容入口。
 - 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位；第 1 行写入原版建造栏，第 2 行及以后使用 DSPCore 扩展按钮，并保留 BuildBarTool 兼容入口。其他作者能力，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.SetBuildBar(...)`；BuildBar 不承担 Proto 创建职责。
-- 资源、图标和本地化：通过 `ModResources` 登记资源根和翻译条目；同一模组可用 `ModResources.Pack(...)` 复用 owner、资源根和 assembly；通过 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)`、`Icons.FromAssetBundle(...)` 或 `Icons.BindToProto(...)` 注册图标。
+- 资源、图标和本地化：通过 `ModResources` 登记资源根和翻译条目；同一模组可用 `ModResources.Pack(...)` 复用 owner、资源根和 assembly；通过 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)`、`Icons.FromAssetBundle(...)` 或 `Icons.BindToProto(...)` 注册图标，目标类型明确时优先使用 `pack.ItemIcon(...)`、`RecipeIcon(...)` 等 typed helper。
 - 分页：作者可以声明自定义页面并取得 `TabSlot`，再用 `TabSlot` 生成物品/配方 `GridIndex`。选择器 surface 属于 DSPCore 系统实现。
 - 游戏枚举：`GameEnums.RegisterRecipeType(...)` 声明自定义配方类型限制，`ItemProto.SetCustomItemType()` 标记 DSPCore 预留的自定义物品类型；运行时代码使用 `GameEnums.CustomRecipeTypeValue` / `CustomItemTypeValue` 避免直接编译期依赖 Preloader 注入字段。
 - 存档：`Saves.Auto<TState>(...)` 自动创建无参状态对象并注册 schema，`Saves.Auto(modGuid, state)` 支持已有实例，另有委托式简单存档处理器、原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
@@ -61,7 +61,7 @@ P0/P1 是当前实现目标。
 - `Lifecycle` 会在 DSPCore 运行时桥接装配后触发 `OnStarted`，在插件更新和销毁时触发 `OnUpdate` / `OnDestroyed`，并从 SaveRuntime 转发 `OnNewGame`、`OnBeforeSave`、`OnBeforeLoad`、`OnAfterLoad` 和 `OnSaveDeleted`。
 - 原型注册会按类似 Factorio 的 `Data`、`DataUpdates`、`DataFinalFixes` 三阶段执行回调；阶段上下文提供当前可见 Proto 查询和修改入口；运行时在 `VFPreload.InvokeOnLoadWorkEnded` 前后写入对应 Proto，并在最终修正后重建 `ProtoSet` 索引和关键派生缓存。
 - `BuildBarRegistry.BindQuickBar` 会把物品 ID 或 `ItemProto` 映射到建造栏 tab/row/index 槽位；第 1 行写入原版 `UIBuildMenu.protos`，第 2 行及以后使用 DSPCore 扩展按钮。`BuildBar.SetPlayerOverride(...)` 会写入玩家覆盖层并保存到 `.dspcore`，运行时总是用作者默认绑定叠加玩家覆盖后的有效绑定。没有 DSPCore BuildBar 存档数据时，DSPCore 会从 RebindBuildBar 的 `CustomBarBind.cfg` 导入第 1 行玩家配置。
-- `IconSetRegistry` 可以加载 Unity `Resources` sprite、本地 PNG 文件、已加载 assembly 中的嵌入 PNG 或 AssetBundle 中的 `Sprite` / `Texture2D`，缓存后写入目标 Proto；作者侧短入口是 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)`、`Icons.FromAssetBundle(...)` 和 `Icons.BindToProto(...)`。同一模组有统一资源根时，可先创建 `ModResources.Pack(...)`，再用 pack 上的图标方法减少重复参数。
+- `IconSetRegistry` 可以加载 Unity `Resources` sprite、本地 PNG 文件、已加载 assembly 中的嵌入 PNG 或 AssetBundle 中的 `Sprite` / `Texture2D`，缓存后写入目标 Proto；作者侧短入口是 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)`、`Icons.FromAssetBundle(...)` 和 `Icons.BindToProto(...)`。同一模组有统一资源根时，可先创建 `ModResources.Pack(...)`，再用 pack 上的图标方法减少重复参数；常见物品/配方/科技/指引/信号图标绑定应优先使用 `pack.ItemIcon(...)`、`RecipeIcon(...)`、`TechIcon(...)`、`TutorialIcon(...)` 和 `SignalIcon(...)`。
 - `TabRegistry` 会为稳定页面 ID 分配 `TabSlot`，并通过现有 GridIndex 分类流程把自定义页面投射到物品选择器、配方选择器、制造器界面、信号选择器和标签图标选择器。
 - `PickerSurfaces` 会处理物品、配方和信号选择器 surface，实时网格会应用过滤、重复 `GridIndex` 兜底和动态行列扩容。
 - `GameEnums.RegisterRecipeType(...)` 当前会把声明的配方标记为自定义配方类型，并在制作器配方列表打开前隐藏当前机器不能使用的配方；`ItemProto.SetCustomItemType()` 会把已有物品标记为 DSPCore 预留的自定义物品类型；`RecipeTypes` 保留为旧别名，`AssemblerComponent.SetRecipe` 仍保留最终保护。
@@ -168,7 +168,7 @@ var pack = ModResources.Pack(
 pack.Text("ExampleMachines", "zhCN", "示例机器");
 pack.IconFromEmbedded("example-embedded", "ExampleMod.Assets.example.png");
 pack.IconFromAssetBundle("example-bundle", "example-icons", "example-machine");
-pack.BindIconToProto("example-machine", "example.png", ProtoKind.Item, 9554);
+pack.ItemIcon("example-machine", "example.png", itemId: 9554);
 ```
 
 ## 示例：自动存档、委托式存档和生命周期
