@@ -28,5 +28,25 @@ internal static class SoftPacketExample
             {
                 int length = payload.Length;
             });
+
+        Multiplayer.RegisterClientIntoOtherSave(
+            ownerModGuid: "com.example.my-mod",
+            intoOtherSave: static () =>
+            {
+            });
+    }
+
+    public static void AdapterRead()
+    {
+        MultiplayerBridgeSnapshot snapshot = Multiplayer.GetAdapterSnapshot();
+        foreach (MultiplayerPacketDescriptor packet in snapshot.Packets)
+        {
+            string packetId = packet.PacketId;
+        }
+
+        if (Multiplayer.TryGetPlanetDataRequest("com.example.planet-state", out var request))
+        {
+            byte[] payload = request.ExportPlanetData(1);
+        }
     }
 }

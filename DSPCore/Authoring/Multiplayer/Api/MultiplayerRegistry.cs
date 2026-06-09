@@ -65,6 +65,18 @@ public sealed class MultiplayerRegistry
     }
 
     /// <summary>
+    /// 尝试获取指定 packet 描述。
+    /// Tries to get a packet descriptor by id.
+    /// </summary>
+    /// <param name="packetId">packet ID。Packet ID.</param>
+    /// <param name="descriptor">返回的 packet 描述。Returned packet descriptor.</param>
+    /// <returns>找到时返回 true。Returns true when found.</returns>
+    public bool TryGetPacket(string packetId, out MultiplayerPacketDescriptor descriptor)
+    {
+        return packets.TryGetValue(packetId, out descriptor!);
+    }
+
+    /// <summary>
     /// 获取所有主机转发描述快照。
     /// Gets a snapshot of all host relay descriptors.
     /// </summary>
@@ -72,6 +84,18 @@ public sealed class MultiplayerRegistry
     public IReadOnlyCollection<MultiplayerRelayDescriptor> GetRelays()
     {
         return relays.Values;
+    }
+
+    /// <summary>
+    /// 尝试获取指定主机转发描述。
+    /// Tries to get a host relay descriptor by packet id.
+    /// </summary>
+    /// <param name="packetId">packet ID。Packet ID.</param>
+    /// <param name="descriptor">返回的转发描述。Returned relay descriptor.</param>
+    /// <returns>找到时返回 true。Returns true when found.</returns>
+    public bool TryGetRelay(string packetId, out MultiplayerRelayDescriptor descriptor)
+    {
+        return relays.TryGetValue(packetId, out descriptor!);
     }
 
     /// <summary>
@@ -85,6 +109,18 @@ public sealed class MultiplayerRegistry
     }
 
     /// <summary>
+    /// 尝试获取指定星球数据请求描述。
+    /// Tries to get a planet data request descriptor by id.
+    /// </summary>
+    /// <param name="requestId">请求 ID。Request ID.</param>
+    /// <param name="descriptor">返回的星球数据描述。Returned planet data descriptor.</param>
+    /// <returns>找到时返回 true。Returns true when found.</returns>
+    public bool TryGetPlanetDataRequest(string requestId, out MultiplayerPlanetDataDescriptor descriptor)
+    {
+        return planetData.TryGetValue(requestId, out descriptor!);
+    }
+
+    /// <summary>
     /// 获取所有客户端存档初始化描述快照。
     /// Gets a snapshot of all client save initialization descriptors.
     /// </summary>
@@ -92,5 +128,17 @@ public sealed class MultiplayerRegistry
     public IReadOnlyCollection<MultiplayerClientSaveDescriptor> GetClientSaveInitializers()
     {
         return clientSaves.Values;
+    }
+
+    /// <summary>
+    /// 尝试获取指定客户端存档初始化描述。
+    /// Tries to get a client save initializer descriptor by owner mod GUID.
+    /// </summary>
+    /// <param name="ownerModGuid">所属模组 GUID。Owner mod GUID.</param>
+    /// <param name="descriptor">返回的客户端存档描述。Returned client save descriptor.</param>
+    /// <returns>找到时返回 true。Returns true when found.</returns>
+    public bool TryGetClientSaveInitializer(string ownerModGuid, out MultiplayerClientSaveDescriptor descriptor)
+    {
+        return clientSaves.TryGetValue(ownerModGuid, out descriptor!);
     }
 }

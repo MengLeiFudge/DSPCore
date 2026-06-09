@@ -226,8 +226,8 @@ DSPCore.sln
 - Blueprint parameter extensions must use DSPCore tagged blocks appended to `BuildingParameters.parameters`; do not reserve fixed vanilla parameter slots for a mod-specific feature.
 - 蓝图参数扩展必须使用追加到 `BuildingParameters.parameters` 的 DSPCore tagged block；不要为单个模组功能预留固定原版参数槽位。
 
-- Optional multiplayer support must stay soft in the main DSPCore project. Do not add a hard Nebula reference unless a separate adapter project or explicit dependency decision is added. The main project may declare packet, host relay, planet data request, and client missing-save boundaries for an adapter to consume.
-- 主 DSPCore 项目的可选联机支持必须保持软依赖。除非新增独立适配项目或明确依赖决策，不要添加 Nebula 硬引用。主项目可以声明 packet、host relay、planet data request 和 client missing-save 边界，供适配器消费。
+- Optional multiplayer support must stay soft in the main DSPCore project. Do not add a hard Nebula reference unless a separate adapter project or explicit dependency decision is added. The main project may declare packet, host relay, planet data request, and client missing-save boundaries, plus adapter snapshot/query entries for an adapter to consume.
+- 主 DSPCore 项目的可选联机支持必须保持软依赖。除非新增独立适配项目或明确依赖决策，不要添加 Nebula 硬引用。主项目可以声明 packet、host relay、planet data request 和 client missing-save 边界，并提供 adapter snapshot/query 入口供适配器消费。
 
 - RebindBuildBar compatibility imports `BuildBarBinds` from `CustomBarBind.cfg` into DSPCore row-1 player overrides when no DSPCore BuildBar save data exists. DSPCore does not take over RebindBuildBar's rebinding UI, hotkeys, or later config writes.
 - RebindBuildBar 兼容会在没有 DSPCore BuildBar 存档数据时，把 `CustomBarBind.cfg` 里的 `BuildBarBinds` 导入 DSPCore 第 1 行玩家覆盖层。DSPCore 不接管 RebindBuildBar 自己的重绑 UI、快捷键或后续配置写回。

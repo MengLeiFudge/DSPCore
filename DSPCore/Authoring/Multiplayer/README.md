@@ -10,11 +10,26 @@ Multiplayer 模块提供软联机声明，不让 DSPCore 主项目硬依赖 Nebu
 - `RegisterHostRelay(...)` 描述需要主机处理并转发的 packet。
 - `RegisterPlanetData(...)` 描述客户端向主机请求某个星球数据的导出/导入边界。
 - `RegisterClientIntoOtherSave(...)` 描述客户端缺失联机存档数据时的初始化回调。
+- `GetAdapterSnapshot()`、`TryGetPacket(...)`、`TryGetHostRelay(...)` 和 `TryGetPlanetDataRequest(...)` 让独立联机适配器不用直接读取内部 registry 细节。
+- `ApplyClientIntoOtherSaveInitializers()` 可由适配器在客户端缺失联机存档数据时调用。
+
+## 功能：适配器读取声明
+
+```csharp
+MultiplayerBridgeSnapshot snapshot = Multiplayer.GetAdapterSnapshot();
+foreach (MultiplayerPacketDescriptor packet in snapshot.Packets)
+{
+    // Adapter maps packet.PacketId to its own network transport.
+}
+```
+
+适配器也可以用 `TryGetPacket(...)`、`TryGetHostRelay(...)` 或 `TryGetPlanetDataRequest(...)` 按稳定 ID 查询单个声明。
 
 ## 边界
 
 - 当前不直接发送 Nebula packet；这是软桥声明层。
 - 需要真实同步时，应由单独 Nebula 适配器读取 `DspCore.Multiplayer` 注册表。
+- 适配器入口只暴露声明和初始化边界，不把 Nebula 类型带入 DSPCore 主项目。
 - packet ID 必须稳定，避免联机协议不兼容。
 
 ## 示例

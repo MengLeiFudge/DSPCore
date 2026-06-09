@@ -65,4 +65,55 @@ public static class Multiplayer
     {
         DspCore.Multiplayer.RegisterClientIntoOtherSave(new MultiplayerClientSaveDescriptor(ownerModGuid, intoOtherSave));
     }
+
+    /// <summary>
+    /// 获取可供联机适配器读取的声明快照。
+    /// Gets a declaration snapshot for multiplayer adapters.
+    /// </summary>
+    /// <returns>联机桥快照。Multiplayer bridge snapshot.</returns>
+    public static MultiplayerBridgeSnapshot GetAdapterSnapshot()
+    {
+        return new MultiplayerBridgeSnapshot(
+            IsNebulaAvailable,
+            DspCore.Multiplayer.GetAll(),
+            DspCore.Multiplayer.GetRelays(),
+            DspCore.Multiplayer.GetPlanetDataRequests(),
+            DspCore.Multiplayer.GetClientSaveInitializers());
+    }
+
+    /// <summary>
+    /// 尝试获取指定 packet 描述。
+    /// Tries to get a packet descriptor by id.
+    /// </summary>
+    public static bool TryGetPacket(string packetId, out MultiplayerPacketDescriptor descriptor)
+    {
+        return DspCore.Multiplayer.TryGetPacket(packetId, out descriptor);
+    }
+
+    /// <summary>
+    /// 尝试获取指定主机转发描述。
+    /// Tries to get a host relay descriptor by packet id.
+    /// </summary>
+    public static bool TryGetHostRelay(string packetId, out MultiplayerRelayDescriptor descriptor)
+    {
+        return DspCore.Multiplayer.TryGetRelay(packetId, out descriptor);
+    }
+
+    /// <summary>
+    /// 尝试获取指定星球数据请求描述。
+    /// Tries to get a planet data request descriptor by id.
+    /// </summary>
+    public static bool TryGetPlanetDataRequest(string requestId, out MultiplayerPlanetDataDescriptor descriptor)
+    {
+        return DspCore.Multiplayer.TryGetPlanetDataRequest(requestId, out descriptor);
+    }
+
+    /// <summary>
+    /// 执行所有客户端缺失联机存档数据时的初始化回调。
+    /// Runs all client missing-save initialization callbacks.
+    /// </summary>
+    public static void ApplyClientIntoOtherSaveInitializers()
+    {
+        MultiplayerRuntime.ApplyClientIntoOtherSave();
+    }
 }
