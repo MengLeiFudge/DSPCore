@@ -20,20 +20,20 @@ public static class TabRegistrationExample
 {
     public static void Register(ItemProto itemProto, RecipeProto recipeProto)
     {
-        TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
-            // Id 建议包含 mod 前缀，避免不同模组冲突。
+        TabSlot machinesTab = Tabs.AddTab(
+            // id 建议包含 mod 前缀，避免不同模组冲突。
             // Prefix the id with your mod id to avoid cross-mod conflicts.
-            Id: "example-machines",
-            OwnerModGuid: "com.example.my-mod",
-            Title: "Example Machines",
+            id: "example-machines",
+            ownerModGuid: "com.example.my-mod",
+            title: "Example Machines",
 
             // IconId 应指向 Icons.Register 中注册过的图标。
             // IconId should point to an icon registered through Icons.Register.
-            IconId: "example-tab-icon",
+            iconId: "example-tab-icon",
 
             // Order 用于多个自定义分页之间排序。
             // Order sorts this tab button among other custom tab buttons.
-            Order: 100));
+            order: 100);
 
         // GridIndex 是物品/配方自己的游戏原生格子字段。
         // GridIndex is the native game cell field on items and recipes.

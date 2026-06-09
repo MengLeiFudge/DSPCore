@@ -13,15 +13,17 @@ Tabs 模块让模组声明自定义页面，并取得可用于物品/配方 `Gri
 ## 功能：声明自定义页面
 
 ```csharp
-TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
-    Id: "example-machines",
-    OwnerModGuid: "com.example.my-mod",
-    Title: "ExampleMachines",
-    IconId: "example-machines-icon",
-    Order: 100));
+TabSlot machinesTab = Tabs.AddTab(
+    id: "example-machines",
+    ownerModGuid: "com.example.my-mod",
+    title: "ExampleMachines",
+    iconId: "example-machines-icon",
+    order: 100);
 ```
 
 `Id` 应保持稳定；`OwnerModGuid` 用于归属；`Title` 通常写本地化 key；`IconId` 指向 Icons 中已注册的图标；`Order` 用于表达按钮显示排序。返回的 `TabSlot` 是页面槽位，不是物品/配方 `GridIndex`。
+
+`CoreTabDescriptor` 仍可直接传给 `Tabs.AddTab(...)`，适合批量构造、配置驱动注册或需要先保存 descriptor 对象的高级路径。
 
 ## 功能：把物品或配方放到页面格子
 

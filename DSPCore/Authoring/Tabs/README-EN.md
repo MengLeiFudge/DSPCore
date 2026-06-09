@@ -13,15 +13,17 @@ The Tabs block lets a mod declare custom pages and receive a `TabSlot` that can 
 ## Capability: Declare Custom Pages
 
 ```csharp
-TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
-    Id: "example-machines",
-    OwnerModGuid: "com.example.my-mod",
-    Title: "ExampleMachines",
-    IconId: "example-machines-icon",
-    Order: 100));
+TabSlot machinesTab = Tabs.AddTab(
+    id: "example-machines",
+    ownerModGuid: "com.example.my-mod",
+    title: "ExampleMachines",
+    iconId: "example-machines-icon",
+    order: 100);
 ```
 
 Keep `Id` stable. `OwnerModGuid` identifies ownership. `Title` is normally a localization key. `IconId` points to an icon registered in Icons. `Order` expresses button display ordering. The returned `TabSlot` is a page slot, not an item or recipe `GridIndex`.
+
+`CoreTabDescriptor` can still be passed directly to `Tabs.AddTab(...)` for batch construction, configuration-driven registration, or advanced flows that need to keep descriptor objects.
 
 ## Capability: Put Items Or Recipe Proto Objects Into Page Cells
 

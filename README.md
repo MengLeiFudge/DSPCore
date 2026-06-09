@@ -215,12 +215,12 @@ Patches.RegisterForPlugin(
 ```csharp
 using DSPCore;
 
-TabSlot machinesTab = Tabs.AddTab(new CoreTabDescriptor(
-    Id: "example-machines",
-    OwnerModGuid: "com.example.my-mod",
-    Title: "Example Machines",
-    IconId: "example-machine-tab",
-    Order: 100));
+TabSlot machinesTab = Tabs.AddTab(
+    id: "example-machines",
+    ownerModGuid: "com.example.my-mod",
+    title: "Example Machines",
+    iconId: "example-machine-tab",
+    order: 100);
 
 itemProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
 recipeProto.GridIndex = ProtoRegistration.GetGridIndex(machinesTab, row: 1, index: 5);
