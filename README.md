@@ -18,8 +18,8 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 ## 项目结构
 
 - `DSPCore/`：主 BepInEx 插件项目，内部拆成 `Authoring/` 作者能力和 `Systems/` 系统集成两片。
-- `DSPCore/Authoring/`：模组作者直接调用的能力，例如 Core、DataPhases、ProtoAccess、Items、Recipes、Techs、Tutorials、Tabs、BuildBar、Resources、Icons、GameEnums、KeyBinds、Saves、Achievements、Components、Planets、Blueprints、Models、Options、Multiplayer、Networks、Galaxy 和 UI。
-- `DSPCore/Systems/`：DSPCore 对作者声明的运行时处理，例如生命周期、Proto pipeline、分页投射、选择器 surface、快捷栏投射、资源加载、存档桥、成就策略和错误窗口。
+- `DSPCore/Authoring/`：模组作者直接调用的能力，例如 Core、DataPhases、ProtoAccess、Items、Recipes、Techs、Tutorials、Tabs、BuildBar、Resources、Icons、GameEnums、KeyBinds、Saves、Achievements、Diagnostics、Components、Planets、Blueprints、Models、Options、Multiplayer、Networks、Galaxy 和 UI。
+- `DSPCore/Systems/`：DSPCore 对作者声明的运行时处理，例如生命周期、Proto pipeline、分页投射、选择器 surface、快捷栏投射、资源加载、存档桥、成就策略、作者声明诊断和错误窗口。
 - `DSPCore.Preloader/`：BepInEx patchers 项目，用于游戏程序集加载前 patch。
 - `DSPCore.Packaging/`：Thunderstore 打包项目。
 
@@ -29,7 +29,7 @@ DSPCore 是戴森球计划模组的新通用底层标准。
 - 提供 `xiaoye97.LDBTool`、`crecheng.DSPModSave`、`CommonAPI` 和 `BuildBarTool` 的旧 API 兼容层；兼容代码按所属作者能力放入 `Authoring/<Capability>/Compat/`，不再使用集中式 `Legacy/` 目录。
 - 公开 API 提供中英文 XML summary。
 
-当前版本已接入 P0/P1 和第一批 P2/P3 运行时桥接：BepInEx/Harmony 启动、Preloader 字段和枚举预留槽注入、Proto 写入、多行建造栏绑定、玩家覆盖、RebindBuildBar 配置导入、资源/图标加载、物品/配方/制造器/信号/标签图标分页、选择器弹窗和实时过滤、自定义配方类型选择前过滤、自定义物品类型标记入口、按键回调、DSPCore 独立存档、旧 DSPModSave 处理器桥接、实体组件生命周期、星球/恒星/银河系统生命周期、蓝图参数块、模型和预制体克隆、配置项绑定、可选联机软桥、网络查询适配器、补丁平台、成就异常检查和竞争性上传策略补丁、可带游戏/实体上下文的错误报告和可复制诊断文本、错误窗口复制/关闭按钮、本地化条目和通用 UI 窗口生命周期转发。
+当前版本已接入 P0/P1 和第一批 P2/P3 运行时桥接：BepInEx/Harmony 启动、Preloader 字段和枚举预留槽注入、Proto 写入、多行建造栏绑定、玩家覆盖、RebindBuildBar 配置导入、资源/图标加载、物品/配方/制造器/信号/标签图标分页、选择器弹窗和实时过滤、自定义配方类型选择前过滤、自定义物品类型标记入口、按键回调、DSPCore 独立存档、旧 DSPModSave 处理器桥接、实体组件生命周期、星球/恒星/银河系统生命周期、蓝图参数块、模型和预制体克隆、配置项绑定、作者声明诊断、可选联机软桥、网络查询适配器、补丁平台、成就异常检查和竞争性上传策略补丁、可带游戏/实体上下文的错误报告和可复制诊断文本、错误窗口复制/关闭按钮、本地化条目和通用 UI 窗口生命周期转发。
 
 ## 功能块
 
@@ -44,6 +44,7 @@ P0/P1 是当前实现目标。
 - 游戏枚举：`GameEnums.RegisterRecipeType(...)` 声明自定义配方类型限制，`ItemProto.SetCustomItemType()` 标记 DSPCore 预留的自定义物品类型；运行时代码使用 `GameEnums.CustomRecipeTypeValue` / `CustomItemTypeValue` 避免直接编译期依赖 Preloader 注入字段。
 - 存档：`Saves.Auto<TState>(...)` 自动创建无参状态对象并注册 schema，`Saves.Auto(modGuid, state)` 支持已有实例，另有委托式简单存档处理器、原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
 - 成就策略：声明是否影响银河系/排行榜上传等策略。错误窗口和错误收集属于 DSPCore 系统实现。
+- 作者声明诊断：`Diagnostics.Warn(...)` / `Error(...)` 可把模组自己的声明问题写入统一诊断；DSPCore 启动期也会检查 Proto ID、GridIndex、Tab 图标、Option 页面和本地化基础语言配对。
 - UI 框架：窗口生命周期、标签页窗口、基础控件、声明式网格布局、主题卡片辅助，以及标准表单、列表、详情区和状态页脚脚手架；不包含具体业务页面。
 - 实体组件：用 `Components.Register<TComponent>(...)` 按 item id、model index 或 `PrefabDesc` 条件给实体挂自定义组件，转发移除、tick 和存档；复杂构造再使用 descriptor。
 - 星球/恒星/银河系统：用 `PlanetSystems.Register<TSystem>(...)`、`GalaxySystems.RegisterStar<TSystem>(...)` 或 `RegisterGalaxy<TSystem>(...)` 注册系统，按 `PlanetFactory`、`StarData` 或 `GalaxyData` 创建实例并转发生命周期；复杂构造再使用 descriptor。
@@ -68,6 +69,7 @@ P0/P1 是当前实现目标。
 - `SaveRegistry` 会写入 `.dspcore` 独立存档，并按 `CoreLoadOrder` 导入处理器。
 - `AchievementPolicyRegistry` 汇总每个模组的竞争性上传阻断声明；DSPCore 始终屏蔽原版异常检查并保持本地/平台成就可用，任意模组调用 `Achievements.BlockCompetitiveUpload(...)` 时只阻断 Milky Way / Steam 排行榜上传。`disableAchievements` 旧参数保留为兼容名，当前语义是阻止竞争性上传。
 - `ErrorWindow` 会接收 Unity fatal/error 日志和错误窗口事件；作者可用 `Errors.ReportException(..., ErrorDiagnosticContext)` 把明确的星球/实体上下文存进错误报告，诊断文本会展示报告自带上下文，并可额外加入本次复制的上下文、当前游戏状态、最近错误、候选插件文本命中、DSPCore 声明和 Harmony patch map 概览。
+- `Diagnostics` 会在启动期运行作者声明检查，发现 warning/error 时写入 BepInEx 日志并进入 `Errors.BuildDiagnosticText(...)` 的 Diagnostics 段；作者也可以用 `Diagnostics.Warn(...)`、`Error(...)` 或 `Info(...)` 手动加入模组自己的声明问题。
 - `ResourceRegistry.RegisterLocalization` 会写入 DSP 本地化 key 和语言字符串；作者侧短入口是 `ModResources.Root(...)`、`ModResources.Text(...)` 和 `ModResources.Pack(...)`。
 - `UiWindowManager` 会在 `UIRoot` 打开、更新和销毁时转发 DSPCore 窗口生命周期；具体窗口由模组自己创建和打开。
 - `Components` 会在 `PlanetFactory.CreateEntityLogicComponents` 后按描述创建组件；无参构造组件可用 `Components.Register<TComponent>(...)` 短入口注册。运行时会在实体移除、电力 tick、工厂 tick 和后置阶段转发回调；组件数据写入 `.dspcore`，未加载星球的数据会延迟到 `GameData.GetOrCreateFactory` 后恢复。
@@ -253,6 +255,8 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 - `DSPCore/Authoring/Core/Examples/PatchPlatform.md`
 - `DSPCore/Authoring/Achievements/Examples/AchievementPolicyExample.cs`
 - `DSPCore/Authoring/Achievements/Examples/AchievementPolicy.md`
+- `DSPCore/Authoring/Diagnostics/Examples/DeclarationDiagnosticsExample.cs`
+- `DSPCore/Authoring/Diagnostics/Examples/DeclarationDiagnostics.md`
 - `DSPCore/Authoring/BuildBar/Examples/QuickBarBindingExample.cs`
 - `DSPCore/Authoring/BuildBar/Examples/QuickBarBinding.md`
 - `DSPCore/Authoring/Saves/Examples/SaveHandlerExample.cs`

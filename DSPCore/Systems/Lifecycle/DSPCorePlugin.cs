@@ -57,6 +57,7 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
         harmony.PatchAll(typeof(BuildingParameterRuntimePatches));
         harmony.PatchAll(typeof(GalaxyLifecycleRuntimePatches));
         PatchRuntime.ApplyRegisteredPatches(harmony);
+        DiagnosticRuntime.Initialize();
         Lifecycle.RaiseStarted();
         Logger.LogInfo("DSPCore runtime bridges are initialized.");
     }

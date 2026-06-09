@@ -117,6 +117,12 @@ public static class DspCore
     public static ErrorReporter Errors { get; } = new();
 
     /// <summary>
+    /// 全局作者声明诊断注册表。
+    /// Global author declaration diagnostic registry.
+    /// </summary>
+    public static DiagnosticRegistry Diagnostics { get; } = new();
+
+    /// <summary>
     /// 全局实体组件注册表。
     /// Global entity component registry.
     /// </summary>
@@ -219,6 +225,7 @@ public static class DspCore
         RegisterFeature("core.saves", "Save sidecar bridge / 存档桥接", 40);
         RegisterFeature("core.achievements", "Achievement policy / 成就策略", 50);
         RegisterFeature("core.errors", "Error diagnostics / 错误诊断", 60);
+        RegisterFeature("core.diagnostics", "Author declaration diagnostics / 作者声明诊断", 65);
         RegisterFeature("core.components", "Entity component lifecycle / 实体组件生命周期", 70);
         RegisterFeature("core.planet-systems", "Planet system lifecycle / 星球系统生命周期", 80);
         RegisterFeature("core.blueprint-parameters", "Blueprint parameter blocks / 蓝图参数块", 90);

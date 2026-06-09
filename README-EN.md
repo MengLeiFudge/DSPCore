@@ -18,8 +18,8 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods.
 ## Project Layout
 
 - `DSPCore/`: main BepInEx plugin project, split into `Authoring/` capabilities and `Systems/` integrations.
-- `DSPCore/Authoring/`: capabilities mod authors call directly, such as Core, DataPhases, ProtoAccess, Items, Recipes, Techs, Tutorials, Tabs, BuildBar, Resources, Icons, GameEnums, KeyBinds, Saves, Achievements, Components, Planets, Blueprints, Models, Options, Multiplayer, Networks, Galaxy, and UI.
-- `DSPCore/Systems/`: runtime handling for author declarations, such as lifecycle, proto pipeline, tab projection, picker surfaces, quick bar projection, resource loading, save bridge, achievement policy, and error window handling.
+- `DSPCore/Authoring/`: capabilities mod authors call directly, such as Core, DataPhases, ProtoAccess, Items, Recipes, Techs, Tutorials, Tabs, BuildBar, Resources, Icons, GameEnums, KeyBinds, Saves, Achievements, Diagnostics, Components, Planets, Blueprints, Models, Options, Multiplayer, Networks, Galaxy, and UI.
+- `DSPCore/Systems/`: runtime handling for author declarations, such as lifecycle, proto pipeline, tab projection, picker surfaces, quick bar projection, resource loading, save bridge, achievement policy, author declaration diagnostics, and error window handling.
 - `DSPCore.Preloader/`: BepInEx patchers project for pre-load game assembly patches.
 - `DSPCore.Packaging/`: Thunderstore packaging project.
 
@@ -29,7 +29,7 @@ DSPCore is a new common framework standard for Dyson Sphere Program mods.
 - Legacy compatibility shims for `xiaoye97.LDBTool`, `crecheng.DSPModSave`, `CommonAPI`, and `BuildBarTool`; compatibility code lives under the owning `Authoring/<Capability>/Compat/` directory instead of a centralized `Legacy/` directory.
 - Bilingual XML summaries for public APIs.
 
-The current version includes P0/P1 and first P2/P3 runtime bridges: BepInEx/Harmony startup, preloader field and reserved enum-slot injection, proto insertion, multi-row build bar binding, player overrides, RebindBuildBar configuration import, resource/icon loading, tabs for item/recipe/replicator/signal/tag-icon surfaces, picker popups and live filtering, custom recipe type pre-selection filtering, custom item type marker entries, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, entity component lifecycle, planet/star/galaxy lifecycle, blueprint parameter blocks, model and prefab cloning, option binding, optional multiplayer soft bridge, network query adapters, patch platform, achievement abnormality-check and competitive-upload policy patches, error reports and copyable diagnostic text with game/entity context, fatal-window copy/close buttons, localization entries, and common UI window lifecycle forwarding.
+The current version includes P0/P1 and first P2/P3 runtime bridges: BepInEx/Harmony startup, preloader field and reserved enum-slot injection, proto insertion, multi-row build bar binding, player overrides, RebindBuildBar configuration import, resource/icon loading, tabs for item/recipe/replicator/signal/tag-icon surfaces, picker popups and live filtering, custom recipe type pre-selection filtering, custom item type marker entries, key callbacks, DSPCore sidecar saves, legacy DSPModSave handler bridging, entity component lifecycle, planet/star/galaxy lifecycle, blueprint parameter blocks, model and prefab cloning, option binding, author declaration diagnostics, optional multiplayer soft bridge, network query adapters, patch platform, achievement abnormality-check and competitive-upload policy patches, error reports and copyable diagnostic text with game/entity context, fatal-window copy/close buttons, localization entries, and common UI window lifecycle forwarding.
 
 ## Feature Blocks
 
@@ -44,6 +44,7 @@ P0/P1 blocks are the current implementation target.
 - Game enums: `GameEnums.RegisterRecipeType(...)` declares custom recipe type restrictions, and `ItemProto.SetCustomItemType()` marks an item with DSPCore's reserved custom item type. Runtime code should use `GameEnums.CustomRecipeTypeValue` / `CustomItemTypeValue` instead of compiling directly against Preloader-injected enum members.
 - Saves: `Saves.Auto<TState>(...)` creates parameterless state objects and registers automatic schemas, `Saves.Auto(modGuid, state)` supports existing instances, and delegate-based simple save handlers, raw `BinaryReader`/`BinaryWriter` handlers, and tagged block helpers remain available.
 - Achievement policies: declare policy effects such as Milky Way / leaderboard upload blocking. Error window and error collection belong to DSPCore systems.
+- Author declaration diagnostics: `Diagnostics.Warn(...)` / `Error(...)` can add a mod's own declaration issues to unified diagnostics. DSPCore startup also checks proto IDs, GridIndex values, tab icons, option pages, and basic localization language pairs.
 - UI framework: window lifecycle helpers, tabbed windows, base controls, declarative grid layout, theme/card helpers, and standard form, list, detail, and status-footer scaffolds; concrete business pages are not included.
 - Entity components: use `Components.Register<TComponent>(...)` to attach custom components to entities by item id, model index, or `PrefabDesc`, then forward removal, ticks, and saves; use descriptors for complex construction.
 - Planet/star/galaxy systems: use `PlanetSystems.Register<TSystem>(...)`, `GalaxySystems.RegisterStar<TSystem>(...)`, or `RegisterGalaxy<TSystem>(...)` to register systems, create instances for `PlanetFactory`, `StarData`, or `GalaxyData`, and forward lifecycle callbacks; use descriptors for complex construction.
@@ -68,6 +69,7 @@ Implemented runtime bridges:
 - `SaveRegistry` writes a `.dspcore` sidecar save file and imports handlers by `CoreLoadOrder`.
 - `AchievementPolicyRegistry` aggregates each mod's competitive-upload blocking declaration. DSPCore always blocks vanilla abnormality checks and keeps local/platform achievements available. If any mod calls `Achievements.BlockCompetitiveUpload(...)`, DSPCore blocks only Milky Way / Steam leaderboard uploads. The old `disableAchievements` parameter remains as a compatibility name; its current meaning is competitive-upload blocking.
 - `ErrorWindow` receives Unity fatal/error logs and fatal-window events. Authors can use `Errors.ReportException(..., ErrorDiagnosticContext)` to store explicit planet/entity context in an error report; diagnostic text shows report-owned context and can also include context for the copied snapshot, current game state, recent errors, candidate plugin text hits, DSPCore declarations, and a Harmony patch-map overview.
+- `Diagnostics` runs author declaration checks during startup. Warning and error issues are written to the BepInEx log and appear in the Diagnostics section of `Errors.BuildDiagnosticText(...)`; authors can also use `Diagnostics.Warn(...)`, `Error(...)`, or `Info(...)` to add mod-specific declaration issues manually.
 - `ResourceRegistry.RegisterLocalization` is applied to DSP localization keys and language strings. Author-side short entries are `ModResources.Root(...)`, `ModResources.Text(...)`, and `ModResources.Pack(...)`.
 - `UiWindowManager` forwards DSPCore window lifecycle through `UIRoot` open, update, and destroy events; mods still create and open concrete windows themselves.
 - `Components` creates components after `PlanetFactory.CreateEntityLogicComponents`; parameterless components can be registered through the `Components.Register<TComponent>(...)` short entry. Runtime forwards entity removal, power ticks, factory ticks, and post phases. Component data is stored in `.dspcore`; data for unloaded planet factories is restored after `GameData.GetOrCreateFactory`.
@@ -252,6 +254,8 @@ The old call is accepted, but it is marked obsolete. New mods should prefer `Ite
 - `DSPCore/Authoring/Core/Examples/PatchPlatform.md`
 - `DSPCore/Authoring/Achievements/Examples/AchievementPolicyExample.cs`
 - `DSPCore/Authoring/Achievements/Examples/AchievementPolicy.md`
+- `DSPCore/Authoring/Diagnostics/Examples/DeclarationDiagnosticsExample.cs`
+- `DSPCore/Authoring/Diagnostics/Examples/DeclarationDiagnostics.md`
 - `DSPCore/Authoring/BuildBar/Examples/QuickBarBindingExample.cs`
 - `DSPCore/Authoring/BuildBar/Examples/QuickBarBinding.md`
 - `DSPCore/Authoring/Saves/Examples/SaveHandlerExample.cs`

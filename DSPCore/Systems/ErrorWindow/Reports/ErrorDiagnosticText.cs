@@ -273,6 +273,34 @@ internal static class ErrorDiagnosticText
             }
         }
 
+        builder.AppendLine("Diagnostics:");
+        var diagnostics = DspCore.Diagnostics.GetIssues();
+        if (diagnostics.Count == 0)
+        {
+            builder.AppendLine("- none");
+        }
+        else
+        {
+            foreach (var issue in diagnostics.OrderByDescending(item => item.Severity).ThenBy(item => item.Code, StringComparer.Ordinal))
+            {
+                builder.Append("- ");
+                builder.Append(issue.Severity);
+                builder.Append(" | ");
+                builder.Append(issue.OwnerModGuid);
+                builder.Append(" | ");
+                builder.Append(issue.Code);
+                builder.Append(" | ");
+                builder.Append(issue.Message);
+                if (!string.IsNullOrWhiteSpace(issue.Subject))
+                {
+                    builder.Append(" | ");
+                    builder.Append(issue.Subject);
+                }
+
+                builder.AppendLine();
+            }
+        }
+
         builder.AppendLine();
     }
 
