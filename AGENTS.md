@@ -153,7 +153,7 @@ DSPCore.sln
 │   │   ├── Recipes/         # recipe proto registration entry
 │   │   ├── Techs/           # tech proto registration entry
 │   │   ├── Tutorials/       # tutorial/guide proto registration entry
-│   │   ├── GameEnums/       # vanilla enum extension direction, current recipe type guard API
+│   │   ├── GameEnums/       # vanilla enum extension direction, GameEnums facade, current recipe type guard API
 │   │   ├── Resources/       # resource and localization declarations
 │   │   ├── Saves/           # save abstraction and DSPModSave compatibility
 │   │   ├── Components/      # entity component descriptors and lifecycle base classes

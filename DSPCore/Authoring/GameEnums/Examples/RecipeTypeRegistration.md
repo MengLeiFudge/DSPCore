@@ -14,6 +14,7 @@
 - `DisplayName`：显示名。
 - `RecipeIds`：属于该类型的配方 ID。
 - `AssemblerItemIds`：允许使用这些配方的机器物品 ID。
+- `GameEnums.RegisterRecipeType(...)`：新示例主推入口；`RecipeTypes.Register(...)` 仍保留为旧短入口。
 
 ## 运行时前提
 

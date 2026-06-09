@@ -13,21 +13,24 @@ GameEnums owns the author-facing capability of extending vanilla game enum-like 
 ## Current Capability: Declare Custom Recipe Types
 
 ```csharp
-RecipeTypes.Register(new RecipeTypeDescriptor(
-    Id: "example-smelting",
-    OwnerModGuid: "com.example.my-mod",
-    DisplayName: "ExampleSmelting",
-    RecipeIds: new[] { 9554001, 9554002 },
-    AssemblerItemIds: new[] { 2303 }));
+GameEnums.RegisterRecipeType(
+    id: "example-smelting",
+    ownerModGuid: "com.example.my-mod",
+    displayName: "ExampleSmelting",
+    recipeIds: new[] { 9554001, 9554002 },
+    assemblerItemIds: new[] { 2303 });
 ```
 
 `RecipeIds` points to existing recipes in this type. If `AssemblerItemIds` is empty or null, current runtime does not restrict machines. If it is non-empty, only assemblers whose item proto id is listed may use this recipe type.
+
+Existing `RecipeTypes.Register(...)` remains as the old short entry. New documentation and examples prefer `GameEnums.RegisterRecipeType(...)` so the GameEnums capability does not stay narrowed to the RecipeTypes concept.
 
 ## What DSPCore Does After The Call
 
 - Registration stores descriptors by `Id`; if the same `Id` is registered more than once, the later declaration replaces the earlier one.
 - During derived-cache rebuild, DSPCore assigns a runtime id for each type and looks up recipes listed in `RecipeIds`.
 - Found recipes are marked `ERecipeType.Custom`, and DSPCore maps recipe id to descriptor.
+- `GameEnums.CanAssemblerUseRecipe(assemblerEntityId, recipeId)` reuses the same restriction check.
 - When an assembler window opens or refreshes the recipe picker, DSPCore records the current assembler entity and hides unsupported custom recipes during `UIRecipePicker.RefreshIcons`.
 - When `AssemblerComponent.SetRecipe` is called, DSPCore still checks whether a custom recipe's current assembler entity `protoId` appears in `AssemblerItemIds`.
 - Unsupported machines do not see those recipes in the picker; if external UI or another patch bypasses the picker, the recipe is still blocked at assignment time.

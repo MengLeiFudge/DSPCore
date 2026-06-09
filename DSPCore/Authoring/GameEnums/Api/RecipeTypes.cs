@@ -3,8 +3,8 @@ using System.Collections.Generic;
 namespace DSPCore;
 
 /// <summary>
-/// 作者侧自定义配方类型入口。
-/// Author-facing custom recipe type entry point.
+/// 作者侧自定义配方类型旧入口。
+/// Legacy author-facing custom recipe type entry point.
 /// </summary>
 public static class RecipeTypes
 {
@@ -14,7 +14,7 @@ public static class RecipeTypes
     /// </summary>
     public static void Register(RecipeTypeDescriptor descriptor)
     {
-        DspCore.RecipeTypes.Register(descriptor);
+        GameEnums.RegisterRecipeType(descriptor);
     }
 
     /// <summary>
@@ -23,7 +23,7 @@ public static class RecipeTypes
     /// </summary>
     public static IReadOnlyCollection<RecipeTypeDescriptor> GetAll()
     {
-        return DspCore.RecipeTypes.GetAll();
+        return GameEnums.GetRecipeTypes();
     }
 
     /// <summary>
@@ -32,6 +32,6 @@ public static class RecipeTypes
     /// </summary>
     public static int GetOrAssignRuntimeId(string id)
     {
-        return DspCore.RecipeTypes.GetOrAssignRuntimeId(id);
+        return GameEnums.GetOrAssignRecipeTypeRuntimeId(id);
     }
 }

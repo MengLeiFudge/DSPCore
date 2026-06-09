@@ -62,7 +62,7 @@ P0/P1 是当前实现目标。
 - `IconSetRegistry` 可以加载 Unity `Resources` sprite、本地 PNG 文件或已加载 assembly 中的嵌入 PNG，缓存后写入目标 Proto；作者侧短入口是 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)` 和 `Icons.BindToProto(...)`。
 - `TabRegistry` 会为稳定页面 ID 分配 `TabSlot`，并通过现有 GridIndex 分类流程把自定义页面投射到物品选择器、配方选择器、制造器界面、信号选择器和标签图标选择器。
 - `PickerSurfaces` 会处理物品、配方和信号选择器 surface，实时网格会应用过滤、重复 `GridIndex` 兜底和动态行列扩容。
-- `GameEnums` 当前会把声明的配方标记为自定义配方类型，并在制作器配方列表打开前隐藏当前机器不能使用的配方；`AssemblerComponent.SetRecipe` 仍保留最终保护。
+- `GameEnums.RegisterRecipeType(...)` 当前会把声明的配方标记为自定义配方类型，并在制作器配方列表打开前隐藏当前机器不能使用的配方；`RecipeTypes` 保留为旧别名，`AssemblerComponent.SetRecipe` 仍保留最终保护。
 - `KeyBindRegistry` 会轮询已注册按键并调用回调，支持简单的 `Ctrl`/`Alt`/`Shift` 修饰键组合。
 - `SaveRegistry` 会写入 `.dspcore` 独立存档，并按 `CoreLoadOrder` 导入处理器。
 - `AchievementPolicyRegistry` 汇总每个模组的成就禁用声明；不声明或声明 `disableAchievements: false` 不会请求禁用，任意模组声明 true 时全局阻断成就变更、Milky Way / 排行榜上传和平台成就/元数据调用。没有 true 声明时，DSPCore 会屏蔽原版异常检查并保持成就可用。
