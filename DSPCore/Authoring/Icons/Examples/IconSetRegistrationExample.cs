@@ -19,18 +19,23 @@ public static class IconSetRegistrationExample
     {
         // Id 是 DSPCore 内部查找图标的稳定键。
         // Id is the stable key used by DSPCore and other capabilities.
-        Icons.Register(new IconDescriptor(
-            Id: "example-machine",
-            OwnerModGuid: "com.example.my-mod",
+        Icons.FromResources(
+            id: "default-machine",
+            ownerModGuid: "com.example.my-mod",
+            resourcesPath: "icons/default-machine");
 
-            // AssetPath 可以指向本地 PNG，也可以按后续资源规则指向 Unity 资源。
-            // AssetPath may point to a local PNG or a Unity resource path.
-            AssetPath: "assets/icons/example-machine.png",
-            FallbackIconId: "default-machine",
+        Icons.BindToProto(
+            id: "example-machine",
+            ownerModGuid: "com.example.my-mod",
+
+            // assetPath 可以指向本地 PNG，也可以按后续资源规则指向 Unity 资源。
+            // assetPath may point to a local PNG or a Unity resource path.
+            assetPath: "assets/icons/example-machine.png",
 
             // TargetKind/TargetProtoId 表示加载成功后写入哪个 Proto。
             // TargetKind/TargetProtoId select the proto that receives the icon.
-            TargetKind: ProtoKind.Item,
-            TargetProtoId: 9554));
+            targetKind: ProtoKind.Item,
+            targetProtoId: 9554,
+            fallbackIconId: "default-machine");
     }
 }

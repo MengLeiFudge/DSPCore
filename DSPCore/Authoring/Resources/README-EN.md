@@ -11,12 +11,11 @@ The Resources block records shared resource declarations and applies localizatio
 ## Capability: Register Resource Descriptors
 
 ```csharp
-DspCore.Resources.RegisterResource(new ResourceDescriptor(
-    Id: "example-icons",
-    OwnerModGuid: "com.example.my-mod",
-    Keyword: "icons",
-    RootPath: "assets/icons",
-    BundleName: null));
+ModResources.Root(
+    id: "example-icons",
+    ownerModGuid: "com.example.my-mod",
+    keyword: "icons",
+    rootPath: "assets/icons");
 ```
 
 Resource descriptors only record ownership and path metadata. The consuming capability or system decides how and when to load them; icon sprite loading, for example, belongs to Icons.
@@ -24,11 +23,11 @@ Resource descriptors only record ownership and path metadata. The consuming capa
 ## Capability: Register Localization Entries
 
 ```csharp
-DspCore.Resources.RegisterLocalization(new LocalizationEntry(
-    Key: "ExampleMachines",
-    Language: "zhCN",
-    Value: "示例机器",
-    OwnerModGuid: "com.example.my-mod"));
+ModResources.Text(
+    key: "ExampleMachines",
+    language: "zhCN",
+    value: "示例机器",
+    ownerModGuid: "com.example.my-mod");
 ```
 
 `Language` can be `zhCN`, `enUS`, `frFR`, `deDE`, `esES`, `jaJA`, `koKO`, or a DSP language LCID numeric string.
@@ -49,4 +48,5 @@ DspCore.Resources.RegisterLocalization(new LocalizationEntry(
 
 ## Examples
 
-Resources does not yet have standalone examples. See Icons, Tabs, and ProtoRegistration examples for icon id and localization key usage.
+- `Examples/ResourceRegistration.md`
+- `Examples/ResourceRegistrationExample.cs`

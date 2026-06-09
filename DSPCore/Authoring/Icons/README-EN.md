@@ -12,11 +12,16 @@ The Icons block lets a mod register icon resources by stable id and apply them t
 ## Capability: Register Shared Icons
 
 ```csharp
-Icons.Register(new IconDescriptor(
-    Id: "example-icon",
-    OwnerModGuid: "com.example.my-mod",
-    AssetPath: "assets/example-icon.png",
-    FallbackIconId: null));
+Icons.FromResources(
+    id: "example-icon",
+    ownerModGuid: "com.example.my-mod",
+    resourcesPath: "icons/example-icon");
+
+Icons.FromFile(
+    id: "example-file-icon",
+    ownerModGuid: "com.example.my-mod",
+    filePath: "assets/example-icon.png",
+    fallbackIconId: "example-icon");
 ```
 
 `AssetPath` can be a Unity `Resources` sprite path or a local PNG file path. Keep `Id` stable so Tabs, ProtoRegistration, or your own module code can reference it.
@@ -26,13 +31,13 @@ Icons.Register(new IconDescriptor(
 If a descriptor specifies `TargetKind` and `TargetProtoId`, DSPCore tries to write the resolved sprite to that target Proto:
 
 ```csharp
-Icons.Register(new IconDescriptor(
-    Id: "example-item-icon",
-    OwnerModGuid: "com.example.my-mod",
-    AssetPath: "assets/example-item.png",
-    FallbackIconId: "example-icon",
-    TargetKind: ProtoKind.Item,
-    TargetProtoId: 9554));
+Icons.BindToProto(
+    id: "example-item-icon",
+    ownerModGuid: "com.example.my-mod",
+    assetPath: "assets/example-item.png",
+    targetKind: ProtoKind.Item,
+    targetProtoId: 9554,
+    fallbackIconId: "example-icon");
 ```
 
 ## What DSPCore Does After The Call

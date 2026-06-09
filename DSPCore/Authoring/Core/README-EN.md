@@ -7,6 +7,7 @@ The Core block provides the DSPCore global entry point, built-in feature registr
 - You can use short entries through `using DSPCore;`, or use `DspCore` to access all global registries.
 - DSPCore initializes built-in features and module declarations from BepInEx `Awake`, then assembles Harmony patches for systems.
 - `Features` and `Modules` let mods declare feature/module metadata that other mods can query.
+- `Lifecycle` can register DSPCore runtime started, update, and destroyed callbacks for small framework-level initialization or cleanup.
 - Legacy CommonAPI `CommonAPIPlugin.IsSubmoduleLoaded(...)` bridges to `Modules.TryGet(...)` for migration.
 
 ## Capability: Access Global Registries
@@ -44,6 +45,18 @@ During initialization, DSPCore initializes features by priority and ID. Modules 
 
 `DspCore.Patches.Register(new PatchDescriptor(...))` currently stores patch metadata only. It does not automatically apply Harmony patches for you. Concrete patches still belong in the owning system or your mod runtime code.
 
+## Capability: Register DSPCore Lifecycle Callbacks
+
+```csharp
+Lifecycle.OnStarted(InitializeAfterDspCore);
+Lifecycle.OnUpdate(PollSmallRuntimeState);
+Lifecycle.OnDestroyed(DisposeState);
+```
+
+`OnStarted` runs after the DSPCore plugin entry finishes runtime bridge assembly; if registered after DSPCore has already started, it runs immediately once. `OnUpdate` follows the DSPCore plugin update loop, and `OnDestroyed` runs when the DSPCore plugin is destroyed.
+
+These events only describe the DSPCore framework lifecycle. They do not mean a specific game save, planet, factory, or UI surface exists.
+
 ## Capability: CommonAPI Compatibility Query
 
 Legacy code calling:
@@ -63,4 +76,9 @@ is redirected to `DSPCore.Modules.TryGet(...)`. `CommonAPISubmoduleDependencyAtt
 
 ## Runtime Startup
 
-`DSPCorePlugin.Awake()` initializes DSPCore, registers legacy DSPModSave handlers, creates Harmony, and assembles the currently implemented Proto, BuildBar, Saves, Achievements, Errors, Localization, Tabs, and GameEnums patches. `Update()` polls KeyBinds and picker surfaces.
+`DSPCorePlugin.Awake()` initializes DSPCore, registers legacy DSPModSave handlers, creates Harmony, assembles the currently implemented Proto, BuildBar, Saves, Achievements, Errors, Localization, Tabs, and GameEnums patches, then raises `Lifecycle.OnStarted`. `Update()` polls KeyBinds, picker surfaces, and `Lifecycle.OnUpdate`.
+
+## Examples
+
+- `Examples/Lifecycle.md`
+- `Examples/LifecycleExample.cs`

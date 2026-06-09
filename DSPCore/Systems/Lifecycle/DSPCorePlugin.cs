@@ -57,11 +57,13 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
         harmony.PatchAll(typeof(BuildingParameterRuntimePatches));
         harmony.PatchAll(typeof(GalaxyLifecycleRuntimePatches));
         PatchRuntime.ApplyRegisteredPatches(harmony);
+        Lifecycle.RaiseStarted();
         Logger.LogInfo("DSPCore runtime bridges are initialized.");
     }
 
     private void OnDestroy()
     {
+        Lifecycle.RaiseDestroyed();
         harmony?.UnpatchSelf();
         ErrorRuntime.Dispose();
     }
@@ -70,5 +72,6 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
     {
         KeyBindRuntime.Update();
         PickerRuntime.Update();
+        Lifecycle.RaiseUpdate();
     }
 }

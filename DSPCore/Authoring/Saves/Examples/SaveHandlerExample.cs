@@ -17,10 +17,20 @@ namespace ExampleMod;
 // - IntoOtherSave 用于“加载了其他存档但没有本模组数据”的初始化。
 public sealed class SaveHandlerExample : ICoreSaveHandler
 {
+    private static int counter;
+
     public static void Register()
     {
         // modGuid 建议使用你的 BepInEx GUID。
         // Use your BepInEx plugin GUID as modGuid.
+        Saves.Register(
+            modGuid: "com.example.simple-mod",
+            export: writer => writer.Write(counter),
+            import: reader => counter = reader.ReadInt32(),
+            intoOtherSave: () => counter = 0);
+
+        // 复杂状态仍可以用完整 handler class。
+        // Complex state can still use a full handler class.
         Saves.Register("com.example.my-mod", new SaveHandlerExample());
     }
 

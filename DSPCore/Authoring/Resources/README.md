@@ -11,12 +11,11 @@ Resources 模块记录模组共享资源声明，并把本地化条目写入 DSP
 ## 功能：登记资源描述
 
 ```csharp
-DspCore.Resources.RegisterResource(new ResourceDescriptor(
-    Id: "example-icons",
-    OwnerModGuid: "com.example.my-mod",
-    Keyword: "icons",
-    RootPath: "assets/icons",
-    BundleName: null));
+ModResources.Root(
+    id: "example-icons",
+    ownerModGuid: "com.example.my-mod",
+    keyword: "icons",
+    rootPath: "assets/icons");
 ```
 
 资源描述只记录归属和路径信息。具体怎么加载、何时加载，由消费它的功能块决定；例如图标 sprite 加载由 Icons 负责。
@@ -24,11 +23,11 @@ DspCore.Resources.RegisterResource(new ResourceDescriptor(
 ## 功能：登记本地化条目
 
 ```csharp
-DspCore.Resources.RegisterLocalization(new LocalizationEntry(
-    Key: "ExampleMachines",
-    Language: "zhCN",
-    Value: "示例机器",
-    OwnerModGuid: "com.example.my-mod"));
+ModResources.Text(
+    key: "ExampleMachines",
+    language: "zhCN",
+    value: "示例机器",
+    ownerModGuid: "com.example.my-mod");
 ```
 
 `Language` 可以使用 `zhCN`、`enUS`、`frFR`、`deDE`、`esES`、`jaJA`、`koKO`，也可以直接写 DSP 的语言 LCID 数字字符串。
@@ -49,4 +48,5 @@ DspCore.Resources.RegisterLocalization(new LocalizationEntry(
 
 ## 示例
 
-当前 Resources 还没有独立 Examples；可参考 Icons、Tabs、ProtoRegistration 示例中对图标 ID 和本地化 key 的使用。
+- `Examples/ResourceRegistration.md`
+- `Examples/ResourceRegistrationExample.cs`

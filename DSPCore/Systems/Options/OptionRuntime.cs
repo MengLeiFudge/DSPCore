@@ -32,4 +32,16 @@ internal static class OptionRuntime
     {
         return Entries.TryGetValue(OptionRegistry.KeyOf(section, key), out var entry) ? entry.Value : string.Empty;
     }
+
+    public static bool TryGetString(string section, string key, out string value)
+    {
+        if (Entries.TryGetValue(OptionRegistry.KeyOf(section, key), out var entry))
+        {
+            value = entry.Value;
+            return true;
+        }
+
+        value = string.Empty;
+        return false;
+    }
 }

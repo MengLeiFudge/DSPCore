@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace DSPCore;
 
@@ -53,7 +54,17 @@ public sealed class OptionRegistry
     /// <returns>当前值，未绑定时返回空字符串。Current value, or empty string when unbound.</returns>
     public string GetString(string section, string key)
     {
-        return OptionRuntime.GetString(section, key);
+        if (OptionRuntime.TryGetString(section, key, out var value))
+        {
+            return value;
+        }
+
+        if (!descriptors.TryGetValue(KeyOf(section, key), out var descriptor))
+        {
+            return string.Empty;
+        }
+
+        return descriptor.DefaultValue;
     }
 
     /// <summary>
@@ -80,6 +91,25 @@ public sealed class OptionRegistry
     public int GetInt(string section, string key, int fallback = 0)
     {
         return int.TryParse(GetString(section, key), out var value) ? value : fallback;
+    }
+
+    /// <summary>
+    /// 获取浮点配置值。
+    /// Gets a floating-point option value.
+    /// </summary>
+    /// <param name="section">配置分区。Config section.</param>
+    /// <param name="key">配置键。Config key.</param>
+    /// <param name="fallback">解析失败时的默认值。Fallback used when parsing fails.</param>
+    /// <returns>当前浮点值。Current floating-point value.</returns>
+    public float GetFloat(string section, string key, float fallback = 0f)
+    {
+        var text = GetString(section, key);
+        if (float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var invariantValue))
+        {
+            return invariantValue;
+        }
+
+        return float.TryParse(text, out var value) ? value : fallback;
     }
 
     /// <summary>

@@ -12,7 +12,17 @@ The Saves block lets a mod store its own state in DSPCore `.dspcore` sidecar sav
 
 ## Capability: Register A Save Handler
 
-Implement `ICoreSaveHandler`, then call during startup or feature registration:
+Simple state can register delegates directly without declaring a handler class:
+
+```csharp
+Saves.Register(
+    modGuid: "com.example.my-mod",
+    export: writer => writer.Write(counter),
+    import: reader => counter = reader.ReadInt32(),
+    intoOtherSave: () => counter = 0);
+```
+
+For complex state, implement `ICoreSaveHandler`, then call during startup or feature registration:
 
 ```csharp
 Saves.Register("com.example.my-mod", handler, CoreLoadOrder.Postload);

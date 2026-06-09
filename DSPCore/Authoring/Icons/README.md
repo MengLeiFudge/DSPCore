@@ -12,11 +12,16 @@ Icons 模块让模组用稳定 ID 注册图标资源，并在 Proto 缓存重建
 ## 功能：注册共享图标
 
 ```csharp
-Icons.Register(new IconDescriptor(
-    Id: "example-icon",
-    OwnerModGuid: "com.example.my-mod",
-    AssetPath: "assets/example-icon.png",
-    FallbackIconId: null));
+Icons.FromResources(
+    id: "example-icon",
+    ownerModGuid: "com.example.my-mod",
+    resourcesPath: "icons/example-icon");
+
+Icons.FromFile(
+    id: "example-file-icon",
+    ownerModGuid: "com.example.my-mod",
+    filePath: "assets/example-icon.png",
+    fallbackIconId: "example-icon");
 ```
 
 `AssetPath` 可以是 Unity `Resources` sprite 路径，也可以是本地 PNG 文件路径。`Id` 应保持稳定，供 Tabs、ProtoRegistration 或你的模块代码引用。
@@ -26,13 +31,13 @@ Icons.Register(new IconDescriptor(
 如果 descriptor 指定了 `TargetKind` 和 `TargetProtoId`，DSPCore 会尝试把解析出的 sprite 写到目标 Proto：
 
 ```csharp
-Icons.Register(new IconDescriptor(
-    Id: "example-item-icon",
-    OwnerModGuid: "com.example.my-mod",
-    AssetPath: "assets/example-item.png",
-    FallbackIconId: "example-icon",
-    TargetKind: ProtoKind.Item,
-    TargetProtoId: 9554));
+Icons.BindToProto(
+    id: "example-item-icon",
+    ownerModGuid: "com.example.my-mod",
+    assetPath: "assets/example-item.png",
+    targetKind: ProtoKind.Item,
+    targetProtoId: 9554,
+    fallbackIconId: "example-icon");
 ```
 
 ## 调用后 DSPCore 会怎么处理

@@ -35,20 +35,20 @@ The current version includes P0/P1 and first P2/P3 runtime bridges: BepInEx/Harm
 
 P0/P1 blocks are the current implementation target.
 
-- Feature lifecycle: declare capability blocks, dependencies, priority, and initialization.
+- Feature lifecycle: declare capability blocks, dependencies, priority, and initialization, and use `Lifecycle` to register DSPCore started, update, and destroyed callbacks.
 - Data phases: `Data`, `DataUpdates`, and `DataFinalFixes`.
 - Proto capabilities: DataPhases owns the three phases; ProtoAccess owns second/third phase lookup and mutation of registered data; Items, Recipes, Techs, and Tutorials own typed proto registration; ProtoRegistration remains the low-level aggregate and compatibility entry.
 - Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot; row 1 writes to the vanilla build bar, row 2+ uses DSPCore extended buttons, and BuildBarTool compatibility entries remain available. Other authoring capabilities, such as item registration, should prefer `ItemProto.SetBuildBar(...)` after they have the item proto; BuildBar does not own proto creation.
-- Resources, icons, and localization: resource roots, icon descriptors, and translation entries.
+- Resources, icons, and localization: register resource roots and translation entries through `ModResources`, and register icons through `Icons.FromResources(...)`, `Icons.FromFile(...)`, or `Icons.BindToProto(...)`.
 - Tabs: authors can declare custom pages, receive a `TabSlot`, and use that slot to generate item/recipe `GridIndex` values. Picker surfaces are DSPCore system implementation.
-- Saves: raw `BinaryReader`/`BinaryWriter` handlers and tagged block helpers.
+- Saves: delegate-based simple save handlers, raw `BinaryReader`/`BinaryWriter` handlers, and tagged block helpers.
 - Achievement policies: declare policy effects such as Milky Way / leaderboard upload blocking. Error window and error collection belong to DSPCore systems.
 - UI framework: window lifecycle helpers, tabbed windows, base controls, declarative grid layout, and theme/card helpers; concrete business pages are not included.
 - Entity components: attach custom components to entities by item id, model index, or `PrefabDesc`, then forward removal, ticks, and saves.
 - Planet/star/galaxy systems: create systems for `PlanetFactory`, `StarData`, or `GalaxyData` and forward lifecycle callbacks.
 - Blueprint parameters: use tagged blocks so multiple mods do not compete for fixed `BuildingParameters.parameters` slots.
 - Models and prefabs: clone existing `ModelProto` entries, configure independent `PrefabDesc` instances, and rebuild model derived caches.
-- Options, multiplayer, and networks: provide BepInEx config binding, option page and settings version descriptors, Nebula soft detection, packet/host relay/planet data/client save declarations, and factory network query adapters.
+- Options, multiplayer, and networks: provide `Options.String/Bool/Int/Float` short entries, BepInEx config binding, option page and settings version descriptors, Nebula soft detection, packet/host relay/planet data/client save declarations, and factory network query adapters.
 - Patch platform: centralize conditional patch declarations, required plugin GUID/version checks, disabled reasons, and apply failure reporting.
 
 ## Runtime Status
@@ -56,9 +56,10 @@ P0/P1 blocks are the current implementation target.
 Implemented runtime bridges:
 
 - `DSPCorePlugin` starts from BepInEx and applies Harmony patches.
+- `Lifecycle` raises `OnStarted` after DSPCore runtime bridges are assembled, then raises `OnUpdate` / `OnDestroyed` during plugin update and destroy.
 - Proto registration runs Factorio-like `Data`, `DataUpdates`, and `DataFinalFixes` callbacks. Runtime writes the resulting protos around `VFPreload.InvokeOnLoadWorkEnded`; DSPCore rebuilds `ProtoSet` indices and key derived caches after final fixes.
 - `BuildBarRegistry.BindQuickBar` maps item ids or `ItemProto` instances to build bar tab/row/index slots; row 1 writes vanilla `UIBuildMenu.protos`, and row 2+ uses DSPCore extended buttons. `BuildBar.SetPlayerOverride(...)` writes a player override layer to the `.dspcore` save, and runtime uses author defaults overlaid with player overrides. When no DSPCore BuildBar save data exists, DSPCore imports row-1 player configuration from RebindBuildBar's `CustomBarBind.cfg`.
-- `IconSetRegistry` can load Unity `Resources` sprites or local PNG files, cache them, and apply them to target protos.
+- `IconSetRegistry` can load Unity `Resources` sprites or local PNG files, cache them, and apply them to target protos. Author-side short entries are `Icons.FromResources(...)`, `Icons.FromFile(...)`, and `Icons.BindToProto(...)`.
 - `TabRegistry` assigns a `TabSlot` for each stable page id and projects custom pages to item picker, recipe picker, replicator, signal picker, and tag-icon picker surfaces through the existing GridIndex category flow.
 - `PickerSurfaces` handles item, recipe, and signal picker surfaces. Live grids apply filters, duplicate `GridIndex` fallbacks, and dynamic row/column expansion.
 - `GameEnums` currently marks declared recipes as custom recipe types and hides recipes unsupported by the current assembler before the recipe picker selection; `AssemblerComponent.SetRecipe` remains the final guard.
@@ -66,13 +67,13 @@ Implemented runtime bridges:
 - `SaveRegistry` writes a `.dspcore` sidecar save file and imports handlers by `CoreLoadOrder`.
 - `AchievementPolicyRegistry` aggregates each mod's achievement-disable declaration. Not declaring, or declaring `disableAchievements: false`, does not request disabling. If any mod declares true, DSPCore globally blocks achievement mutation, Milky Way / leaderboard uploads, and platform achievement/metadata calls. If no declaration is true, DSPCore blocks vanilla abnormality checks and keeps achievements available.
 - `ErrorWindow` receives Unity fatal/error logs and fatal-window events.
-- `ResourceRegistry.RegisterLocalization` is applied to DSP localization keys and language strings.
+- `ResourceRegistry.RegisterLocalization` is applied to DSP localization keys and language strings. Author-side short entries are `ModResources.Root(...)` and `ModResources.Text(...)`.
 - `UiWindowManager` forwards DSPCore window lifecycle through `UIRoot` open, update, and destroy events; mods still create and open concrete windows themselves.
 - `Components` creates components after `PlanetFactory.CreateEntityLogicComponents`, then forwards entity removal, power ticks, factory ticks, and post phases. Component data is stored in `.dspcore`; data for unloaded planet factories is restored after `GameData.GetOrCreateFactory`.
 - `Planets` creates planet systems after `GameData.GetOrCreateFactory` and forwards local planet rendering, power ticks, factory ticks, and post phases.
 - `Blueprints` encodes author parameter blocks at the end of `BuildingParameters` arrays and preserves block IDs across copy, blueprints, paste, and prebuild apply.
 - `Models` clones `ModelProto` and `PrefabDesc` before final derived cache rebuilds, then rebuilds `ModelProto` indices and `PlanetFactory.PrefabDescByModelIndex`.
-- `Options` binds author-declared string options to the DSPCore BepInEx config file and stores option page and settings version descriptors.
+- `Options` binds author-declared string options to the DSPCore BepInEx config file and stores option page and settings version descriptors. `String`, `Bool`, `Int`, and `Float` register an option and return the current value.
 - `Multiplayer` currently detects whether Nebula is loaded and stores packet, host relay, planet data request, and client missing-save declarations. Actual Nebula sending belongs to a dedicated adapter.
 - `Networks` provides the `TryGetCommonNetwork(...)` and `IsConnectedToNetwork(...)` query surfaces; concrete scanning is supplied by registered adapters.
 - `Galaxy` creates star and galaxy systems after galaxy data exists, then forwards `SpaceSector.GameTick` updates and sidecar saves.
@@ -131,6 +132,32 @@ myItemProto.SetBuildBar(tab: 3, row: 2, index: 5);
 BuildBar.BindQuickBar(tab: 3, row: 2, index: 4, itemId: 9554);
 ```
 
+## Example: Options, Resources, And Icon Short Entries
+
+```csharp
+using DSPCore;
+
+bool enabled = Options.Bool("Example", "Enabled", true, "Enable example feature.");
+int rows = Options.Int("Example", "Rows", 2, "Example row count.");
+
+ModResources.Text("ExampleMachines", "enUS", "Example Machines", "com.example.my-mod");
+Icons.BindToProto("example-machine", "com.example.my-mod", "assets/icons/example.png", ProtoKind.Item, 9554);
+```
+
+## Example: Delegate Saves And Lifecycle
+
+```csharp
+using DSPCore;
+
+Saves.Register(
+    modGuid: "com.example.my-mod",
+    export: writer => writer.Write(counter),
+    import: reader => counter = reader.ReadInt32(),
+    intoOtherSave: () => counter = 0);
+
+Lifecycle.OnStarted(InitializeAfterDspCore);
+```
+
 ## Example: Tabs And GridIndex
 
 ```csharp
@@ -161,6 +188,8 @@ The old call is accepted, but it is marked obsolete. New mods should prefer `Ite
 
 - `README.md`
 - Capability examples use paired `Examples/<Scenario>.md` + `Examples/<Scenario>Example.cs` files. `.cs` examples are documentation artifacts and are excluded from compilation.
+- `DSPCore/Authoring/Core/Examples/LifecycleExample.cs`
+- `DSPCore/Authoring/Core/Examples/Lifecycle.md`
 - `DSPCore/Authoring/Achievements/Examples/AchievementPolicyExample.cs`
 - `DSPCore/Authoring/Achievements/Examples/AchievementPolicy.md`
 - `DSPCore/Authoring/BuildBar/Examples/QuickBarBindingExample.cs`
@@ -171,6 +200,8 @@ The old call is accepted, but it is marked obsolete. New mods should prefer `Ite
 - `DSPCore/Authoring/Saves/Examples/SaveBlocks.md`
 - `DSPCore/Authoring/Icons/Examples/IconSetRegistrationExample.cs`
 - `DSPCore/Authoring/Icons/Examples/IconSetRegistration.md`
+- `DSPCore/Authoring/Resources/Examples/ResourceRegistrationExample.cs`
+- `DSPCore/Authoring/Resources/Examples/ResourceRegistration.md`
 - `DSPCore/Authoring/Tabs/Examples/TabRegistrationExample.cs`
 - `DSPCore/Authoring/Tabs/Examples/TabRegistration.md`
 - `DSPCore/Systems/PickerSurfaces/Examples/PickerRequestExample.cs`
