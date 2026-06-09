@@ -1,6 +1,6 @@
 # 配置项
 
-Options 模块让模组声明简单配置项，由 DSPCore 统一绑定到 BepInEx `ConfigFile`，并提供 DSPCore 自有统一设置窗口。公开表面包含 `String`、`Bool`、`Int`、`Float`、`Enum`、`IntRange`、`FloatRange` 短入口、底层字符串注册、设置页面描述、设置版本描述和 `Options.OpenWindow()`。
+Options 模块让模组声明简单配置项，由 DSPCore 统一绑定到 BepInEx `ConfigFile`，并提供 DSPCore 自有统一设置窗口。公开表面包含 `String`、`Bool`、`Int`、`Float`、`Enum`、`IntRange`、`FloatRange` 短入口、底层字符串注册、设置页面描述、设置版本描述、配置导入/导出和 `Options.OpenWindow()`。
 
 ## 这个模块带来什么便利
 
@@ -10,6 +10,7 @@ Options 模块让模组声明简单配置项，由 DSPCore 统一绑定到 BepIn
 - DSPCore 运行时尚未绑定配置文件时，短入口会返回 descriptor 默认值，不会给作者返回空字符串。
 - DSPCore 统一设置窗口会按 `OptionPageDescriptor` 和带 `PageId` 的 `OptionDescriptor` 分组展示配置项。
 - 联机或存档兼容检查可以读取 `OptionVersionDescriptor`。
+- 需要复制、保存或跨系统传递设置时，可以导出结构化快照或文本快照，再导回当前已注册配置项。
 
 ## 功能：短入口注册并读取
 
@@ -42,6 +43,15 @@ bool enabled = Options.Bool(
 
 `OptionUi.PageId` 控制统一设置窗口里的分组；`OptionUi.DisplayName` 控制玩家看到的行标题；`OptionUi.Order` 控制同页内排序；`OptionUi.CanReset` 控制是否显示 Reset 按钮。没有这些需求时继续使用最短重载。
 
+## 功能：配置导入和导出
+
+```csharp
+string text = Options.ExportText();
+OptionImportReport report = Options.ImportText(text);
+```
+
+`ExportValues()` 会返回 `OptionValueSnapshot` 集合，适合给其他系统直接消费。`ExportText()` 会生成可复制、可保存的文本；`ImportText(...)` 只会写入当前已经注册并已绑定到 BepInEx config 的配置项。未知 key、格式错误行或当前无法写入的项会进入 `OptionImportReport.SkippedKeys`。
+
 ## 功能：打开统一设置窗口
 
 ```csharp
@@ -57,6 +67,8 @@ Options.OpenWindow();
 - `Int` / `Float` / 按键绑定输入非法时会回滚为当前配置值；range 滑条会按最小值、最大值和步进值写回。
 - `OptionUi.Order` 只影响窗口里的同页排序，不改变配置加载顺序。
 - Reset 按钮只写回 descriptor 默认值，不执行迁移、重启或自定义副作用。
+- 文本导出格式用于 DSPCore 自己的 `ImportText(...)` 回读，不作为人工编辑格式承诺。
+- 导入只覆盖已注册配置项，不会创建新的配置 descriptor。
 - 配置 key 应保持稳定，避免玩家本地配置失效。
 
 ## 示例

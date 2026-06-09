@@ -46,12 +46,15 @@ internal static class OptionRuntime
         return false;
     }
 
-    public static void SetString(string section, string key, string value)
+    public static bool SetString(string section, string key, string value)
     {
         if (Entries.TryGetValue(OptionRegistry.KeyOf(section, key), out var entry))
         {
             entry.Value = value;
+            return true;
         }
+
+        return false;
     }
 
     public static void OpenWindow()

@@ -93,6 +93,20 @@ internal static class OptionRegistrationExample
         Options.OpenWindow();
     }
 
+    public static string ExportForClipboard()
+    {
+        // ExportText returns a stable machine-readable text block that can be stored,
+        // copied, or passed back to Options.ImportText later.
+        return Options.ExportText();
+    }
+
+    public static OptionImportReport ImportFromClipboard(string exportedText)
+    {
+        // ImportText only applies values for currently registered and bound options.
+        // Unknown lines and unavailable config entries are reported instead of being ignored.
+        return Options.ImportText(exportedText);
+    }
+
     private enum ExampleDisplayMode
     {
         Compact,

@@ -8,4 +8,6 @@ Use the same method name with `OptionUi` when the row needs a display name, page
 
 `OptionUi.Order` only changes row order inside the same page. `OptionUi.CanReset` only shows a Reset button that writes the descriptor default value back to the DSPCore BepInEx config file.
 
+Use `Options.ExportValues()` / `Options.ImportValues(...)` when another system wants structured snapshots. Use `Options.ExportText()` / `Options.ImportText(...)` when the snapshot needs to be copied, stored, or sent as text. The text format is machine-readable and should be round-tripped through DSPCore instead of parsed by mods.
+
 Call `Options.OpenWindow()` only from a button, key bind, or custom UI callback after `UIRoot` is initialized. Early plugin startup is too soon for Unity UI creation. The current window is DSPCore-owned and does not inject into the vanilla option page.
