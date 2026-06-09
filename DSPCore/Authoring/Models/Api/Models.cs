@@ -24,6 +24,16 @@ public static class Models
         Action<ModelProto>? configureModel = null,
         Action<PrefabDesc>? configurePrefab = null)
     {
-        DspCore.Models.Register(new ModelDescriptor(ownerModGuid, sourceModelIndex, modelIndex, configureModel, configurePrefab));
+        Register(new ModelDescriptor(ownerModGuid, sourceModelIndex, modelIndex, configureModel, configurePrefab));
+    }
+
+    /// <summary>
+    /// 注册一个模型克隆声明。
+    /// Registers a model clone declaration.
+    /// </summary>
+    /// <param name="descriptor">模型描述。Model descriptor.</param>
+    public static void Register(ModelDescriptor descriptor)
+    {
+        DspCore.Models.Register(descriptor);
     }
 }

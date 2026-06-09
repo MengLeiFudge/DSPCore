@@ -48,7 +48,7 @@ P0/P1 是当前实现目标。
 - 实体组件：用 `Components.Register<TComponent>(...)` 按 item id、model index 或 `PrefabDesc` 条件给实体挂自定义组件，转发移除、tick 和存档；复杂构造再使用 descriptor。
 - 星球/恒星/银河系统：用 `PlanetSystems.Register<TSystem>(...)`、`GalaxySystems.RegisterStar<TSystem>(...)` 或 `RegisterGalaxy<TSystem>(...)` 注册系统，按 `PlanetFactory`、`StarData` 或 `GalaxyData` 创建实例并转发生命周期；复杂构造再使用 descriptor。
 - 蓝图参数：用 `Blueprints.Register(blockId, ownerModGuid, copy, paste, ...)` 注册整数负载 tagged block，避免多个模组抢 `BuildingParameters.parameters` 固定槽位；复杂 block 处理再使用 descriptor。
-- 模型和预制体：从已有 `ModelProto` 克隆新模型，配置独立 `PrefabDesc`，并重建模型派生缓存。
+- 模型和预制体：从已有 `ModelProto` 克隆新模型，配置独立 `PrefabDesc`，并重建模型派生缓存；调用方已有来源对象时优先使用 `ModelProto.CloneAsModel(...)`，只有来源 model index 时再使用 `Models.CloneModel(...)`。
 - 配置、联机和网络：提供 `Options.String/Bool/Int/Float/Enum/IntRange/FloatRange` 短入口，支持同名方法加 `OptionUi` 设置页面、显示名、同页排序和 Reset 按钮，提供 BepInEx 配置绑定、DSPCore 统一设置窗口、设置页面、设置版本描述、配置导入/导出、Nebula 软检测、packet/host relay/planet data/client save 声明、adapter snapshot/query 入口，以及 `Networks.Register(...)` 工厂网络查询适配器短入口。
 - 补丁平台：通过 `Patches.Register(...)` / `RegisterForPlugin(...)` 集中声明条件补丁、必需插件 GUID/version、禁用原因和应用失败报告；descriptor 保留为高级路径。
 
