@@ -41,7 +41,7 @@ P0/P1 blocks are the current implementation target.
 - Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot; row 1 writes to the vanilla build bar, row 2+ uses DSPCore extended buttons, and BuildBarTool compatibility entries remain available. Other authoring capabilities, such as item registration, should prefer `ItemProto.SetBuildBar(...)` after they have the item proto; BuildBar does not own proto creation.
 - Resources, icons, and localization: register resource roots and translation entries through `ModResources`, and register icons through `Icons.FromResources(...)`, `Icons.FromFile(...)`, or `Icons.BindToProto(...)`.
 - Tabs: authors can declare custom pages, receive a `TabSlot`, and use that slot to generate item/recipe `GridIndex` values. Picker surfaces are DSPCore system implementation.
-- Saves: delegate-based simple save handlers, raw `BinaryReader`/`BinaryWriter` handlers, and tagged block helpers.
+- Saves: `Saves.Auto(...)` automatic schemas, delegate-based simple save handlers, raw `BinaryReader`/`BinaryWriter` handlers, and tagged block helpers.
 - Achievement policies: declare policy effects such as Milky Way / leaderboard upload blocking. Error window and error collection belong to DSPCore systems.
 - UI framework: window lifecycle helpers, tabbed windows, base controls, declarative grid layout, and theme/card helpers; concrete business pages are not included.
 - Entity components: attach custom components to entities by item id, model index, or `PrefabDesc`, then forward removal, ticks, and saves.
@@ -144,10 +144,18 @@ ModResources.Text("ExampleMachines", "enUS", "Example Machines", "com.example.my
 Icons.BindToProto("example-machine", "com.example.my-mod", "assets/icons/example.png", ProtoKind.Item, 9554);
 ```
 
-## Example: Delegate Saves And Lifecycle
+## Example: Automatic Saves, Delegate Saves, And Lifecycle
 
 ```csharp
 using DSPCore;
+
+private sealed class ExampleState
+{
+    [CoreSaveField("counter")]
+    public int Counter { get; set; }
+}
+
+private static readonly ExampleState State = Saves.Auto("com.example.auto-mod", new ExampleState());
 
 Saves.Register(
     modGuid: "com.example.my-mod",

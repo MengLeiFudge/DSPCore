@@ -8,7 +8,27 @@ The Saves block lets a mod store its own state in DSPCore `.dspcore` sidecar sav
 - Each mod owns a save segment by GUID. Import/export exceptions are reported to Errors, so mods do not have to share one fragile binary layout.
 - `IntoOtherSave()` is called for new games or saves that do not contain your mod data, reducing the risk of state leaking from one save into another.
 - Covered legacy DSPModSave handlers bridge into the same SaveRegistry for migration.
+- `Saves.Auto(...)` can save simple state objects marked with `[CoreSaveField]`, reducing handler boilerplate.
 - Tagged block helpers let evolving fields be read and written by tag; unknown fields are skipped, lowering version-upgrade cost.
+
+## Capability: Save Simple State With An Automatic Schema
+
+```csharp
+private sealed class ExampleState
+{
+    [CoreSaveField("counter")]
+    public int Counter { get; set; }
+
+    [CoreSaveField("enabled")]
+    public bool Enabled = true;
+}
+
+private static readonly ExampleState State = Saves.Auto("com.example.my-mod", new ExampleState());
+```
+
+`Saves.Auto(...)` registers `state` as a save handler. Export writes the schema version and each `[CoreSaveField]` member. Import restores the defaults captured during registration first, then reads existing fields by tag; missing fields keep their defaults. Pass `migrate: (version, state) => { ... }` when older versions need migration.
+
+The current automatic schema supports only `bool`, `int`, `long`, `float`, `double`, `string`, and enums. Complex collections, dictionaries, nested objects, and Unity types should still use delegates, a full handler, or tagged blocks.
 
 ## Capability: Register A Save Handler
 

@@ -41,7 +41,7 @@ P0/P1 是当前实现目标。
 - 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位；第 1 行写入原版建造栏，第 2 行及以后使用 DSPCore 扩展按钮，并保留 BuildBarTool 兼容入口。其他作者能力，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.SetBuildBar(...)`；BuildBar 不承担 Proto 创建职责。
 - 资源、图标和本地化：通过 `ModResources` 登记资源根和翻译条目，通过 `Icons.FromResources(...)`、`Icons.FromFile(...)` 或 `Icons.BindToProto(...)` 注册图标。
 - 分页：作者可以声明自定义页面并取得 `TabSlot`，再用 `TabSlot` 生成物品/配方 `GridIndex`。选择器 surface 属于 DSPCore 系统实现。
-- 存档：委托式简单存档处理器、原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
+- 存档：`Saves.Auto(...)` 自动 schema、委托式简单存档处理器、原始 `BinaryReader`/`BinaryWriter` 处理器和 tagged block 工具。
 - 成就策略：声明是否影响银河系/排行榜上传等策略。错误窗口和错误收集属于 DSPCore 系统实现。
 - UI 框架：窗口生命周期、标签页窗口、基础控件、声明式网格布局和主题卡片辅助；不包含具体业务页面。
 - 实体组件：按 item id、model index 或 `PrefabDesc` 条件给实体挂自定义组件，转发移除、tick 和存档。
@@ -144,10 +144,18 @@ ModResources.Text("ExampleMachines", "zhCN", "示例机器", "com.example.my-mod
 Icons.BindToProto("example-machine", "com.example.my-mod", "assets/icons/example.png", ProtoKind.Item, 9554);
 ```
 
-## 示例：委托式存档和生命周期
+## 示例：自动存档、委托式存档和生命周期
 
 ```csharp
 using DSPCore;
+
+private sealed class ExampleState
+{
+    [CoreSaveField("counter")]
+    public int Counter { get; set; }
+}
+
+private static readonly ExampleState State = Saves.Auto("com.example.auto-mod", new ExampleState());
 
 Saves.Register(
     modGuid: "com.example.my-mod",
