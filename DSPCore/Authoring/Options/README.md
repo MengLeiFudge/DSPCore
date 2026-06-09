@@ -1,11 +1,12 @@
 # 配置项
 
-Options 模块让模组声明简单配置项，由 DSPCore 统一绑定到 BepInEx `ConfigFile`，并提供 DSPCore 自有统一设置窗口。公开表面包含 `String`、`Bool`、`Int`、`Float`、`Enum`、`IntRange`、`FloatRange` 短入口、底层字符串注册、设置页面描述、设置版本描述、配置导入/导出和 `Options.OpenWindow()`。
+Options 模块让模组声明简单配置项，由 DSPCore 统一绑定到 BepInEx `ConfigFile`，并提供 DSPCore 自有统一设置窗口。公开表面包含 `Options.Page(...).Section(...)` 页面上下文入口、`String`、`Bool`、`Int`、`Float`、`Enum`、`IntRange`、`FloatRange` 短入口、底层字符串注册、设置页面描述、设置版本描述、配置导入/导出和 `Options.OpenWindow()`。
 
 ## 这个模块带来什么便利
 
 - 模组可以在作者侧声明配置项，不需要拿到 DSPCore 插件实例。
-- 简单配置可以用 `Options.Bool(...)`、`Options.IntRange(...)`、`Options.Enum(...)` 这类短入口一次完成注册和读取；需要显示名、页面分组、排序或重置按钮时，用同名方法传入 `OptionUi`。
+- 简单配置可以用 `Options.Bool(...)`、`Options.IntRange(...)`、`Options.Enum(...)` 这类短入口一次完成注册和读取；同一设置页面下有多行配置时，先用 `Options.Page(...).Section(...)` 固定页面和分区，再在 `OptionSection` 上调用同名短入口。
+- 需要显示名、排序或重置按钮时，仍用同名方法传入 `OptionUi`；页面上下文会自动携带 `PageId`。
 - DSPCore 启动后会绑定已注册配置项；启动后新增的配置项也会立即绑定。
 - DSPCore 运行时尚未绑定配置文件时，短入口会返回 descriptor 默认值，不会给作者返回空字符串。
 - DSPCore 统一设置窗口会按 `OptionPageDescriptor` 和带 `PageId` 的 `OptionDescriptor` 分组展示配置项。
@@ -26,6 +27,19 @@ float opacity = Options.FloatRange("Example", "Opacity", 0.8f, "Panel opacity.",
 
 这些方法会先注册配置项，再返回当前值。适合普通开关、数字、文本、枚举下拉和范围滑条配置。
 
+同一设置页里有多行配置时，推荐先创建页面上下文，避免每行重复传 `pageId` 和 `section`：
+
+```csharp
+OptionSection settings = Options
+    .Page("com.example.settings", "com.example.my-mod", "Example Settings")
+    .Section("Example");
+
+bool enabled = settings.Bool("Enabled", true, "Enable example feature.");
+int maxRows = settings.IntRange("MaxRows", 3, "Maximum rows.", minimum: 1, maximum: 6);
+```
+
+如果同一页面下偶尔需要跨配置分区，可以直接在 `OptionPage` 上调用同名方法并显式传入 `section`。
+
 需要更细展示控制时，仍使用同名短入口，只额外传入 `OptionUi`：
 
 ```csharp
@@ -41,7 +55,7 @@ bool enabled = Options.Bool(
     });
 ```
 
-`OptionUi.PageId` 控制统一设置窗口里的分组；`OptionUi.DisplayName` 控制玩家看到的行标题；`OptionUi.Order` 控制同页内排序；`OptionUi.CanReset` 控制是否显示 Reset 按钮。没有这些需求时继续使用最短重载。
+`OptionUi.PageId` 控制统一设置窗口里的分组；使用 `OptionPage` 或 `OptionSection` 时，页面 ID 由上下文覆盖。`OptionUi.DisplayName` 控制玩家看到的行标题；`OptionUi.Order` 控制同页内排序；`OptionUi.CanReset` 控制是否显示 Reset 按钮。没有这些需求时继续使用最短重载。
 
 ## 功能：配置导入和导出
 
@@ -65,6 +79,7 @@ Options.OpenWindow();
 - 当前写入 BepInEx 的底层值仍是字符串；布尔、整数、浮点和枚举有读取辅助。
 - 当前窗口是 DSPCore 自有窗口，不注入原版设置页。
 - `Int` / `Float` / 按键绑定输入非法时会回滚为当前配置值；range 滑条会按最小值、最大值和步进值写回。
+- `Options.Page(...)` 会注册页面并返回上下文；`Options.RegisterPage(...)` 仍保留给只想登记页面 descriptor 的旧调用。
 - `OptionUi.Order` 只影响窗口里的同页排序，不改变配置加载顺序。
 - Reset 按钮只写回 descriptor 默认值，不执行迁移、重启或自定义副作用。
 - 文本导出格式用于 DSPCore 自己的 `ImportText(...)` 回读，不作为人工编辑格式承诺。

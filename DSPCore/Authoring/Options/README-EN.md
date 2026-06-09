@@ -1,11 +1,12 @@
 # Options
 
-The Options module lets mods declare simple options that DSPCore binds to the BepInEx `ConfigFile`, and provides a DSPCore-owned unified settings window. The public surface includes `String`, `Bool`, `Int`, `Float`, `Enum`, `IntRange`, and `FloatRange` short entries, lower-level string registration, option page descriptors, settings version descriptors, option import/export, and `Options.OpenWindow()`.
+The Options module lets mods declare simple options that DSPCore binds to the BepInEx `ConfigFile`, and provides a DSPCore-owned unified settings window. The public surface includes the `Options.Page(...).Section(...)` page context entry, `String`, `Bool`, `Int`, `Float`, `Enum`, `IntRange`, and `FloatRange` short entries, lower-level string registration, option page descriptors, settings version descriptors, option import/export, and `Options.OpenWindow()`.
 
 ## What This Module Provides
 
 - Mods can declare options from authoring code without holding the DSPCore plugin instance.
-- Simple options can use short entries such as `Options.Bool(...)`, `Options.IntRange(...)`, and `Options.Enum(...)` to register and read in one call. When display names, page grouping, order, or reset buttons are needed, pass `OptionUi` to the same method name.
+- Simple options can use short entries such as `Options.Bool(...)`, `Options.IntRange(...)`, and `Options.Enum(...)` to register and read in one call. When several rows belong to one settings page, use `Options.Page(...).Section(...)` first to fix the page and section, then call the same short entries on `OptionSection`.
+- When display names, order, or reset buttons are needed, pass `OptionUi` to the same method name. Page contexts carry `PageId` automatically.
 - DSPCore binds options registered before startup, and also binds options registered after startup.
 - If the DSPCore runtime has not bound the config file yet, short entries return the descriptor default instead of an empty string.
 - The DSPCore unified settings window groups options by `OptionPageDescriptor` and `OptionDescriptor.PageId`.
@@ -26,6 +27,19 @@ float opacity = Options.FloatRange("Example", "Opacity", 0.8f, "Panel opacity.",
 
 These methods register the option first, then return the current value. Use them for ordinary toggles, numbers, text settings, enum dropdowns, and range sliders.
 
+When several rows belong to the same settings page, prefer a page context so each row does not repeat `pageId` and `section`:
+
+```csharp
+OptionSection settings = Options
+    .Page("com.example.settings", "com.example.my-mod", "Example Settings")
+    .Section("Example");
+
+bool enabled = settings.Bool("Enabled", true, "Enable example feature.");
+int maxRows = settings.IntRange("MaxRows", 3, "Maximum rows.", minimum: 1, maximum: 6);
+```
+
+If one page occasionally needs rows from different config sections, call the same methods directly on `OptionPage` and pass `section` explicitly.
+
 When the row needs presentation metadata, keep the same short entry and pass `OptionUi`:
 
 ```csharp
@@ -41,7 +55,7 @@ bool enabled = Options.Bool(
     });
 ```
 
-`OptionUi.PageId` controls grouping in the unified settings window. `OptionUi.DisplayName` controls the row title shown to players. `OptionUi.Order` controls order within the page. `OptionUi.CanReset` controls whether a Reset button is shown. Use the shortest overload when those are not needed.
+`OptionUi.PageId` controls grouping in the unified settings window. When `OptionPage` or `OptionSection` is used, the context overrides the page id. `OptionUi.DisplayName` controls the row title shown to players. `OptionUi.Order` controls order within the page. `OptionUi.CanReset` controls whether a Reset button is shown. Use the shortest overload when those are not needed.
 
 ## Capability: Import And Export Options
 
@@ -65,6 +79,7 @@ The unified settings window displays all registered options. `Bool` uses a check
 - The underlying BepInEx values are still strings. Boolean, integer, floating-point, and enum read helpers exist.
 - The current window is DSPCore-owned and does not inject into the vanilla option page.
 - Invalid `Int` / `Float` / key binding input is reverted to the current config value; range sliders write back according to their minimum, maximum, and step values.
+- `Options.Page(...)` registers the page and returns a context. `Options.RegisterPage(...)` remains available for old calls that only want to register the page descriptor.
 - `OptionUi.Order` only changes in-window ordering inside the same page; it does not change config load order.
 - The Reset button only writes the descriptor default value; it does not run migrations, restart logic, or custom side effects.
 - The text export format is for DSPCore's own `ImportText(...)` round trip, not a promised hand-editing format.

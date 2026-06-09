@@ -49,7 +49,7 @@ P0/P1 blocks are the current implementation target.
 - Planet/star/galaxy systems: use `PlanetSystems.Register<TSystem>(...)`, `GalaxySystems.RegisterStar<TSystem>(...)`, or `RegisterGalaxy<TSystem>(...)` to register systems, create instances for `PlanetFactory`, `StarData`, or `GalaxyData`, and forward lifecycle callbacks; use descriptors for complex construction.
 - Blueprint parameters: use `Blueprints.Register(blockId, ownerModGuid, copy, paste, ...)` to register integer-payload tagged blocks so multiple mods do not compete for fixed `BuildingParameters.parameters` slots; use descriptors for complex block handling.
 - Models and prefabs: clone existing `ModelProto` entries, configure independent `PrefabDesc` instances, and rebuild model derived caches; prefer `ModelProto.CloneAsModel(...)` when the caller already has the source object, and use `Models.CloneModel(...)` when only the source model index is available.
-- Options, multiplayer, and networks: provide `Options.String/Bool/Int/Float/Enum/IntRange/FloatRange` short entries, same-name overloads with `OptionUi` for page, display, in-page order, and Reset button metadata, BepInEx config binding, a DSPCore unified settings window, option page and settings version descriptors, option import/export, Nebula soft detection, packet/host relay/planet data/client save declarations, adapter snapshot/query entries, multiplayer descriptor overloads, and the `Networks.Register(...)` short entry for factory network query adapters.
+- Options, multiplayer, and networks: provide the `Options.Page(...).Section(...)` page context and `Options.String/Bool/Int/Float/Enum/IntRange/FloatRange` short entries, same-name overloads with `OptionUi` for display, in-page order, and Reset button metadata, BepInEx config binding, a DSPCore unified settings window, option page and settings version descriptors, option import/export, Nebula soft detection, packet/host relay/planet data/client save declarations, adapter snapshot/query entries, multiplayer descriptor overloads, and the `Networks.Register(...)` short entry for factory network query adapters.
 - Patch platform: use `Patches.Register(...)` / `RegisterForPlugin(...)` to centralize conditional patch declarations, required plugin GUID/version checks, disabled reasons, and apply failure reporting; descriptors remain the advanced path.
 
 ## Runtime Status
@@ -74,7 +74,7 @@ Implemented runtime bridges:
 - `Planets` creates planet systems after `GameData.GetOrCreateFactory`; parameterless systems can be registered through the `PlanetSystems.Register<TSystem>(...)` short entry. Runtime forwards local planet rendering, power ticks, factory ticks, and post phases.
 - `Blueprints` encodes author parameter blocks at the end of `BuildingParameters` arrays and preserves block IDs across copy, blueprints, paste, and prebuild apply; simple blocks can use `Blueprints.Register(...)` with direct `int[]` payloads.
 - `Models` clones `ModelProto` and `PrefabDesc` before final derived cache rebuilds, then rebuilds `ModelProto` indices and `PlanetFactory.PrefabDescByModelIndex`.
-- `Options` binds author-declared string options to the DSPCore BepInEx config file and stores option page and settings version descriptors. `String`, `Bool`, `Int`, `Float`, `Enum`, `IntRange`, and `FloatRange` register an option and return the current value; same-name short entries accept `OptionUi` when page, display-name, order, or Reset metadata is needed; `ExportValues` / `ExportText` and `ImportValues` / `ImportText` provide option snapshot import/export; `Options.OpenWindow()` opens the DSPCore-owned unified settings window.
+- `Options` binds author-declared string options to the DSPCore BepInEx config file and stores option page and settings version descriptors. `Options.Page(...).Section(...)` can fix the settings page and config section first; `String`, `Bool`, `Int`, `Float`, `Enum`, `IntRange`, and `FloatRange` register an option and return the current value; same-name short entries accept `OptionUi` when display-name, order, or Reset metadata is needed; `ExportValues` / `ExportText` and `ImportValues` / `ImportText` provide option snapshot import/export; `Options.OpenWindow()` opens the DSPCore-owned unified settings window.
 - `Multiplayer` currently detects whether Nebula is loaded, stores packet, host relay, planet data request, and client missing-save declarations, and exposes adapter snapshot/query entries plus descriptor overloads. Actual Nebula sending belongs to a dedicated adapter.
 - `Networks` provides the `Register(...)` adapter short entry plus the `TryGetCommonNetwork(...)` and `IsConnectedToNetwork(...)` query surfaces; concrete scanning is supplied by registered adapters.
 - `Galaxy` creates star and galaxy systems after galaxy data exists; parameterless systems can be registered through `GalaxySystems.RegisterStar<TSystem>(...)` / `RegisterGalaxy<TSystem>(...)` short entries. Runtime forwards `SpaceSector.GameTick` updates and sidecar saves.
@@ -147,9 +147,13 @@ BuildBar.BindQuickBar(tab: 3, row: 2, index: 4, itemId: 9554);
 ```csharp
 using DSPCore;
 
-bool enabled = Options.Bool("Example", "Enabled", true, "Enable example feature.");
-int rows = Options.Int("Example", "Rows", 2, "Example row count.");
-int maxRows = Options.IntRange("Example", "MaxRows", 3, "Maximum rows.", minimum: 1, maximum: 6);
+OptionSection settings = Options
+    .Page("com.example.settings", "com.example.my-mod", "Example Settings")
+    .Section("Example");
+
+bool enabled = settings.Bool("Enabled", true, "Enable example feature.");
+int rows = settings.Int("Rows", 2, "Example row count.");
+int maxRows = settings.IntRange("MaxRows", 3, "Maximum rows.", minimum: 1, maximum: 6);
 // Open from a button, key bind, or custom UI callback after UIRoot is ready.
 Options.OpenWindow();
 

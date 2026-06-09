@@ -4,12 +4,13 @@ internal static class OptionRegistrationExample
 {
     public static void Register()
     {
-        // RegisterPage groups rows in the DSPCore unified settings window. The page id must
-        // stay stable because each option stores it as its grouping key.
-        Options.RegisterPage(
+        // Page registers a DSPCore settings page and returns a context. The page id must stay
+        // stable because each option stores it as its grouping key.
+        OptionSection settings = Options.Page(
             pageId: "com.example.settings",
             ownerModGuid: "com.example.my-mod",
-            title: "Example Settings");
+            title: "Example Settings")
+            .Section("Example");
 
         // RegisterVersion lets save or multiplayer compatibility checks compare settings
         // schemas without reading every individual option.
@@ -19,71 +20,57 @@ internal static class OptionRegistrationExample
 
         // Short entries register the descriptor and return the current BepInEx config value.
         // Use them for ordinary bool, int, float, and string settings.
-        bool enabled = Options.Bool(
-            section: "Example",
+        bool enabled = settings.Bool(
             key: "Enabled",
             defaultValue: true,
             description: "Enable example behavior.",
             ui: new OptionUi(
-                PageId: "com.example.settings",
                 DisplayName: "Enable Example")
             {
                 Order = 10,
                 CanReset = true
             });
 
-        int rowCount = Options.Int(
-            section: "Example",
+        int rowCount = settings.Int(
             key: "Rows",
             defaultValue: 2,
-            description: "Example row count.",
-            pageId: "com.example.settings");
+            description: "Example row count.");
 
-        float uiScale = Options.Float(
-            section: "Example",
+        float uiScale = settings.Float(
             key: "UiScale",
             defaultValue: 1.0f,
-            description: "Example UI scale.",
-            pageId: "com.example.settings");
+            description: "Example UI scale.");
 
-        ExampleDisplayMode displayMode = Options.Enum(
-            section: "Example",
+        ExampleDisplayMode displayMode = settings.Enum(
             key: "DisplayMode",
             defaultValue: ExampleDisplayMode.Normal,
-            description: "Example display mode.",
-            pageId: "com.example.settings");
+            description: "Example display mode.");
 
-        int maxRows = Options.IntRange(
-            section: "Example",
+        int maxRows = settings.IntRange(
             key: "MaxRows",
             defaultValue: 3,
             description: "Maximum example rows shown in the UI.",
             minimum: 1,
             maximum: 6,
             ui: new OptionUi(
-                PageId: "com.example.settings",
                 DisplayName: "Maximum Rows")
             {
                 Order = 20,
                 CanReset = true
             });
 
-        float opacity = Options.FloatRange(
-            section: "Example",
+        float opacity = settings.FloatRange(
             key: "Opacity",
             defaultValue: 0.8f,
             description: "Example panel opacity.",
             minimum: 0.2f,
             maximum: 1.0f,
-            step: 0.05f,
-            pageId: "com.example.settings");
+            step: 0.05f);
 
-        string mode = Options.String(
-            section: "Example",
+        string mode = settings.String(
             key: "Mode",
             defaultValue: "Normal",
-            description: "Example mode used by com.example.my-mod.",
-            pageId: "com.example.settings");
+            description: "Example mode used by com.example.my-mod.");
     }
 
     public static void OpenFromButtonOrKey()

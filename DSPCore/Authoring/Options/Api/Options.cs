@@ -532,6 +532,22 @@ public static class Options
     }
 
     /// <summary>
+    /// 注册一个设置页面并返回页面上下文。
+    /// Registers an option page and returns a page context.
+    /// </summary>
+    /// <param name="pageId">页面 ID。Page ID.</param>
+    /// <param name="ownerModGuid">所属模组 GUID。Owner mod GUID.</param>
+    /// <param name="title">页面标题。Page title.</param>
+    /// <param name="order">排序值。Sort order.</param>
+    /// <returns>设置页面上下文。Option page context.</returns>
+    public static OptionPage Page(string pageId, string ownerModGuid, string title, int order = 0)
+    {
+        var descriptor = new OptionPageDescriptor(pageId, ownerModGuid, title, order);
+        DspCore.Options.RegisterPage(descriptor);
+        return new OptionPage(descriptor);
+    }
+
+    /// <summary>
     /// 注册一个设置版本。
     /// Registers a settings version.
     /// </summary>
