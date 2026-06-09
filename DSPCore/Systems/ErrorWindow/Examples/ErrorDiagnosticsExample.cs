@@ -11,16 +11,26 @@ internal static class ErrorDiagnosticsExample
         }
         catch (Exception ex)
         {
-            // ReportException records ownership, exception type, message, and stack trace.
-            Errors.ReportException("com.example.my-mod", ex);
+            // ReportException records ownership, exception type, message, stack trace,
+            // and optional context when the failing code already knows the game object.
+            PlanetFactory factory = GameMain.localPlanet?.factory;
+            if (factory != null)
+            {
+                Errors.ReportException(
+                    "com.example.my-mod",
+                    ex,
+                    ErrorDiagnosticContext.ForEntity(factory, entityId: 1, note: "Example entity context"));
+            }
+            else
+            {
+                Errors.ReportException("com.example.my-mod", ex);
+            }
 
             // BuildDiagnosticText adds game context, recent reports, text-hit plugin candidates,
             // DSPCore declarations, and a Harmony patch-map overview. It does not decide root cause.
             string diagnostics = Errors.BuildDiagnosticText(ex.ToString());
 
-            // When the failing code has a factory/entity, pass explicit context so the copied
-            // report contains planet id, entity id, proto id, and model index facts.
-            PlanetFactory factory = GameMain.localPlanet?.factory;
+            // When you only need context for one copied snapshot, pass explicit context here.
             if (factory != null)
             {
                 string entityDiagnostics = Errors.BuildDiagnosticText(

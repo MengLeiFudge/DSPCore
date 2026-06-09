@@ -20,12 +20,40 @@ public static class Errors
     }
 
     /// <summary>
+    /// 创建并记录一个错误报告。
+    /// Creates and records an error report.
+    /// </summary>
+    /// <param name="ownerModGuid">报告方模组 GUID。Reporting mod GUID.</param>
+    /// <param name="errorType">错误类型。Error type.</param>
+    /// <param name="message">错误消息。Error message.</param>
+    /// <param name="stackTrace">堆栈信息。Stack trace.</param>
+    /// <param name="context">可选诊断上下文。Optional diagnostic context.</param>
+    /// <returns>创建的错误报告。Created error report.</returns>
+    public static ErrorReport Report(string ownerModGuid, string errorType, string message, string stackTrace, ErrorDiagnosticContext? context = null)
+    {
+        return DspCore.Errors.Report(ownerModGuid, errorType, message, stackTrace, context);
+    }
+
+    /// <summary>
     /// 从异常创建并记录错误报告。
     /// Creates and records an error report from an exception.
     /// </summary>
     public static ErrorReport ReportException(string ownerModGuid, Exception exception)
     {
         return DspCore.Errors.ReportException(ownerModGuid, exception);
+    }
+
+    /// <summary>
+    /// 从异常和诊断上下文创建并记录错误报告。
+    /// Creates and records an error report from an exception and diagnostic context.
+    /// </summary>
+    /// <param name="ownerModGuid">报告方模组 GUID。Reporting mod GUID.</param>
+    /// <param name="exception">异常对象。Exception object.</param>
+    /// <param name="context">可选诊断上下文。Optional diagnostic context.</param>
+    /// <returns>创建的错误报告。Created error report.</returns>
+    public static ErrorReport ReportException(string ownerModGuid, Exception exception, ErrorDiagnosticContext? context)
+    {
+        return DspCore.Errors.ReportException(ownerModGuid, exception, context);
     }
 
     /// <summary>

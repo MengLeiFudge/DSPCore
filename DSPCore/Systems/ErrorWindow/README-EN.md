@@ -5,7 +5,7 @@ The Errors block collects structured error reports and enhances the vanilla fata
 ## What This Block Gives You
 
 - You can record exceptions through one entry point instead of maintaining separate error lists in each module.
-- Error reports include owner mod GUID, error type, message, and stack trace for later diagnostics UI or log tooling.
+- Error reports include owner mod GUID, error type, message, stack trace, and optional planet/entity context for later diagnostics UI or log tooling.
 - Unity error / exception / assert logs are captured as reports.
 - `Errors.BuildDiagnosticText(...)` creates copyable diagnostics containing current game state, caller-provided planet/entity context, recent errors, text-hit candidate plugins, DSPCore author declarations, and a Harmony patch-map overview.
 - The vanilla fatal window gains Copy and Close buttons. Copy writes the enhanced diagnostic text to the clipboard, and Close closes the window.
@@ -23,7 +23,16 @@ catch (Exception ex)
 }
 ```
 
-You can also construct an `ErrorReport` directly and call `Errors.Report(report)`.
+If failing code already has a clear planet factory or entity ID, report the exception with context in the same call:
+
+```csharp
+Errors.ReportException(
+    "com.example.my-mod",
+    ex,
+    ErrorDiagnosticContext.ForEntity(factory, entityId, "copy parameter failed"));
+```
+
+You can also construct an `ErrorReport` directly and call `Errors.Report(report)`, or use the `Errors.Report(ownerModGuid, errorType, message, stackTrace, context)` parameter short entry.
 
 ## Capability: Build Or Copy Diagnostic Text
 
@@ -34,7 +43,7 @@ Errors.CopyDiagnosticText("current error text");
 
 The diagnostic text includes the current error text, current game state, recent error reports, text-hit candidate plugins, registered feature/module/patch declarations, and a Harmony patched-method owner overview. Candidate plugins are based only on GUID / name text hits and are not a root-cause verdict.
 
-If failing code already has a clear planet factory or entity ID, pass that context too:
+If you only want to attach context to the copied diagnostics, pass that context to the diagnostic text entry:
 
 ```csharp
 var context = ErrorDiagnosticContext.ForEntity(factory, entityId, "copy parameter failed");
@@ -42,14 +51,14 @@ string text = Errors.BuildDiagnosticText(ex.ToString(), context);
 Errors.CopyDiagnosticText(ex.ToString(), context);
 ```
 
-This writes `PlanetId`, `PlanetName`, `EntityId`, `ProtoId`, `ModelIndex`, and the factory entity cursor into the report. DSPCore records caller-provided facts only; it does not decide that those objects caused the root problem.
+This writes `PlanetId`, `PlanetName`, `EntityId`, `ProtoId`, `ModelIndex`, and the factory entity cursor into this copied diagnostic text. DSPCore records caller-provided facts only; it does not decide that those objects caused the root problem.
 
 ## What DSPCore Does After The Call
 
-- `Report(...)` appends the report to the in-memory list.
-- `ReportException(...)` creates an `ErrorReport` from exception type, message, and stack trace, then appends it.
+- `Report(...)` appends the report to the in-memory list; the parameter short entry creates an `ErrorReport` first.
+- `ReportException(...)` creates an `ErrorReport` from exception type, message, stack trace, and optional context, then appends it.
 - `GetReports()` returns the current report snapshot.
-- `BuildDiagnosticText(...)` returns diagnostic text. Passing `ErrorDiagnosticContext` appends explicit planet/entity context. `CopyDiagnosticText(...)` writes the same text to the system clipboard and returns it.
+- `BuildDiagnosticText(...)` returns diagnostic text. Recent error reports include their stored context; passing `ErrorDiagnosticContext` also appends explicit planet/entity context for this copied snapshot. `CopyDiagnosticText(...)` writes the same text to the system clipboard and returns it.
 - When Unity receives error / exception / assert logs on the log thread, DSPCore records them under `UnityLog`.
 - When `UIFatalErrorTip` shows an error or assertion failed message, DSPCore records a `DSPCore.FatalWindow` report and ensures Copy / Close buttons exist. Copy uses `BuildDiagnosticText(...)` to generate enhanced text.
 

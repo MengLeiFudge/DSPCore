@@ -191,9 +191,44 @@ internal static class ErrorDiagnosticText
             builder.Append(report.ErrorType);
             builder.Append(" | ");
             builder.AppendLine(FirstLine(report.Message));
+            AppendReportContext(builder, report.Context);
         }
 
         builder.AppendLine();
+    }
+
+    private static void AppendReportContext(StringBuilder builder, ErrorDiagnosticContext context)
+    {
+        if (context == null)
+        {
+            return;
+        }
+
+        var values = new List<string>();
+        AddContextValue(values, "Note", context.Note);
+        AddContextValue(values, "PlanetId", context.PlanetId);
+        AddContextValue(values, "PlanetName", context.PlanetName);
+        AddContextValue(values, "EntityId", context.EntityId);
+        AddContextValue(values, "ProtoId", context.ProtoId);
+        AddContextValue(values, "ModelIndex", context.ModelIndex);
+        AddContextValue(values, "FactoryEntityCursor", context.FactoryEntityCursor);
+        if (values.Count == 0)
+        {
+            return;
+        }
+
+        builder.Append("  context: ");
+        builder.AppendLine(string.Join(" | ", values));
+    }
+
+    private static void AddContextValue(List<string> values, string name, object value)
+    {
+        if (value == null)
+        {
+            return;
+        }
+
+        values.Add(name + "=" + value);
     }
 
     private static void AppendDeclarations(StringBuilder builder)
