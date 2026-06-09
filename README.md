@@ -37,7 +37,7 @@ P0/P1 是当前实现目标。
 
 - 功能生命周期：声明能力块、依赖、优先级和初始化，并可通过 `Lifecycle` 注册 DSPCore 启动、更新、销毁和常见存档链路回调。
 - 数据阶段：`Data`、`DataUpdates` 和 `DataFinalFixes`。
-- 原型相关能力：DataPhases 提供三阶段；ProtoAccess 通过 `ProtoPhaseContext.FindItem(...)` / `FindRecipe(...)` 和 `data.Access` 承接第二/第三阶段读取和修改他人注册数据；Items、Recipes、Techs、Tutorials 分别负责对应 proto 注册；ProtoRegistration 保留低层聚合和兼容入口。
+- 原型相关能力：DataPhases 提供三阶段；ProtoAccess 通过 `ProtoPhaseContext.FindItem(...)` / `FindRecipe(...)` 和 `data.Access` 承接第二/第三阶段读取和修改他人注册数据；Items、Recipes、Techs、Tutorials 分别负责对应 proto 注册；`ItemProto` / `RecipeProto` 可用对象短入口设置 `GridIndex`、绑定图标并注册；ProtoRegistration 保留低层聚合和兼容入口。
 - 建造栏位置：将 `ItemProto` 或物品 ID 绑定到 tab/row/index 槽位；第 1 行写入原版建造栏，第 2 行及以后使用 DSPCore 扩展按钮，并保留 BuildBarTool 兼容入口。其他作者能力，例如物品注册，首选在拿到 `ItemProto` 后调用 `ItemProto.SetBuildBar(...)`；BuildBar 不承担 Proto 创建职责。
 - 资源、图标和本地化：通过 `ModResources` 登记资源根和翻译条目；同一模组可用 `ModResources.Pack(...)` 复用 owner、资源根和 assembly；通过 `Icons.FromResources(...)`、`Icons.FromFile(...)`、`Icons.FromEmbedded(...)`、`Icons.FromAssetBundle(...)` 或 `Icons.BindToProto(...)` 注册图标。
 - 分页：作者可以声明自定义页面并取得 `TabSlot`，再用 `TabSlot` 生成物品/配方 `GridIndex`。选择器 surface 属于 DSPCore 系统实现。
@@ -98,12 +98,17 @@ using DSPCore;
 
 ProtoRegistration.Data("com.example.my-mod", data =>
 {
-    data.RegisterItem(itemProto, "Declare base item");
+    itemProto
+        .SetGridIndex(tab: 3, row: 1, index: 5)
+        .RegisterItem("com.example.my-mod", purpose: "Declare base item");
 });
 
 ProtoRegistration.DataUpdates("com.example.my-mod", data =>
 {
-    data.RegisterRecipe(recipeProto, "Attach recipe after item declarations");
+    recipeProto
+        .SetGridIndex(tab: 3, row: 1, index: 6)
+        .RegisterRecipe("com.example.my-mod", CoreDataPhase.DataUpdates, "Attach recipe after item declarations");
+
     ItemProto baseItem = data.FindItem(1001);
     if (baseItem != null)
         baseItem.GridIndex = GridIndexes.From(tab: 3, row: 1, index: 5);
@@ -227,6 +232,10 @@ BuildBarTool.BuildBarTool.SetBuildBar(3, 4, 9554, true);
 - `DSPCore/Authoring/Icons/Examples/IconSetRegistration.md`
 - `DSPCore/Authoring/Resources/Examples/ResourceRegistrationExample.cs`
 - `DSPCore/Authoring/Resources/Examples/ResourceRegistration.md`
+- `DSPCore/Authoring/Items/Examples/ItemAuthoringChainExample.cs`
+- `DSPCore/Authoring/Items/Examples/ItemAuthoringChain.md`
+- `DSPCore/Authoring/Recipes/Examples/RecipeAuthoringChainExample.cs`
+- `DSPCore/Authoring/Recipes/Examples/RecipeAuthoringChain.md`
 - `DSPCore/Authoring/Tabs/Examples/TabRegistrationExample.cs`
 - `DSPCore/Authoring/Tabs/Examples/TabRegistration.md`
 - `DSPCore/Systems/PickerSurfaces/Examples/PickerRequestExample.cs`

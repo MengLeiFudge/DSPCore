@@ -37,7 +37,7 @@ P0/P1 blocks are the current implementation target.
 
 - Feature lifecycle: declare capability blocks, dependencies, priority, and initialization, and use `Lifecycle` to register DSPCore started, update, destroyed, and common save-chain callbacks.
 - Data phases: `Data`, `DataUpdates`, and `DataFinalFixes`.
-- Proto capabilities: DataPhases owns the three phases; ProtoAccess provides second/third phase lookup and mutation of registered data through `ProtoPhaseContext.FindItem(...)` / `FindRecipe(...)` and `data.Access`; Items, Recipes, Techs, and Tutorials own typed proto registration; ProtoRegistration remains the low-level aggregate and compatibility entry.
+- Proto capabilities: DataPhases owns the three phases; ProtoAccess provides second/third phase lookup and mutation of registered data through `ProtoPhaseContext.FindItem(...)` / `FindRecipe(...)` and `data.Access`; Items, Recipes, Techs, and Tutorials own typed proto registration; `ItemProto` / `RecipeProto` can use object-centric short entries to set `GridIndex`, bind icons, and register; ProtoRegistration remains the low-level aggregate and compatibility entry.
 - Build bar placement: bind an `ItemProto` or item id to a tab/row/index slot; row 1 writes to the vanilla build bar, row 2+ uses DSPCore extended buttons, and BuildBarTool compatibility entries remain available. Other authoring capabilities, such as item registration, should prefer `ItemProto.SetBuildBar(...)` after they have the item proto; BuildBar does not own proto creation.
 - Resources, icons, and localization: register resource roots and translation entries through `ModResources`; one mod can use `ModResources.Pack(...)` to reuse owner, root path, and assembly; register icons through `Icons.FromResources(...)`, `Icons.FromFile(...)`, `Icons.FromEmbedded(...)`, `Icons.FromAssetBundle(...)`, or `Icons.BindToProto(...)`.
 - Tabs: authors can declare custom pages, receive a `TabSlot`, and use that slot to generate item/recipe `GridIndex` values. Picker surfaces are DSPCore system implementation.
@@ -98,12 +98,17 @@ using DSPCore;
 
 ProtoRegistration.Data("com.example.my-mod", data =>
 {
-    data.RegisterItem(itemProto, "Declare base item");
+    itemProto
+        .SetGridIndex(tab: 3, row: 1, index: 5)
+        .RegisterItem("com.example.my-mod", purpose: "Declare base item");
 });
 
 ProtoRegistration.DataUpdates("com.example.my-mod", data =>
 {
-    data.RegisterRecipe(recipeProto, "Attach recipe after item declarations");
+    recipeProto
+        .SetGridIndex(tab: 3, row: 1, index: 6)
+        .RegisterRecipe("com.example.my-mod", CoreDataPhase.DataUpdates, "Attach recipe after item declarations");
+
     ItemProto baseItem = data.FindItem(1001);
     if (baseItem != null)
         baseItem.GridIndex = GridIndexes.From(tab: 3, row: 1, index: 5);
@@ -226,6 +231,10 @@ The old call is accepted, but it is marked obsolete. New mods should prefer `Ite
 - `DSPCore/Authoring/Icons/Examples/IconSetRegistration.md`
 - `DSPCore/Authoring/Resources/Examples/ResourceRegistrationExample.cs`
 - `DSPCore/Authoring/Resources/Examples/ResourceRegistration.md`
+- `DSPCore/Authoring/Items/Examples/ItemAuthoringChainExample.cs`
+- `DSPCore/Authoring/Items/Examples/ItemAuthoringChain.md`
+- `DSPCore/Authoring/Recipes/Examples/RecipeAuthoringChainExample.cs`
+- `DSPCore/Authoring/Recipes/Examples/RecipeAuthoringChain.md`
 - `DSPCore/Authoring/Tabs/Examples/TabRegistrationExample.cs`
 - `DSPCore/Authoring/Tabs/Examples/TabRegistration.md`
 - `DSPCore/Systems/PickerSurfaces/Examples/PickerRequestExample.cs`
