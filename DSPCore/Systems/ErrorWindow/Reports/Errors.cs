@@ -47,12 +47,32 @@ public static class Errors
     }
 
     /// <summary>
+    /// 生成带游戏对象上下文的诊断文本。
+    /// Builds diagnostic text with game-object context.
+    /// </summary>
+    public static string BuildDiagnosticText(string? focalText, ErrorDiagnosticContext? context, int maxReports = 20, int maxPatchedMethods = 80)
+    {
+        return DspCore.Errors.BuildDiagnosticText(focalText, context, maxReports, maxPatchedMethods);
+    }
+
+    /// <summary>
     /// 生成诊断文本并复制到系统剪贴板。
     /// Builds diagnostic text and copies it to the system clipboard.
     /// </summary>
     public static string CopyDiagnosticText(string? focalText = null, int maxReports = 20, int maxPatchedMethods = 80)
     {
         string text = BuildDiagnosticText(focalText, maxReports, maxPatchedMethods);
+        GUIUtility.systemCopyBuffer = text;
+        return text;
+    }
+
+    /// <summary>
+    /// 生成带游戏对象上下文的诊断文本并复制到系统剪贴板。
+    /// Builds diagnostic text with game-object context and copies it to the system clipboard.
+    /// </summary>
+    public static string CopyDiagnosticText(string? focalText, ErrorDiagnosticContext? context, int maxReports = 20, int maxPatchedMethods = 80)
+    {
+        string text = BuildDiagnosticText(focalText, context, maxReports, maxPatchedMethods);
         GUIUtility.systemCopyBuffer = text;
         return text;
     }

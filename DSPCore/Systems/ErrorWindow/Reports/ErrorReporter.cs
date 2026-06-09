@@ -57,4 +57,18 @@ public sealed class ErrorReporter
     {
         return ErrorDiagnosticText.Build(focalText ?? string.Empty, maxReports, maxPatchedMethods);
     }
+
+    /// <summary>
+    /// 生成带游戏对象上下文的诊断文本。
+    /// Builds diagnostic text with game-object context.
+    /// </summary>
+    /// <param name="focalText">可选当前错误文本。Optional current error text.</param>
+    /// <param name="context">可选游戏对象上下文。Optional game-object context.</param>
+    /// <param name="maxReports">最多包含的最近报告数量。Maximum recent reports to include.</param>
+    /// <param name="maxPatchedMethods">最多包含的 Harmony patched method 数量。Maximum Harmony patched methods to include.</param>
+    /// <returns>可复制的诊断文本。Copyable diagnostic text.</returns>
+    public string BuildDiagnosticText(string? focalText, ErrorDiagnosticContext? context, int maxReports = 20, int maxPatchedMethods = 80)
+    {
+        return ErrorDiagnosticText.Build(focalText ?? string.Empty, maxReports, maxPatchedMethods, context);
+    }
 }

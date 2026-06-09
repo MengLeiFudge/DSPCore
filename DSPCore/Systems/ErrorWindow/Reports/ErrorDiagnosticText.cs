@@ -11,7 +11,7 @@ namespace DSPCore;
 
 internal static class ErrorDiagnosticText
 {
-    public static string Build(string focalText, int maxReports, int maxPatchedMethods)
+    public static string Build(string focalText, int maxReports, int maxPatchedMethods, ErrorDiagnosticContext context = null)
     {
         maxReports = Math.Max(1, maxReports);
         maxPatchedMethods = Math.Max(0, maxPatchedMethods);
@@ -31,11 +31,85 @@ internal static class ErrorDiagnosticText
         builder.AppendLine();
 
         AppendFocalText(builder, focalText);
+        AppendGameContext(builder, context);
         AppendCandidatePlugins(builder, focalText, reports);
         AppendReports(builder, reports);
         AppendDeclarations(builder);
         AppendHarmonyPatchMap(builder, maxPatchedMethods);
         return builder.ToString();
+    }
+
+    private static void AppendGameContext(StringBuilder builder, ErrorDiagnosticContext context)
+    {
+        builder.AppendLine("== Game Context ==");
+        try
+        {
+            builder.AppendLine("- GameMain.isRunning: " + GameMain.isRunning);
+            builder.AppendLine("- GameMain.isPaused: " + GameMain.isPaused);
+            builder.AppendLine("- Loaded factories: " + (GameMain.data?.factoryCount.ToString() ?? "<no game data>"));
+            var localPlanet = GameMain.localPlanet;
+            if (localPlanet == null)
+            {
+                builder.AppendLine("- Local planet: none");
+            }
+            else
+            {
+                builder.Append("- Local planet: ");
+                builder.Append(localPlanet.id.ToString());
+                AppendOptionalName(builder, localPlanet);
+                builder.Append(" | factory loaded: ");
+                builder.AppendLine((localPlanet.factory != null).ToString());
+            }
+        }
+        catch (Exception ex)
+        {
+            builder.AppendLine("- unavailable: " + ex.GetType().Name + ": " + ex.Message);
+        }
+
+        if (context != null)
+        {
+            builder.AppendLine("Provided context:");
+            AppendContextValue(builder, "Note", context.Note);
+            AppendContextValue(builder, "PlanetId", context.PlanetId);
+            AppendContextValue(builder, "PlanetName", context.PlanetName);
+            AppendContextValue(builder, "EntityId", context.EntityId);
+            AppendContextValue(builder, "ProtoId", context.ProtoId);
+            AppendContextValue(builder, "ModelIndex", context.ModelIndex);
+            AppendContextValue(builder, "FactoryEntityCursor", context.FactoryEntityCursor);
+        }
+
+        builder.AppendLine();
+    }
+
+    private static void AppendOptionalName(StringBuilder builder, object source)
+    {
+        var name = ReadStringMember(source, "displayName") ?? ReadStringMember(source, "name");
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            builder.Append(" | ");
+            builder.Append(name);
+        }
+    }
+
+    private static void AppendContextValue(StringBuilder builder, string name, object value)
+    {
+        if (value == null)
+        {
+            return;
+        }
+
+        builder.Append("- ");
+        builder.Append(name);
+        builder.Append(": ");
+        builder.AppendLine(value.ToString());
+    }
+
+    private static string ReadStringMember(object source, string name)
+    {
+        const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        var type = source.GetType();
+        return type.GetField(name, flags)?.GetValue(source)?.ToString() ??
+            type.GetProperty(name, flags)?.GetValue(source, null)?.ToString();
     }
 
     private static void AppendFocalText(StringBuilder builder, string focalText)
