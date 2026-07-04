@@ -172,6 +172,11 @@ internal static class EntityLifecycleRuntime
 
     private static void ApplyPending(PlanetFactory factory)
     {
+        if (factory?.planet == null)
+        {
+            return;
+        }
+
         var planetId = factory.planet.id;
         if (!PendingByPlanet.TryGetValue(planetId, out var pending) || pending.Count == 0)
         {

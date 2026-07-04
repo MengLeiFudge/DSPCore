@@ -82,12 +82,30 @@ public static class Protos
     }
 
     /// <summary>
+    /// 注册一个带稳定身份的物品原型。
+    /// Registers an item proto with a stable identity.
+    /// </summary>
+    public static void RegisterItem(object proto, string ownerModGuid, ProtoStableId stableId, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
+    {
+        ProtoRegistration.RegisterItem(proto, ownerModGuid, stableId, phase, purpose);
+    }
+
+    /// <summary>
     /// 注册一个配方原型。
     /// Registers a recipe proto.
     /// </summary>
     public static void RegisterRecipe(object proto, string ownerModGuid, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
     {
         ProtoRegistration.RegisterRecipe(proto, ownerModGuid, phase, purpose);
+    }
+
+    /// <summary>
+    /// 注册一个带稳定身份的配方原型。
+    /// Registers a recipe proto with a stable identity.
+    /// </summary>
+    public static void RegisterRecipe(object proto, string ownerModGuid, ProtoStableId stableId, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
+    {
+        ProtoRegistration.RegisterRecipe(proto, ownerModGuid, stableId, phase, purpose);
     }
 
     /// <summary>
@@ -100,12 +118,30 @@ public static class Protos
     }
 
     /// <summary>
+    /// 注册一个带稳定身份的科技原型。
+    /// Registers a tech proto with a stable identity.
+    /// </summary>
+    public static void RegisterTech(object proto, string ownerModGuid, ProtoStableId stableId, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
+    {
+        ProtoRegistration.RegisterTech(proto, ownerModGuid, stableId, phase, purpose);
+    }
+
+    /// <summary>
     /// 注册一个指引或教程原型。
     /// Registers a guide or tutorial proto.
     /// </summary>
     public static void RegisterTutorial(object proto, string ownerModGuid, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
     {
         ProtoRegistration.RegisterTutorial(proto, ownerModGuid, phase, purpose);
+    }
+
+    /// <summary>
+    /// 注册一个带稳定身份的指引或教程原型。
+    /// Registers a guide or tutorial proto with a stable identity.
+    /// </summary>
+    public static void RegisterTutorial(object proto, string ownerModGuid, ProtoStableId stableId, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
+    {
+        ProtoRegistration.RegisterTutorial(proto, ownerModGuid, stableId, phase, purpose);
     }
 
     /// <summary>

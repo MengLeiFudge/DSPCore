@@ -38,7 +38,7 @@ public static class LDBTool
     /// <param name="category">建造分类。Build category.</param>
     /// <param name="index">按钮索引。Button index.</param>
     /// <param name="itemId">物品 ID。Item id.</param>
-    [Obsolete("Use ItemProto.SetBuildBar(tab, row, index) or DSPCore.BuildBar.BindQuickBar(tab, row, index, itemId) instead.")]
+    [Obsolete("Use ItemProto.SetBuildBar(category, row, index) or DSPCore.BuildBar.BindQuickBar(category, row, index, itemId) instead.")]
     public static void SetBuildBar(int category, int index, int itemId)
     {
         DSPCore.LegacyBuildBarCompatibility.SetBuildBar(category, index, itemId);

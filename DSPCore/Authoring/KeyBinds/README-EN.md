@@ -7,6 +7,7 @@ The KeyBinds block lets a mod declare a default key binding, trigger timing, and
 - You do not need every mod to write its own `Input.GetKeyDown` / `GetKey` / `GetKeyUp` polling.
 - Default key parsing and simple `Ctrl` / `Alt` / `Shift` modifiers are centralized in DSPCore.
 - Key bindings with `CanOverride=true` are automatically added to the DSPCore unified settings window, where players can click Capture and press a key, or edit the key text directly.
+- Authors can set `displayPageId` so a key appears with the owning mod's settings page. Players can use DSPCore's `Key Bind Display` option to show keys only on mod settings pages, only on the unified key-bind page, or in both places.
 - When bindings in the same `ConflictGroup` resolve to the same key text, the unified settings window shows the conflicting bindings.
 - Callback exceptions are reported through the ErrorWindow system instead of being silently swallowed or breaking the whole update flow.
 - One descriptor model covers press, hold, and release triggers.
@@ -21,15 +22,25 @@ KeyBinds.Register(
     defaultKey: "Ctrl+K",
     callback: TogglePanel,
     action: CoreKeyAction.Press,
-    conflictGroup: 100);
+    conflictGroup: 100,
+    displayPageId: "com.example.settings");
 ```
 
-`DefaultKey` uses Unity `KeyCode` names and may include simple `Ctrl`, `Alt`, or `Shift` modifiers. `Action` can be `Press`, `Hold`, or `Release`. `ConflictGroup` value 0 opts out of conflict checks; non-zero groups are checked in the unified settings window after key text normalization. Use `KeyBinds.Register(new KeyBindDescriptor(...))` when code needs to construct or cache the full declaration first.
+`DefaultKey` uses Unity `KeyCode` names and may include simple `Ctrl`, `Alt`, or `Shift` modifiers. `Action` can be `Press`, `Hold`, or `Release`. `ConflictGroup` value 0 opts out of conflict checks; non-zero groups are checked in the unified settings window after key text normalization. When `displayPageId` is empty, the key only has the unified key-bind page as a display location. To show it with a mod settings page, register the same page id with `Options.Page(...)` first. Use `KeyBinds.Register(new KeyBindDescriptor(...))` when code needs to construct or cache the full declaration first.
+
+## Capability: Player-Controlled Key Display Placement
+
+DSPCore registers its own settings page and a `Key Bind Display` enum option. The default is `Both`:
+
+- `ModSettings`: show only on the author-declared mod settings page. Keys without `displayPageId` still fall back to the unified key-bind page so they do not disappear.
+- `KeyBindings`: show only on DSPCore's unified `Key Bindings` page.
+- `Both`: show on both the mod settings page and the unified key-bind page. Both rows read and write the same underlying config entry.
 
 ## What DSPCore Does After The Call
 
 - Registration stores the descriptor; if the same `Id` is registered more than once, the later registration replaces the earlier one.
 - When `CanOverride=true`, DSPCore registers the key binding as an option row in the unified settings window.
+- When the unified settings window opens, DSPCore uses the player's `Key Bind Display` strategy to decide which pages show key rows. Multiple rows do not duplicate the underlying config entry.
 - Each update, DSPCore prefers the player-configured key text; empty or invalid config falls back to `DefaultKey`.
 - When the unified settings window opens, DSPCore scans valid key texts in the same `ConflictGroup`; if the current binding matches another declaration, its option row shows the conflict target.
 - If required modifiers are not pressed, the callback does not trigger.
@@ -40,6 +51,7 @@ KeyBinds.Register(
 
 - Capture records the next pressed non-modifier key and includes currently held `Ctrl` / `Alt` / `Shift`; pressing only a modifier key does not finish capture.
 - `ConflictGroup` only reports same-key conflicts in the same group; it does not automatically rebind keys, disable callbacks, or choose mod priority.
+- The display placement strategy applies only to DSPCore's own unified settings window. The vanilla key-binding page only receives a DSPCore Key Bindings entry button; DSPCore does not inject key rows into the vanilla `BuiltinKey` / `overrideKeys` data model.
 - Keep callbacks small. Expensive scans or complex state machines should be handled by your mod's later update flow.
 - Invalid player config logs one warning and falls back to the default key; if the default key is invalid too, the binding is skipped.
 

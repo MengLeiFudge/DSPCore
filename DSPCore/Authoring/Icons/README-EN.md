@@ -25,7 +25,7 @@ pack.IconFromAssetBundle("example-bundle-icon", "example-icons", "example-machin
 pack.ItemIcon("example-machine", "example-machine.png", itemId: 9554);
 ```
 
-The pack resolves relative paths under `RootPath`, so `"example-machine.png"` becomes `"assets/icons/example-machine.png"`. `ItemIcon` / `RecipeIcon` typed helpers automatically select the target `ProtoKind`. Embedded resource names are not combined with the root because they must be assembly manifest resource names.
+The pack resolves relative paths under `RootPath` through the shared Resources path rules, so `"example-machine.png"` becomes `"assets/icons/example-machine.png"`. `ItemIcon` / `RecipeIcon` typed helpers automatically select the target `ProtoKind`. Embedded resource names are not combined with the root because they must be assembly manifest resource names.
 
 ## Capability: Register Independent Shared Icons
 
@@ -77,6 +77,7 @@ Icons.BindToProto(
 - Registration only stores the icon descriptor; if the same `Id` is registered more than once, the later registration replaces the earlier one.
 - `ModResourcePack` only fills owner and relative paths; the final registration is still a normal `IconDescriptor`.
 - Icon resolution recognizes internal `embedded://` and `assetbundle://` paths. Normal paths first try `Resources.Load<Sprite>`, then read a PNG file path.
+- Local PNG and AssetBundle paths resolve through `DspCore.Resources`: runtime tries the original path first, then checks resource roots registered by the icon owner.
 - `FromEmbedded` uses an internal `embedded://` path convention. Runtime reads the manifest resource stream from an assembly already loaded into the current AppDomain.
 - `FromAssetBundle` uses an internal `assetbundle://` path convention. Runtime caches the AssetBundle, loads a `Sprite` by asset name, and falls back to `Texture2D`.
 - If the primary icon fails and `FallbackIconId` is set, DSPCore recursively resolves the fallback icon.
@@ -87,7 +88,7 @@ Icons.BindToProto(
 
 - It does not create protos; target items, recipes, techs, and other protos must already exist.
 - It does not own localization text; use Resources for text.
-- It does not make external PNG paths stable across machines; published mods should use deterministic resource paths.
+- It does not make external PNG paths stable across machines unless a resource root is registered. Published mods should use deterministic paths or register a root through `ModResources.Root(...)` / `ModResources.Pack(...)`.
 - Typed bindings for embedded resources and AssetBundles are not expanded separately yet. Use `BindEmbeddedIconToProto(...)` or `BindAssetBundleIconToProto(...)` for complex sources.
 - AssetBundle unloading is not owned here; mods that need finer lifecycle control should manage separate bundles themselves.
 - It does not actively load resource DLLs. If you use a resource DLL, your mod or loader must load that assembly into the current AppDomain first.

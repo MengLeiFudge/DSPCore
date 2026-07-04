@@ -46,7 +46,7 @@ internal static class IconRuntime
             return cached;
         }
 
-        var sprite = LoadSprite(icon.AssetPath);
+        var sprite = LoadSprite(icon);
         if (sprite == null && icon.FallbackIconId != null && DspCore.Icons.TryGet(icon.FallbackIconId, out var fallback))
         {
             sprite = ResolveSprite(fallback);
@@ -60,8 +60,9 @@ internal static class IconRuntime
         return sprite;
     }
 
-    private static Sprite? LoadSprite(string assetPath)
+    private static Sprite? LoadSprite(IconDescriptor icon)
     {
+        var assetPath = icon.AssetPath;
         if (string.IsNullOrWhiteSpace(assetPath))
         {
             return null;
@@ -74,7 +75,7 @@ internal static class IconRuntime
 
         if (IconAssetPaths.TryParseAssetBundle(assetPath, out var bundlePath, out var assetName))
         {
-            return LoadAssetBundleSprite(bundlePath, assetName);
+            return LoadAssetBundleSprite(icon.OwnerModGuid, bundlePath, assetName);
         }
 
         var sprite = Resources.Load<Sprite>(assetPath);
@@ -83,12 +84,12 @@ internal static class IconRuntime
             return sprite;
         }
 
-        if (!File.Exists(assetPath))
+        if (!DspCore.Resources.TryReadBytes(icon.OwnerModGuid, assetPath, out var data, out _))
         {
             return null;
         }
 
-        return LoadPngSprite(File.ReadAllBytes(assetPath));
+        return LoadPngSprite(data);
     }
 
     private static Sprite? LoadEmbeddedSprite(string assemblyName, string resourceName)
@@ -113,8 +114,13 @@ internal static class IconRuntime
         return LoadPngSprite(buffer.ToArray());
     }
 
-    private static Sprite? LoadAssetBundleSprite(string bundlePath, string assetName)
+    private static Sprite? LoadAssetBundleSprite(string ownerModGuid, string bundlePath, string assetName)
     {
+        if (!DspCore.Resources.TryResolveExistingFile(ownerModGuid, bundlePath, out bundlePath))
+        {
+            bundlePath = DspCore.Resources.ResolvePath(ownerModGuid, bundlePath);
+        }
+
         if (!AssetBundleCache.TryGetValue(bundlePath, out var bundle) || bundle == null)
         {
             if (!File.Exists(bundlePath))

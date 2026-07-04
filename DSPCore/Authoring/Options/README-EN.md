@@ -9,7 +9,8 @@ The Options module lets mods declare simple options that DSPCore binds to the Be
 - When display names, order, or reset buttons are needed, pass `OptionUi` to the same method name. Page contexts carry `PageId` automatically.
 - DSPCore binds options registered before startup, and also binds options registered after startup.
 - If the DSPCore runtime has not bound the config file yet, short entries return the descriptor default instead of an empty string.
-- The DSPCore unified settings window groups options by `OptionPageDescriptor` and `OptionDescriptor.PageId`.
+- The DSPCore unified settings window groups options by `OptionPageDescriptor` and `OptionDescriptor.PageId`, and includes DSPCore's own settings page.
+- Players can use DSPCore's `Key Bind Display` option to show rebindable keys on mod settings pages, on the unified key-bind page, or in both places. Multiple visible rows still write the same config entry.
 - Multiplayer or save compatibility checks can read `OptionVersionDescriptor` values.
 - When settings need to be copied, stored, or passed across systems, export a structured snapshot or text snapshot and import it back into currently registered options.
 
@@ -70,14 +71,16 @@ OptionImportReport report = Options.ImportText(text);
 
 ```csharp
 Options.OpenWindow();
+Options.OpenGlobalSavesWindow();
 ```
 
-The unified settings window displays all registered options. `Bool` uses a checkbox, `Enum` uses a dropdown, `IntRange` / `FloatRange` use sliders, `String`, `Int`, and `Float` use input fields, and key bindings use an input field plus a Capture button. Edits, captured keys, and Reset clicks write back to the DSPCore BepInEx config. Key binding rows report same-key conflicts inside the same `ConflictGroup`. The window must be opened after `UIRoot` is initialized, usually from a mod button, key bind, or custom UI callback.
+The unified settings window displays all registered options. `Bool` uses a checkbox, `Enum` uses a dropdown, `IntRange` / `FloatRange` use sliders, `String`, `Int`, and `Float` use input fields, and key bindings use an input field plus a Capture button. Edits, captured keys, and Reset clicks write back to the DSPCore BepInEx config. Key binding rows report same-key conflicts inside the same `ConflictGroup`, and the player's `Key Bind Display` strategy controls which pages show key rows. The window must be opened after `UIRoot` is initialized; players can open it from the Mod Settings button at the bottom of the vanilla option window or the DSPCore Key Bindings button at the end of the vanilla key-binding page, and author code can still call `Options.OpenWindow()` from a custom button, key bind, or UI callback. `OpenGlobalSavesWindow()` opens the read-only metadata page for cross-save global data; it does not provide editing or raw binary viewing.
 
 ## Boundaries
 
 - The underlying BepInEx values are still strings. Boolean, integer, floating-point, and enum read helpers exist.
-- The current window is DSPCore-owned and does not inject into the vanilla option page.
+- The vanilla option window and vanilla key-binding page only provide entry buttons. Option rows, key capture, Reset, and conflict hints remain inside the DSPCore-owned unified settings window.
+- `Key Bind Display` only affects DSPCore's own unified settings window. It does not mean DSPCore has injected key rows into the vanilla `BuiltinKey` / `overrideKeys` data model.
 - Invalid `Int` / `Float` / key binding input is reverted to the current config value; range sliders write back according to their minimum, maximum, and step values.
 - `Options.Page(...)` registers the page and returns a context. `Options.RegisterPage(...)` remains available for old calls that only want to register the page descriptor.
 - `OptionUi.Order` only changes in-window ordering inside the same page; it does not change config load order.

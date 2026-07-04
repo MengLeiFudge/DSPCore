@@ -221,8 +221,9 @@ public static class UiPageLayout {
             strong ? CardBorderColorStrong : CardBorderColor, strong);
     }
 
-    public static RectTransform CreateFooterCard(RectTransform parent, string objectName, float top) {
-        return CreateCard(parent, objectName, 0f, top, DesignWidth, FooterHeight, FooterFillColor, FooterBorderColor);
+    public static RectTransform CreateFooterCard(RectTransform parent, string objectName, float top,
+        float width = DesignWidth, float height = FooterHeight) {
+        return CreateCard(parent, objectName, 0f, top, width, height, FooterFillColor, FooterBorderColor);
     }
 
     /// <summary>

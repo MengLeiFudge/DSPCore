@@ -26,6 +26,6 @@ public static class ItemAuthoringChainExample
             .BindIcon(pack, "example-machine", "example-machine.png")
             .RegisterItem("com.example.my-mod", purpose: "Declare example machine");
 
-        itemProto.SetBuildBar(tab: 3, row: 2, index: 5);
+        itemProto.SetBuildBar(category: 3, row: 2, index: 5);
     }
 }

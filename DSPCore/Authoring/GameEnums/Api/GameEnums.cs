@@ -50,13 +50,50 @@ public static class GameEnums
     }
 
     /// <summary>
+    /// 注册一个自定义物品类型。
+    /// Registers a custom item type.
+    /// </summary>
+    /// <param name="id">物品类型 ID。Item type ID.</param>
+    /// <param name="ownerModGuid">所属模组 GUID。Owner mod GUID.</param>
+    /// <param name="displayName">显示名称。Display name.</param>
+    /// <param name="itemIds">归属此类型的物品 ID。Item IDs that belong to this type.</param>
+    public static void RegisterItemType(
+        string id,
+        string ownerModGuid,
+        string displayName,
+        IReadOnlyCollection<int>? itemIds = null)
+    {
+        RegisterItemType(new ItemTypeDescriptor(id, ownerModGuid, displayName, itemIds));
+    }
+
+    /// <summary>
+    /// 注册一个自定义物品类型。
+    /// Registers a custom item type.
+    /// </summary>
+    /// <param name="descriptor">物品类型描述。Item type descriptor.</param>
+    public static void RegisterItemType(ItemTypeDescriptor descriptor)
+    {
+        DspCore.GameEnums.Register(descriptor);
+    }
+
+    /// <summary>
     /// 获取所有自定义配方类型。
     /// Gets all custom recipe types.
     /// </summary>
     /// <returns>配方类型描述集合。Recipe type descriptors.</returns>
     public static IReadOnlyCollection<RecipeTypeDescriptor> GetRecipeTypes()
     {
-        return DspCore.GameEnums.GetAll();
+        return DspCore.GameEnums.GetRecipeTypes();
+    }
+
+    /// <summary>
+    /// 获取所有自定义物品类型。
+    /// Gets all custom item types.
+    /// </summary>
+    /// <returns>物品类型描述集合。Item type descriptors.</returns>
+    public static IReadOnlyCollection<ItemTypeDescriptor> GetItemTypes()
+    {
+        return DspCore.GameEnums.GetItemTypes();
     }
 
     /// <summary>
@@ -67,7 +104,18 @@ public static class GameEnums
     /// <returns>运行时 ID。Runtime ID.</returns>
     public static int GetOrAssignRecipeTypeRuntimeId(string id)
     {
-        return DspCore.GameEnums.GetOrAssignRuntimeId(id);
+        return DspCore.GameEnums.GetOrAssignRecipeTypeRuntimeId(id);
+    }
+
+    /// <summary>
+    /// 获取或分配物品类型运行时 ID。
+    /// Gets or assigns a runtime ID for an item type.
+    /// </summary>
+    /// <param name="id">物品类型 ID。Item type ID.</param>
+    /// <returns>运行时 ID。Runtime ID.</returns>
+    public static int GetOrAssignItemTypeRuntimeId(string id)
+    {
+        return DspCore.GameEnums.GetOrAssignItemTypeRuntimeId(id);
     }
 
     /// <summary>
@@ -104,5 +152,29 @@ public static class GameEnums
     public static bool IsCustomItemType(ItemProto item)
     {
         return item != null && (int)item.Type == CustomItemTypeValue;
+    }
+
+    /// <summary>
+    /// 尝试获取物品所属的自定义物品类型。
+    /// Tries to get the custom item type that owns an item.
+    /// </summary>
+    /// <param name="itemId">物品 ID。Item ID.</param>
+    /// <param name="descriptor">物品类型描述。Item type descriptor.</param>
+    /// <returns>找到声明时返回 true。Returns true when a declaration is found.</returns>
+    public static bool TryGetItemTypeForItem(int itemId, out ItemTypeDescriptor descriptor)
+    {
+        return ItemTypeRuntime.TryGetItemType(itemId, out descriptor);
+    }
+
+    /// <summary>
+    /// 尝试获取配方所属的自定义配方类型。
+    /// Tries to get the custom recipe type that owns a recipe.
+    /// </summary>
+    /// <param name="recipeId">配方 ID。Recipe ID.</param>
+    /// <param name="descriptor">配方类型描述。Recipe type descriptor.</param>
+    /// <returns>找到声明时返回 true。Returns true when a declaration is found.</returns>
+    public static bool TryGetRecipeTypeForRecipe(int recipeId, out RecipeTypeDescriptor descriptor)
+    {
+        return RecipeTypeRuntime.TryGetRecipeType(recipeId, out descriptor);
     }
 }

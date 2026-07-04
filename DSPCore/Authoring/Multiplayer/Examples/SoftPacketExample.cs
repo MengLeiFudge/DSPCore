@@ -8,7 +8,7 @@ namespace ExampleMod;
 // 用途：
 // - RegisterPacket / RegisterHostRelay / RegisterPlanetData 声明联机软边界。
 // - RegisterClientIntoOtherSave 声明客户端缺失联机存档数据时的初始化回调。
-// - 独立联机适配器通过 snapshot 或 TryGet... 读取声明，不直接依赖内部 registry。
+// - 独立联机适配器通过 snapshot 或 TryGet... 读取声明，再用 Dispatch... 消费数据。
 //
 // Usage:
 // - Register soft multiplayer declarations once during startup.
@@ -60,12 +60,25 @@ internal static class SoftPacketExample
 
         if (Multiplayer.TryGetPlanetDataRequest("com.example.planet-state", out var request))
         {
-            byte[] payload = request.ExportPlanetData(1);
+            string requestId = request.RequestId;
         }
 
         if (Multiplayer.TryGetClientSaveInitializer("com.example.my-mod", out var initializer))
         {
-            initializer.IntoOtherSave();
+            string ownerModGuid = initializer.OwnerModGuid;
         }
+    }
+
+    public static void AdapterConsume(byte[] payload)
+    {
+        Multiplayer.DispatchPacket("com.example.sync-mode", payload);
+        Multiplayer.DispatchHostRelay("com.example.sync-mode", payload);
+
+        if (Multiplayer.TryExportPlanetData("com.example.planet-state", planetId: 1, out var planetPayload))
+        {
+            Multiplayer.ImportPlanetData("com.example.planet-state", planetId: 1, planetPayload);
+        }
+
+        Multiplayer.ApplyClientIntoOtherSaveInitializers();
     }
 }

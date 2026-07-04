@@ -28,8 +28,9 @@ public static class ProtoPhasesExample
         {
             data.RegisterItem(
                     itemProto.SetGridIndex(tab: 3, row: 1, index: 5),
+                    ProtoStableId.Of("example-item", preferredId: itemProto.ID),
                     "Declare the base item")
-                .SetBuildBar(tab: 3, row: 1, index: 5);
+                .SetBuildBar(category: 3, row: 1, index: 5);
         });
 
         // 配方依赖物品 ID，因此放在 DataUpdates 更直观。
@@ -38,6 +39,7 @@ public static class ProtoPhasesExample
         {
             data.RegisterRecipe(
                 recipeProto.SetGridIndex(tab: 3, row: 1, index: 6),
+                ProtoStableId.Of("example-recipe", preferredId: recipeProto.ID),
                 "Attach recipe after item declarations");
         });
 

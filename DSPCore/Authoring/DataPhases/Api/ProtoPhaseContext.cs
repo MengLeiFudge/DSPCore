@@ -108,6 +108,25 @@ public sealed class ProtoPhaseContext
     }
 
     /// <summary>
+    /// 在当前阶段注册一个带稳定身份的物品原型。
+    /// Registers an item proto with a stable identity in the current phase.
+    /// </summary>
+    /// <param name="proto">物品原型。Item proto.</param>
+    /// <param name="stableId">稳定 Proto 身份。Stable proto identity.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    /// <returns>原物品原型，便于链式调用。The original item proto for chaining.</returns>
+    public ItemProto RegisterItem(ItemProto proto, ProtoStableId stableId, string? purpose = null)
+    {
+        if (proto == null)
+        {
+            throw new ArgumentNullException(nameof(proto));
+        }
+
+        registryFacade.RegisterItem(proto, OwnerModGuid, stableId, Phase, purpose);
+        return proto;
+    }
+
+    /// <summary>
     /// 在当前阶段注册一个物品原型对象。
     /// Registers an item proto object in the current phase.
     /// </summary>
@@ -133,6 +152,25 @@ public sealed class ProtoPhaseContext
         }
 
         RegisterRecipe((object)proto, purpose);
+        return proto;
+    }
+
+    /// <summary>
+    /// 在当前阶段注册一个带稳定身份的配方原型。
+    /// Registers a recipe proto with a stable identity in the current phase.
+    /// </summary>
+    /// <param name="proto">配方原型。Recipe proto.</param>
+    /// <param name="stableId">稳定 Proto 身份。Stable proto identity.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    /// <returns>原配方原型，便于链式调用。The original recipe proto for chaining.</returns>
+    public RecipeProto RegisterRecipe(RecipeProto proto, ProtoStableId stableId, string? purpose = null)
+    {
+        if (proto == null)
+        {
+            throw new ArgumentNullException(nameof(proto));
+        }
+
+        registryFacade.RegisterRecipe(proto, OwnerModGuid, stableId, Phase, purpose);
         return proto;
     }
 
@@ -166,6 +204,25 @@ public sealed class ProtoPhaseContext
     }
 
     /// <summary>
+    /// 在当前阶段注册一个带稳定身份的科技原型。
+    /// Registers a tech proto with a stable identity in the current phase.
+    /// </summary>
+    /// <param name="proto">科技原型。Tech proto.</param>
+    /// <param name="stableId">稳定 Proto 身份。Stable proto identity.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    /// <returns>原科技原型，便于链式调用。The original tech proto for chaining.</returns>
+    public TechProto RegisterTech(TechProto proto, ProtoStableId stableId, string? purpose = null)
+    {
+        if (proto == null)
+        {
+            throw new ArgumentNullException(nameof(proto));
+        }
+
+        registryFacade.RegisterTech(proto, OwnerModGuid, stableId, Phase, purpose);
+        return proto;
+    }
+
+    /// <summary>
     /// 在当前阶段注册一个科技原型对象。
     /// Registers a tech proto object in the current phase.
     /// </summary>
@@ -191,6 +248,25 @@ public sealed class ProtoPhaseContext
         }
 
         RegisterTutorial((object)proto, purpose);
+        return proto;
+    }
+
+    /// <summary>
+    /// 在当前阶段注册一个带稳定身份的指引或教程原型。
+    /// Registers a guide or tutorial proto with a stable identity in the current phase.
+    /// </summary>
+    /// <param name="proto">教程原型。Tutorial proto.</param>
+    /// <param name="stableId">稳定 Proto 身份。Stable proto identity.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    /// <returns>原教程原型，便于链式调用。The original tutorial proto for chaining.</returns>
+    public TutorialProto RegisterTutorial(TutorialProto proto, ProtoStableId stableId, string? purpose = null)
+    {
+        if (proto == null)
+        {
+            throw new ArgumentNullException(nameof(proto));
+        }
+
+        registryFacade.RegisterTutorial(proto, OwnerModGuid, stableId, Phase, purpose);
         return proto;
     }
 

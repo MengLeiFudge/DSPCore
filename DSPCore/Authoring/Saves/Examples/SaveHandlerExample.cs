@@ -19,6 +19,7 @@ namespace ExampleMod;
 public sealed class SaveHandlerExample : ICoreSaveHandler
 {
     private static readonly ExampleState State = Saves.Auto<ExampleState>("com.example.auto-mod");
+    private static readonly GlobalState Global = Saves.GlobalAuto<GlobalState>("com.example.auto-mod");
     private static int counter;
 
     public static void Register()
@@ -34,6 +35,15 @@ public sealed class SaveHandlerExample : ICoreSaveHandler
         // 复杂状态仍可以用完整 handler class。
         // Complex state can still use a full handler class.
         Saves.Register("com.example.my-mod", new SaveHandlerExample());
+
+        // Global 是跨存档状态，不会随某个游戏存档删除；在实际业务事件里修改它。
+        // Global is cross-save state and is not deleted with one game save; mutate it from real gameplay events.
+    }
+
+    public static void RecordProfileEvent()
+    {
+        Global.TotalRuns++;
+        Saves.SaveGlobal();
     }
 
     private sealed class ExampleState
@@ -43,6 +53,12 @@ public sealed class SaveHandlerExample : ICoreSaveHandler
 
         [CoreSaveField("enabled")]
         public bool Enabled = true;
+    }
+
+    private sealed class GlobalState
+    {
+        [CoreSaveField("total_runs")]
+        public int TotalRuns { get; set; }
     }
 
     public void Export(BinaryWriter writer)

@@ -75,7 +75,8 @@ internal static class OptionRegistrationExample
 
     public static void OpenFromButtonOrKey()
     {
-        // Call OpenWindow from a button, key bind, or custom UI callback after UIRoot exists.
+        // DSPCore also adds a Mod Settings button to the vanilla option window.
+        // Call OpenWindow yourself only from a button, key bind, or custom UI callback after UIRoot exists.
         // Calling it during early plugin startup logs a warning and does not create a window.
         Options.OpenWindow();
     }

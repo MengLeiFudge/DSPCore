@@ -35,7 +35,9 @@ public sealed class ComponentRegistry
     /// <returns>找到时返回 true。Returns true when found.</returns>
     public bool TryGet(string componentId, out ComponentDescriptor descriptor)
     {
-        return descriptors.TryGetValue(componentId, out descriptor);
+        var found = descriptors.TryGetValue(componentId, out var value);
+        descriptor = value!;
+        return found;
     }
 
     /// <summary>

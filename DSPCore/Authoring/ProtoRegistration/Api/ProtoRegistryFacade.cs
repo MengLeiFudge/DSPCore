@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DSPCore;
 
@@ -88,7 +89,43 @@ public sealed class ProtoRegistryFacade
     /// <param name="purpose">注册目的说明。Registration purpose.</param>
     public void Register(Type protoType, object proto, string ownerModGuid, CoreDataPhase phase = CoreDataPhase.Data, ProtoKind kind = ProtoKind.Unknown, string? purpose = null)
     {
-        registrations.Add(new ProtoRegistrationEntry(protoType, proto, ownerModGuid, phase, kind, purpose));
+        Register(protoType, proto, ownerModGuid, phase, kind, purpose, null);
+    }
+
+    /// <summary>
+    /// 注册一个带稳定身份的原型对象。
+    /// Registers a proto object with a stable identity.
+    /// </summary>
+    /// <param name="protoType">Proto 类型。Proto type.</param>
+    /// <param name="proto">Proto 对象。Proto object.</param>
+    /// <param name="ownerModGuid">声明方模组 GUID。Declaring mod GUID.</param>
+    /// <param name="phase">数据阶段。Data phase.</param>
+    /// <param name="kind">原型功能类型。Proto feature kind.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    /// <param name="stableId">稳定 Proto 身份。Stable proto identity.</param>
+    public void Register(
+        Type protoType,
+        object proto,
+        string ownerModGuid,
+        CoreDataPhase phase,
+        ProtoKind kind,
+        string? purpose,
+        ProtoStableId? stableId)
+    {
+        if (stableId != null && proto is Proto typedProto)
+        {
+            typedProto.ID = StableProtoIdRuntime.ResolveForRegistration(
+                kind,
+                ownerModGuid,
+                stableId,
+                typedProto.ID,
+                registrations
+                    .Where(item => item.Kind == kind && item.Proto is Proto)
+                    .Select(item => ((Proto)item.Proto).ID)
+                    .ToArray());
+        }
+
+        registrations.Add(new ProtoRegistrationEntry(protoType, proto, ownerModGuid, phase, kind, purpose, stableId));
     }
 
     /// <summary>
@@ -105,6 +142,20 @@ public sealed class ProtoRegistryFacade
     }
 
     /// <summary>
+    /// 注册一个带稳定身份的物品原型。
+    /// Registers an item proto with a stable identity.
+    /// </summary>
+    /// <param name="proto">物品 Proto 对象。Item proto object.</param>
+    /// <param name="ownerModGuid">声明方模组 GUID。Declaring mod GUID.</param>
+    /// <param name="stableId">稳定 Proto 身份。Stable proto identity.</param>
+    /// <param name="phase">数据阶段。Data phase.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    public void RegisterItem(object proto, string ownerModGuid, ProtoStableId stableId, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
+    {
+        Register(proto.GetType(), proto, ownerModGuid, phase, ProtoKind.Item, purpose, stableId);
+    }
+
+    /// <summary>
     /// 注册一个配方原型。
     /// Registers a recipe proto.
     /// </summary>
@@ -115,6 +166,20 @@ public sealed class ProtoRegistryFacade
     public void RegisterRecipe(object proto, string ownerModGuid, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
     {
         Register(proto.GetType(), proto, ownerModGuid, phase, ProtoKind.Recipe, purpose);
+    }
+
+    /// <summary>
+    /// 注册一个带稳定身份的配方原型。
+    /// Registers a recipe proto with a stable identity.
+    /// </summary>
+    /// <param name="proto">配方 Proto 对象。Recipe proto object.</param>
+    /// <param name="ownerModGuid">声明方模组 GUID。Declaring mod GUID.</param>
+    /// <param name="stableId">稳定 Proto 身份。Stable proto identity.</param>
+    /// <param name="phase">数据阶段。Data phase.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    public void RegisterRecipe(object proto, string ownerModGuid, ProtoStableId stableId, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
+    {
+        Register(proto.GetType(), proto, ownerModGuid, phase, ProtoKind.Recipe, purpose, stableId);
     }
 
     /// <summary>
@@ -131,6 +196,20 @@ public sealed class ProtoRegistryFacade
     }
 
     /// <summary>
+    /// 注册一个带稳定身份的科技原型。
+    /// Registers a tech proto with a stable identity.
+    /// </summary>
+    /// <param name="proto">科技 Proto 对象。Tech proto object.</param>
+    /// <param name="ownerModGuid">声明方模组 GUID。Declaring mod GUID.</param>
+    /// <param name="stableId">稳定 Proto 身份。Stable proto identity.</param>
+    /// <param name="phase">数据阶段。Data phase.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    public void RegisterTech(object proto, string ownerModGuid, ProtoStableId stableId, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
+    {
+        Register(proto.GetType(), proto, ownerModGuid, phase, ProtoKind.Tech, purpose, stableId);
+    }
+
+    /// <summary>
     /// 注册一个指引或教程原型。
     /// Registers a guide or tutorial proto.
     /// </summary>
@@ -141,6 +220,20 @@ public sealed class ProtoRegistryFacade
     public void RegisterTutorial(object proto, string ownerModGuid, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
     {
         Register(proto.GetType(), proto, ownerModGuid, phase, ProtoKind.Tutorial, purpose);
+    }
+
+    /// <summary>
+    /// 注册一个带稳定身份的指引或教程原型。
+    /// Registers a guide or tutorial proto with a stable identity.
+    /// </summary>
+    /// <param name="proto">指引或教程 Proto 对象。Guide or tutorial proto object.</param>
+    /// <param name="ownerModGuid">声明方模组 GUID。Declaring mod GUID.</param>
+    /// <param name="stableId">稳定 Proto 身份。Stable proto identity.</param>
+    /// <param name="phase">数据阶段。Data phase.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    public void RegisterTutorial(object proto, string ownerModGuid, ProtoStableId stableId, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
+    {
+        Register(proto.GetType(), proto, ownerModGuid, phase, ProtoKind.Tutorial, purpose, stableId);
     }
 
     /// <summary>

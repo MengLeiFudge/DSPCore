@@ -289,6 +289,11 @@ internal static class GalaxyLifecycleRuntimePatches
     [HarmonyPatch(typeof(GameData), nameof(GameData.SetForNewGame))]
     private static void SetForNewGame(GameData __instance)
     {
+        if (__instance.galaxy == null)
+        {
+            return;
+        }
+
         GalaxyLifecycleRuntime.EnsureGalaxy(__instance.galaxy);
     }
 
@@ -296,6 +301,11 @@ internal static class GalaxyLifecycleRuntimePatches
     [HarmonyPatch(typeof(SpaceSector), nameof(SpaceSector.GameTick))]
     private static void SpaceSectorGameTick(SpaceSector __instance, long time)
     {
+        if (__instance.galaxy == null)
+        {
+            return;
+        }
+
         GalaxyLifecycleRuntime.Update(__instance.galaxy, time);
     }
 }

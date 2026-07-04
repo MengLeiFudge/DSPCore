@@ -22,6 +22,8 @@ public static class RecipeAuthoringChainExample
             assembly: typeof(RecipeAuthoringChainExample).Assembly);
 
         recipeProto
+            .SetIconTag("example-recipe")
+            .SetNonProductive()
             .SetGridIndex(tab, row: 1, index: 6)
             .BindIcon(pack, "example-recipe", "example-recipe.png")
             .RegisterRecipe("com.example.my-mod", CoreDataPhase.DataUpdates, "Attach example recipe");

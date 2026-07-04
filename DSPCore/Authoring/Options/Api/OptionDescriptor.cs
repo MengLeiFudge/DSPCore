@@ -39,4 +39,10 @@ public sealed record OptionDescriptor(
     /// Whether the unified settings window shows a reset button.
     /// </summary>
     public bool CanReset { get; init; }
+
+    /// <summary>
+    /// 可选渲染页面 ID；为空时使用 PageId。
+    /// Optional render page ID; PageId is used when this is empty.
+    /// </summary>
+    public string? RenderPageId { get; init; }
 }

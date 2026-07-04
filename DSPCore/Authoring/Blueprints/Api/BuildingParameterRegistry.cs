@@ -35,7 +35,9 @@ public sealed class BuildingParameterRegistry
     /// <returns>找到时返回 true。Returns true when found.</returns>
     public bool TryGet(string blockId, out BuildingParameterDescriptor descriptor)
     {
-        return descriptors.TryGetValue(blockId, out descriptor);
+        var found = descriptors.TryGetValue(blockId, out var value);
+        descriptor = value!;
+        return found;
     }
 
     /// <summary>

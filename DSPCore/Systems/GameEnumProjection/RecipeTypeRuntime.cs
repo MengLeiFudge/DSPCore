@@ -57,6 +57,11 @@ internal static class RecipeTypeRuntime
         return descriptor.AssemblerItemIds.Contains(protoId);
     }
 
+    public static bool TryGetRecipeType(int recipeId, out RecipeTypeDescriptor descriptor)
+    {
+        return RecipeToType.TryGetValue(recipeId, out descriptor!);
+    }
+
     public static bool CanCurrentAssemblerUseRecipe(int recipeId)
     {
         return currentAssemblerEntityId <= 0 || CanAssemblerUseRecipe(currentAssemblerEntityId, recipeId);

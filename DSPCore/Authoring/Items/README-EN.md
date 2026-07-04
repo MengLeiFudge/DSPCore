@@ -5,6 +5,7 @@ Items is the item proto registration entry point. It only represents the author-
 ## What This Block Gives You
 
 - When you already have an `ItemProto`, configure `GridIndex`, bind an icon, and register it directly on the object instead of jumping through registry-style calls.
+- Common vanilla fields have semantic entries: `SetIconTag(...)`, `UnlockAlways()`, `UnlockByEnemyDrop()`, `UnlockLike(...)`, `UnlockByRecipe()`, `SetPreTechOverride(...)`, and `SetProductive(...)`.
 - Icon binding can use `ModResourcePack`, reusing owner and resource root metadata; normal paths, embedded PNGs, and AssetBundle icons all have object-centric entries.
 - `Items.Register(...)` remains available as the lower-level entry for batch registration or code that does not use extension methods.
 
@@ -14,14 +15,17 @@ Items is the item proto registration entry point. It only represents the author-
 var pack = ModResources.Pack("com.example.my-mod", "assets/icons", typeof(MyPlugin).Assembly);
 
 itemProto
+    .SetIconTag("example-machine")
+    .UnlockAlways()
+    .SetProductive()
     .SetGridIndex(tab, row: 1, index: 5)
     .BindIcon(pack, "example-machine", "example-machine.png")
     .RegisterItem("com.example.my-mod", purpose: "Declare example machine");
 
-itemProto.SetBuildBar(tab: 3, row: 2, index: 5);
+itemProto.SetBuildBar(category: 3, row: 2, index: 5);
 ```
 
-`SetGridIndex(...)` writes the native `ItemProto.GridIndex`. `BindIcon(...)`, `BindEmbeddedIcon(...)`, and `BindAssetBundleIcon(...)` only register icon descriptors; the Icons runtime still applies them during cache rebuilds. `RegisterItem(...)` sends the current item to DSPCore's ProtoPipeline.
+`SetIconTag(...)` writes the newer DSP `ItemProto.IconTag` field. `UnlockAlways()` and related unlock helpers write the vanilla `UnlockKey`: `-1` means always unlocked, `-2` means enemy-drop unlock, and a positive value follows another item; `SetUnlockKey(...)` remains available when the raw value is needed. `SetGridIndex(...)` writes the native `ItemProto.GridIndex`. `BindIcon(...)`, `BindEmbeddedIcon(...)`, and `BindAssetBundleIcon(...)` only register icon descriptors; the Icons runtime still applies them during cache rebuilds. `RegisterItem(...)` sends the current item to DSPCore's ProtoPipeline.
 
 ## Capability: Low-Level Registration
 

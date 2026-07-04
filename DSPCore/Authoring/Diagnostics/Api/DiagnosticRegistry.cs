@@ -111,7 +111,7 @@ public sealed class DiagnosticRegistry
         foreach (var entry in registrations)
         {
             var id = ReadInt(entry.Proto, "ID") ?? 0;
-            if (id <= 0)
+            if (id <= 0 && entry.StableId == null)
             {
                 Error(entry.OwnerModGuid, "proto.id.missing", "Registered proto has no positive ID.", DescribeProto(entry));
             }
@@ -119,7 +119,7 @@ public sealed class DiagnosticRegistry
 
         foreach (var group in registrations
             .Select(item => new { Entry = item, Id = ReadInt(item.Proto, "ID") ?? 0 })
-            .Where(item => item.Id > 0)
+            .Where(item => item.Id > 0 && item.Entry.StableId == null)
             .GroupBy(item => item.Entry.Kind.ToString() + ":" + item.Id, StringComparer.Ordinal))
         {
             var items = group.ToArray();

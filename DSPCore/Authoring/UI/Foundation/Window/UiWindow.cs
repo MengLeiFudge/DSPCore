@@ -20,8 +20,8 @@ public class UiWindow : ManualBehaviour {
     protected float MaxY;
 
     // 固定窗口尺寸常量
-    protected const float WindowWidth = 1366f;
-    protected const float WindowHeight = 768f;
+    protected const float WindowWidth = UiPageLayout.DesignWidth;
+    protected const float WindowHeight = UiPageLayout.DesignHeight;
 
     // 布局常量
     protected const float TitleHeight = 48f;
@@ -54,8 +54,9 @@ public class UiWindow : ManualBehaviour {
     }
 
     public static T Create<T>(string name, string title = "") where T : UiWindow {
-        // var go = Instantiate(_baseObject, UIRoot.instance.uiGame.transform.parent);
-        var go = Instantiate(_baseObject, UIRoot.instance.uiGame.inserterWindow.transform.parent);
+        var overlayCanvas = typeof(UIRoot).GetField("overlayCanvas")?.GetValue(UIRoot.instance) as Component;
+        var parent = overlayCanvas ? overlayCanvas.transform : UIRoot.instance.uiGame.transform.parent;
+        var go = Instantiate(_baseObject, parent);
         go.name = name;
         go.SetActive(false);
         UiWindow win = go.AddComponent<T>();
@@ -65,6 +66,7 @@ public class UiWindow : ManualBehaviour {
         if (btn) btn.onClick.AddListener(win._Close);
 
         win.SetTitle(title);
+        win.ApplyFixedWindowSize();
         win._Create();
         if (UiWindowManager.Initialized) {
             win._Init(win.data);
@@ -105,7 +107,20 @@ public class UiWindow : ManualBehaviour {
 
     public void ApplyFixedWindowSize() {
         var trans = GetComponent<RectTransform>();
+        trans.anchorMin = new Vector2(0.5f, 0.5f);
+        trans.anchorMax = new Vector2(0.5f, 0.5f);
+        trans.pivot = new Vector2(0.5f, 0.5f);
+        trans.anchoredPosition = new Vector2(-Mathf.Max(0f, (1366f - WindowWidth) * 0.5f - 24f), 0f);
         trans.sizeDelta = new(WindowWidth, WindowHeight);
+        StretchWindowChild("panel-bg");
+        StretchWindowChild("shadow");
+    }
+
+    private void StretchWindowChild(string childName) {
+        var child = transform.Find(childName);
+        if (child) {
+            NormalizeRectWithMargin(child, 0f, 0f, 0f, 0f);
+        }
     }
 
     public void AutoFitWindowSize() {

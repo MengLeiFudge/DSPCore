@@ -35,7 +35,9 @@ public sealed class PlanetSystemRegistry
     /// <returns>找到时返回 true。Returns true when found.</returns>
     public bool TryGet(string systemId, out PlanetSystemDescriptor descriptor)
     {
-        return descriptors.TryGetValue(systemId, out descriptor);
+        var found = descriptors.TryGetValue(systemId, out var value);
+        descriptor = value!;
+        return found;
     }
 
     /// <summary>

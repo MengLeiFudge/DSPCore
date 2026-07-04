@@ -6,8 +6,8 @@ The Core block provides the DSPCore global entry point, built-in feature registr
 
 - You can use short entries through `using DSPCore;`, or use `DspCore` to access all global registries.
 - DSPCore initializes built-in features and module declarations from BepInEx `Awake`, then assembles Harmony patches for systems.
-- `Features` and `Modules` let mods declare feature/module metadata that other mods can query.
-- `Patches` can declare conditional patches that DSPCore schedules and logs when required plugins are missing, versions are too old, conditions disable the patch, or apply fails.
+- `Features` and `Modules` let mods declare feature/module metadata that other mods can query; declarations registered after DSPCore has started run their initialization callback immediately once.
+- `Patches` can declare conditional patches that DSPCore schedules and logs when required plugins are missing, versions are too old, conditions disable the patch, or apply fails; patches registered after DSPCore already owns a Harmony instance are applied immediately through the same condition path.
 - `Lifecycle` can register DSPCore runtime started, update, destroyed, and common save-chain callbacks for small framework-level initialization, cleanup, or save-boundary coordination.
 - Legacy CommonAPI `CommonAPIPlugin.IsSubmoduleLoaded(...)` bridges to `Modules.TryGet(...)` for migration.
 
@@ -49,7 +49,7 @@ Modules.Register(
 
 `FeatureDescriptor` and `ModuleDescriptor` can still be passed directly to the corresponding `Register(...)` methods for batch construction, configuration-driven registration, or advanced flows that need to keep descriptor objects.
 
-During initialization, DSPCore initializes features by priority and ID. Modules currently initialize in registry enumeration order and do not use dependency topological sorting.
+During initialization, DSPCore initializes features by priority and ID. Modules currently initialize in registry enumeration order and do not use dependency topological sorting. Feature/module declarations registered after DSPCore has started run their initialization callback immediately once; registering the same ID again after it has initialized replaces the descriptor but does not initialize it again.
 
 ## Capability: Declare Conditional Patches
 
@@ -71,7 +71,7 @@ Patches.RegisterForPlugin(
     minimumPluginVersion: "1.2.0");
 ```
 
-`Patches.Register(...)` is the normal author entry. `Patches.RegisterForPlugin(...)` is for integration patches that depend on another plugin. DSPCore applies registered declarations after `DSPCorePlugin.Awake()` assembles built-in runtime patches. If the target plugin is missing, the version is too old, or `isEnabled` returns false, DSPCore logs the disabled reason and skips `apply`.
+`Patches.Register(...)` is the normal author entry. `Patches.RegisterForPlugin(...)` is for integration patches that depend on another plugin. DSPCore applies registered declarations after `DSPCorePlugin.Awake()` assembles built-in runtime patches; if another mod registers a patch after DSPCore has started, DSPCore immediately tries to apply it with the existing Harmony instance. If the target plugin is missing, the version is too old, or `isEnabled` returns false, DSPCore logs the disabled reason and skips `apply`. A patch ID that has applied or failed will not run again, avoiding duplicate patches; a condition-skipped declaration can still be replaced by a later same-ID registration and retried.
 
 `DspCore.Patches.Register(new PatchDescriptor(...))` remains as the low-level registry path for batch registration or existing descriptor flows. Concrete Harmony patch code should still live in the owning system or your mod runtime code.
 
@@ -104,13 +104,13 @@ is redirected to `DSPCore.Modules.TryGet(...)`. `CommonAPISubmoduleDependencyAtt
 ## What This Block Does Not Own
 
 - It does not contain concrete feature behavior; saves, icons, build bar, achievements, and similar logic must stay in the owning authoring capability and system directories.
-- It does not automatically resolve a module dependency graph; `Dependencies` is currently descriptor data.
+- It does not automatically resolve a module dependency graph; `Dependencies` is currently descriptor data. Late-registered features/modules still only guarantee that their own initialization callback runs once, not that missing dependencies are waited for.
 - It does not own concrete feature patch implementations; `PatchRegistry` stores declarations, while concrete Harmony patch code should be supplied by the owning system or mod runtime code.
 - It should not grow a centralized legacy compatibility directory; old API shims must live in the owning authoring capability's `Compat/`.
 
 ## Runtime Startup
 
-`DSPCorePlugin.Awake()` initializes DSPCore, registers legacy DSPModSave handlers, creates Harmony, assembles the currently implemented Proto, BuildBar, Saves, Achievements, Errors, Localization, Tabs, and GameEnums patches, then raises `Lifecycle.OnStarted`. `Update()` polls KeyBinds, picker surfaces, and `Lifecycle.OnUpdate`. Save-chain events are forwarded by `SaveRuntime` from the corresponding `GameSave` / `GameData` patches.
+`DSPCorePlugin.Awake()` initializes DSPCore, registers legacy DSPModSave handlers, creates Harmony, assembles the currently implemented Proto, BuildBar, Saves, Achievements, Errors, Localization, Tabs, and GameEnums patches, then raises `Lifecycle.OnStarted`. Features, Modules, and Patches registered after DSPCore startup use the late-registration path, so dependent mods whose BepInEx `Awake` runs after DSPCore do not silently lose these declarations. `Update()` polls KeyBinds, picker surfaces, and `Lifecycle.OnUpdate`. Save-chain events are forwarded by `SaveRuntime` from the corresponding `GameSave` / `GameData` patches.
 
 ## Examples
 

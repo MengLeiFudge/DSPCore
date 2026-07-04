@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace DSPCore;
@@ -58,6 +59,32 @@ public sealed class ModResourcePack
     public void Text(string key, string language, string value)
     {
         ModResources.Text(key, language, value, OwnerModGuid);
+    }
+
+    /// <summary>
+    /// 立即查询已注册的本地化文本。
+    /// Immediately queries a registered localization text.
+    /// </summary>
+    /// <param name="key">本地化键。Localization key.</param>
+    /// <param name="value">翻译文本。Translated text.</param>
+    /// <param name="language">语言标识；为空时使用当前游戏语言。Language id; current game language is used when omitted.</param>
+    /// <returns>找到文本时返回 true。Returns true when a text is found.</returns>
+    public bool TryTranslate(string key, out string value, string? language = null)
+    {
+        return ModResources.TryTranslate(key, out value, language);
+    }
+
+    /// <summary>
+    /// 立即查询已注册的本地化文本，找不到时返回 fallback 或 key。
+    /// Immediately queries a registered localization text and returns fallback or key when missing.
+    /// </summary>
+    /// <param name="key">本地化键。Localization key.</param>
+    /// <param name="language">语言标识；为空时使用当前游戏语言。Language id; current game language is used when omitted.</param>
+    /// <param name="fallback">可选 fallback。Optional fallback.</param>
+    /// <returns>翻译文本、fallback 或 key。Translated text, fallback, or key.</returns>
+    public string Translate(string key, string? language = null, string? fallback = null)
+    {
+        return ModResources.Translate(key, language, fallback);
     }
 
     /// <summary>
@@ -241,34 +268,15 @@ public sealed class ModResourcePack
     /// </summary>
     public string ResolvePath(string relativePath)
     {
-        string normalized = Normalize(relativePath);
-        if (string.IsNullOrEmpty(RootPath) || string.IsNullOrEmpty(normalized) || IsRootedPath(normalized))
-        {
-            return normalized;
-        }
-
-        if (RootPath == "/")
-        {
-            return "/" + normalized;
-        }
-
-        return RootPath + "/" + normalized;
+        var registered = DspCore.Resources.GetResources()
+            .FirstOrDefault(item =>
+                string.Equals(item.OwnerModGuid, OwnerModGuid, StringComparison.Ordinal)
+                && string.Equals(Normalize(item.RootPath), RootPath, StringComparison.Ordinal));
+        return registered?.ResolvePath(relativePath) ?? ResourcePaths.Combine(RootPath, relativePath);
     }
 
     private static string Normalize(string path)
     {
-        string normalized = (path ?? string.Empty).Trim().Replace('\\', '/');
-        while (normalized.Length > 1 && normalized.EndsWith("/", StringComparison.Ordinal))
-        {
-            normalized = normalized.Substring(0, normalized.Length - 1);
-        }
-
-        return normalized;
-    }
-
-    private static bool IsRootedPath(string path)
-    {
-        return path.StartsWith("/", StringComparison.Ordinal)
-            || (path.Length >= 2 && path[1] == ':');
+        return ResourcePaths.Normalize(path);
     }
 }

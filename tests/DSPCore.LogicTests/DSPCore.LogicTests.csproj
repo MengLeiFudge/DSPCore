@@ -1,0 +1,101 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>DSPCore.LogicTests</AssemblyName>
+    <RootNamespace>DSPCore.LogicTests</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\DSPCore\Authoring\BuildBar\Api\BuildBarBindResult.cs" Link="Linked\BuildBarBindResult.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\BuildBar\Api\BuildBarBindStatus.cs" Link="Linked\BuildBarBindStatus.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\BuildBar\Api\BuildBarConflictPolicy.cs" Link="Linked\BuildBarConflictPolicy.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\BuildBar\Api\BuildBarRegistry.cs" Link="Linked\BuildBarRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\BuildBar\Api\BuildBarSlot.cs" Link="Linked\BuildBarSlot.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Blueprints\Api\Blueprints.cs" Link="Linked\Blueprints.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Blueprints\Api\BuildingParameterBlock.cs" Link="Linked\BuildingParameterBlock.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Blueprints\Api\BuildingParameterDescriptor.cs" Link="Linked\BuildingParameterDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Blueprints\Api\BuildingParameterRegistry.cs" Link="Linked\BuildingParameterRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Components\Api\ComponentDescriptor.cs" Link="Linked\ComponentDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Components\Api\ComponentRegistry.cs" Link="Linked\ComponentRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Components\Api\Components.cs" Link="Linked\Components.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Components\Api\CoreFactoryComponent.cs" Link="Linked\CoreFactoryComponent.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Galaxy\Api\CoreGalaxySystem.cs" Link="Linked\CoreGalaxySystem.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Galaxy\Api\CoreStarSystem.cs" Link="Linked\CoreStarSystem.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Galaxy\Api\GalaxySystemDescriptor.cs" Link="Linked\GalaxySystemDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Galaxy\Api\GalaxySystemRegistry.cs" Link="Linked\GalaxySystemRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Galaxy\Api\GalaxySystems.cs" Link="Linked\GalaxySystems.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Galaxy\Api\StarSystemDescriptor.cs" Link="Linked\StarSystemDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Galaxy\Api\StarSystemRegistry.cs" Link="Linked\StarSystemRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Options\Api\OptionDescriptor.cs" Link="Linked\OptionDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Options\Api\OptionImportReport.cs" Link="Linked\OptionImportReport.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Options\Api\OptionPage.cs" Link="Linked\OptionPage.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Options\Api\OptionPageDescriptor.cs" Link="Linked\OptionPageDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Options\Api\OptionRegistry.cs" Link="Linked\OptionRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Options\Api\OptionSection.cs" Link="Linked\OptionSection.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Options\Api\OptionUi.cs" Link="Linked\OptionUi.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Options\Api\OptionValueKind.cs" Link="Linked\OptionValueKind.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Options\Api\OptionValueSnapshot.cs" Link="Linked\OptionValueSnapshot.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Options\Api\OptionVersionDescriptor.cs" Link="Linked\OptionVersionDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Options\Api\Options.cs" Link="Linked\Options.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Planets\Api\CorePlanetSystem.cs" Link="Linked\CorePlanetSystem.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Planets\Api\PlanetSystemDescriptor.cs" Link="Linked\PlanetSystemDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Planets\Api\PlanetSystemRegistry.cs" Link="Linked\PlanetSystemRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Planets\Api\PlanetSystems.cs" Link="Linked\PlanetSystems.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\DataPhases\Api\CoreDataPhase.cs" Link="Linked\CoreDataPhase.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\GameEnums\Api\GameEnumRegistry.cs" Link="Linked\GameEnumRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\GameEnums\Api\GameEnums.cs" Link="Linked\GameEnums.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\GameEnums\Api\ItemProtoGameEnumExtensions.cs" Link="Linked\ItemProtoGameEnumExtensions.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\GameEnums\Api\ItemTypeDescriptor.cs" Link="Linked\ItemTypeDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\GameEnums\Api\RecipeTypeDescriptor.cs" Link="Linked\RecipeTypeDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\GameEnums\Api\RecipeTypeRegistry.cs" Link="Linked\RecipeTypeRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Icons\Api\IconAssetPaths.cs" Link="Linked\IconAssetPaths.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Icons\Api\IconDescriptor.cs" Link="Linked\IconDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Icons\Api\IconSetRegistry.cs" Link="Linked\IconSetRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Icons\Api\Icons.cs" Link="Linked\Icons.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Models\Api\ModelDescriptor.cs" Link="Linked\ModelDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Models\Api\ModelProtoAuthoringExtensions.cs" Link="Linked\ModelProtoAuthoringExtensions.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Models\Api\ModelRegistry.cs" Link="Linked\ModelRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Models\Api\Models.cs" Link="Linked\Models.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\ProtoRegistration\Api\ProtoKind.cs" Link="Linked\ProtoKind.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\ProtoRegistration\Api\ProtoRegistrationEntry.cs" Link="Linked\ProtoRegistrationEntry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\ProtoRegistration\Api\ProtoRegistryFacade.cs" Link="Linked\ProtoRegistryFacade.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\ProtoRegistration\Api\ProtoStableId.cs" Link="Linked\ProtoStableId.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\DataPhases\Api\ProtoPhaseContext.cs" Link="Linked\ProtoPhaseContext.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\ProtoAccess\Api\ProtoAccessView.cs" Link="Linked\ProtoAccessView.cs" />
+    <Compile Include="..\..\DSPCore\Systems\ErrorWindow\Reports\ErrorDiagnosticContext.cs" Link="Linked\ErrorDiagnosticContext.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Resources\Api\LocalizationEntry.cs" Link="Linked\LocalizationEntry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Resources\Api\LocalizationLanguages.cs" Link="Linked\LocalizationLanguages.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Resources\Api\ResourceDescriptor.cs" Link="Linked\ResourceDescriptor.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Resources\Api\ResourcePaths.cs" Link="Linked\ResourcePaths.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Resources\Api\ResourceRegistry.cs" Link="Linked\ResourceRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Saves\Api\AutoSaveHandler.cs" Link="Linked\AutoSaveHandler.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Saves\Api\CoreLoadOrder.cs" Link="Linked\CoreLoadOrder.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Saves\Api\CoreSaveFieldAttribute.cs" Link="Linked\CoreSaveFieldAttribute.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Saves\Api\ICoreSaveHandler.cs" Link="Linked\ICoreSaveHandler.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Saves\Api\SaveBlock.cs" Link="Linked\SaveBlock.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Saves\Api\SaveBlockFormat.cs" Link="Linked\SaveBlockFormat.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Saves\Api\SaveRegistration.cs" Link="Linked\SaveRegistration.cs" />
+    <Compile Include="..\..\DSPCore\Authoring\Saves\Api\SaveRegistry.cs" Link="Linked\SaveRegistry.cs" />
+    <Compile Include="..\..\DSPCore\Systems\PickerSurfaces\PickerLayoutPlanner.cs" Link="Linked\PickerLayoutPlanner.cs" />
+    <Compile Include="..\..\DSPCore\Systems\BlueprintParameters\BuildingParameterRuntime.cs" Link="Linked\BuildingParameterRuntime.cs" />
+    <Compile Include="..\..\DSPCore\Systems\EntityLifecycle\EntityLifecycleRuntime.cs" Link="Linked\EntityLifecycleRuntime.cs" />
+    <Compile Include="..\..\DSPCore\Systems\EntityLifecycle\InjectedFieldAccess.cs" Link="Linked\InjectedFieldAccess.cs" />
+    <Compile Include="..\..\DSPCore\Systems\GalaxyLifecycle\GalaxyLifecycleRuntime.cs" Link="Linked\GalaxyLifecycleRuntime.cs" />
+    <Compile Include="..\..\DSPCore\Systems\IconProjection\IconRuntime.cs" Link="Linked\IconRuntime.cs" />
+    <Compile Include="..\..\DSPCore\Systems\ModelProjection\ModelRuntime.cs" Link="Linked\ModelRuntime.cs" />
+    <Compile Include="..\..\DSPCore\Systems\PlanetLifecycle\PlanetLifecycleRuntime.cs" Link="Linked\PlanetLifecycleRuntime.cs" />
+    <Compile Include="..\..\DSPCore\Systems\SaveBridge\GlobalSaveRuntime.cs" Link="Linked\GlobalSaveRuntime.cs" />
+    <Compile Include="..\..\DSPCore\Systems\GameEnumProjection\ItemTypeRuntime.cs" Link="Linked\ItemTypeRuntime.cs" />
+    <Compile Include="..\..\DSPCore\Systems\GameEnumProjection\RecipeTypeRuntime.cs" Link="Linked\RecipeTypeRuntime.cs" />
+    <Compile Include="..\..\DSPCore\Systems\ProtoPipeline\ProtoRegistrationRuntime.cs" Link="Linked\ProtoRegistrationRuntime.cs" />
+    <Compile Include="..\..\DSPCore\Systems\ProtoPipeline\StableProtoIdRuntime.cs" Link="Linked\StableProtoIdRuntime.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Fixtures\embedded-icon.bytes" />
+  </ItemGroup>
+</Project>

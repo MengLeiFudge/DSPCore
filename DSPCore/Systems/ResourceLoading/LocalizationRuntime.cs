@@ -1,26 +1,26 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using BepInEx;
 using HarmonyLib;
 
 namespace DSPCore;
 
 internal static class LocalizationRuntime
 {
+    private const string LocaleOverrideOwner = "DSPCore.LocaleOverride";
+    private const string LocaleDirectory = "DSPCore/Locales";
     private static readonly System.Reflection.FieldInfo? NamesIndexerField = AccessTools.Field(typeof(Localization), "namesIndexer");
     private static readonly System.Reflection.FieldInfo? StringsField = AccessTools.Field(typeof(Localization), "strings");
     private static readonly System.Reflection.FieldInfo? FloatsField = AccessTools.Field(typeof(Localization), "floats");
+    private static bool localeOverridesLoaded;
 
-    private static readonly Dictionary<string, int> LanguageIds = new(StringComparer.OrdinalIgnoreCase)
+    public static void Initialize()
     {
-        ["enUS"] = Localization.LCID_ENUS,
-        ["zhCN"] = Localization.LCID_ZHCN,
-        ["frFR"] = Localization.LCID_FRFR,
-        ["deDE"] = Localization.LCID_DEDE,
-        ["esES"] = Localization.LCID_ESES,
-        ["jaJA"] = Localization.LCID_JAJA,
-        ["koKO"] = Localization.LCID_KOKO
-    };
+        LoadLocaleOverrides();
+    }
 
     public static void AddKeys()
     {
@@ -30,7 +30,7 @@ internal static class LocalizationRuntime
             return;
         }
 
-        foreach (var key in DspCore.Resources.GetLocalizations().Select(item => item.Key).Distinct(StringComparer.Ordinal))
+        foreach (var key in GetAllLocalizationEntries().Select(item => item.Key).Distinct(StringComparer.Ordinal))
         {
             if (!namesIndexer.ContainsKey(key))
             {
@@ -51,8 +51,8 @@ internal static class LocalizationRuntime
         AddKeys();
         var language = Localization.Languages[index];
         var languageId = language.lcId;
-        var entries = DspCore.Resources.GetLocalizations()
-            .Where(item => ResolveLanguageId(item.Language) == languageId)
+        var entries = GetEffectiveLocalizations(languageId)
+            .Where(item => LocalizationLanguages.ResolveId(item.Language) == languageId)
             .ToArray();
         if (entries.Length == 0)
         {
@@ -80,14 +80,98 @@ internal static class LocalizationRuntime
         }
     }
 
-    private static int ResolveLanguageId(string language)
+    private static void LoadLocaleOverrides()
     {
-        if (int.TryParse(language, out var id))
+        if (localeOverridesLoaded)
         {
-            return id;
+            return;
         }
 
-        return LanguageIds.TryGetValue(language, out id) ? id : 0;
+        localeOverridesLoaded = true;
+        var directory = GetLocaleDirectory();
+        if (!Directory.Exists(directory))
+        {
+            return;
+        }
+
+        foreach (var path in Directory.GetFiles(directory, "locale-*.tsv", SearchOption.TopDirectoryOnly).OrderBy(item => item, StringComparer.OrdinalIgnoreCase))
+        {
+            LoadLocaleFile(path);
+        }
+    }
+
+    private static void LoadLocaleFile(string path)
+    {
+        var fileName = Path.GetFileNameWithoutExtension(path);
+        var language = fileName.StartsWith("locale-", StringComparison.OrdinalIgnoreCase)
+            ? fileName.Substring("locale-".Length)
+            : string.Empty;
+        if (LocalizationLanguages.ResolveId(language) <= 0)
+        {
+            DspCore.Logger?.LogWarning($"DSPCore locale override file has unknown language and was skipped: {path}");
+            return;
+        }
+
+        try
+        {
+            var lineNumber = 0;
+            foreach (var line in File.ReadLines(path, Encoding.UTF8))
+            {
+                lineNumber++;
+                if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("#", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var separator = line.IndexOf('\t');
+                if (separator <= 0)
+                {
+                    DspCore.Logger?.LogWarning($"DSPCore locale override skipped malformed line {lineNumber} in {path}.");
+                    continue;
+                }
+
+                var key = line.Substring(0, separator).Trim();
+                if (key.Length == 0)
+                {
+                    DspCore.Logger?.LogWarning($"DSPCore locale override skipped empty key on line {lineNumber} in {path}.");
+                    continue;
+                }
+
+                var value = line.Substring(separator + 1).Replace("\\n", "\n");
+                DspCore.Resources.RegisterLocalizationOverride(new LocalizationEntry(key, language, value, LocaleOverrideOwner));
+            }
+        }
+        catch (Exception ex)
+        {
+            DspCore.Errors.ReportException(LocaleOverrideOwner, ex);
+            DspCore.Logger?.LogError($"DSPCore locale override load failed for {path}: {ex}");
+        }
+    }
+
+    private static IEnumerable<LocalizationEntry> GetAllLocalizationEntries()
+    {
+        return DspCore.Resources.GetLocalizations().Concat(DspCore.Resources.GetLocalizationOverrides());
+    }
+
+    private static IEnumerable<LocalizationEntry> GetEffectiveLocalizations(int languageId)
+    {
+        var result = new Dictionary<string, LocalizationEntry>(StringComparer.Ordinal);
+        foreach (var entry in DspCore.Resources.GetLocalizations().Where(item => LocalizationLanguages.ResolveId(item.Language) == languageId))
+        {
+            result[entry.Key] = entry;
+        }
+
+        foreach (var entry in DspCore.Resources.GetLocalizationOverrides().Where(item => LocalizationLanguages.ResolveId(item.Language) == languageId))
+        {
+            result[entry.Key] = entry;
+        }
+
+        return result.Values;
+    }
+
+    private static string GetLocaleDirectory()
+    {
+        return Path.Combine(Paths.ConfigPath, LocaleDirectory);
     }
 
     private static void EnsureLanguageArraySize(int index, int size)

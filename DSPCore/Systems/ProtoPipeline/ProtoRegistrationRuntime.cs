@@ -63,44 +63,101 @@ internal static class ProtoRegistrationRuntime
 
     public static void RebuildDerivedCaches()
     {
+        RunCacheStep("LDB data indices", RebuildAllDataIndices);
+        RunCacheStep("Item fuel needs", ItemProto.InitFuelNeeds);
+        RunCacheStep("Item turret needs", ItemProto.InitTurretNeeds);
+        RunCacheStep("Item fluids", ItemProto.InitFluids);
+        RunCacheStep("Item turrets", ItemProto.InitTurrets);
+        RunCacheStep("Item enemy drop tables", ItemProto.InitEnemyDropTables);
+        RunCacheStep("Item constructable items", ItemProto.InitConstructableItems);
+        RunCacheStep("Item IDs", ItemProto.InitItemIds);
+        RunCacheStep("Item indices", ItemProto.InitItemIndices);
+        RunCacheStep("Mecha materials", ItemProto.InitMechaMaterials);
+        RunItemPrefabCacheStep("Fighter indices", ItemProto.InitFighterIndices);
+        RunItemPrefabCacheStep("Power facility indices", ItemProto.InitPowerFacilityIndices);
+        RunItemPrefabCacheStep("Production mask", ItemProto.InitProductionMask);
+        RunCacheStep("Model descriptors", ModelRuntime.Apply);
+        RunCacheStep("Max model index", ModelProto.InitMaxModelIndex);
+        RunCacheStep("Model indices", ModelProto.InitModelIndices);
+        RunCacheStep("Model orders", ModelProto.InitModelOrders);
+        RunCacheStep("PrefabDesc array", ModelRuntime.RebuildPrefabDescArray);
+        RunCacheStep("Recipe items", RecipeProto.InitRecipeItems);
+        RunCacheStep("Fractionator needs", RecipeProto.InitFractionatorNeeds);
+        RunCacheStep("Custom item types", ItemTypeRuntime.Apply);
+        RunCacheStep("Custom recipe types", RecipeTypeRuntime.Apply);
+        RunCacheStep("Recipe execute data", RebuildRecipeExecuteData);
+        RunCacheStep("Signal key-id pairs", SignalProtoSet.InitSignalKeyIdPairs);
+        RunCacheStep("Icon bindings", IconRuntime.ApplyIcons);
+        RunCacheStep("Game icon set", RebuildGameIconSet);
+    }
+
+    private static void RunCacheStep(string name, Action action)
+    {
         try
         {
-            RebuildAllDataIndices();
-            ItemProto.InitFuelNeeds();
-            ItemProto.InitTurretNeeds();
-            ItemProto.InitFluids();
-            ItemProto.InitTurrets();
-            ItemProto.InitEnemyDropTables();
-            ItemProto.InitConstructableItems();
-            ItemProto.InitItemIds();
-            ItemProto.InitItemIndices();
-            ItemProto.InitMechaMaterials();
-            ItemProto.InitFighterIndices();
-            ItemProto.InitPowerFacilityIndices();
-            ItemProto.InitProductionMask();
-            ModelRuntime.Apply();
-            ModelProto.InitMaxModelIndex();
-            ModelProto.InitModelIndices();
-            ModelProto.InitModelOrders();
-            ModelRuntime.RebuildPrefabDescArray();
-            RecipeProto.InitRecipeItems();
-            RecipeProto.InitFractionatorNeeds();
-            RecipeTypeRuntime.Apply();
-            RebuildRecipeExecuteData();
-            SignalProtoSet.InitSignalKeyIdPairs();
-            IconRuntime.ApplyIcons();
-
-            if (GameMain.iconSet != null)
-            {
-                GameMain.iconSet.loaded = false;
-                GameMain.iconSet.Create();
-            }
+            action();
         }
         catch (Exception ex)
         {
-            DspCore.Errors.ReportException("DSPCore.ProtoRegistrationRuntime", ex);
-            DspCore.Logger?.LogError($"Failed to rebuild DSP proto caches: {ex}");
+            DspCore.Errors.ReportException(
+                "DSPCore.ProtoRegistrationRuntime",
+                ex,
+                new ErrorDiagnosticContext(Note: $"Proto cache rebuild step failed: {name}"));
+            DspCore.Logger?.LogWarning($"Failed to rebuild DSP proto cache step {name}; continuing with remaining steps: {ex}");
         }
+    }
+
+    private static void RunItemPrefabCacheStep(string name, Action action)
+    {
+        RunCacheStep(name, () =>
+        {
+            var items = LDB.items?.dataArray;
+            if (items == null)
+            {
+                action();
+                return;
+            }
+
+            List<ItemProto>? patchedItems = null;
+            foreach (var item in items)
+            {
+                if (item != null && item.prefabDesc == null)
+                {
+                    patchedItems ??= new List<ItemProto>();
+                    patchedItems.Add(item);
+                    item.prefabDesc = PrefabDesc.none;
+                }
+            }
+
+            if (patchedItems == null)
+            {
+                action();
+                return;
+            }
+
+            try
+            {
+                action();
+            }
+            finally
+            {
+                foreach (var item in patchedItems)
+                {
+                    item.prefabDesc = null;
+                }
+            }
+        });
+    }
+
+    private static void RebuildGameIconSet()
+    {
+        if (GameMain.iconSet == null)
+        {
+            return;
+        }
+
+        GameMain.iconSet.loaded = false;
+        GameMain.iconSet.Create();
     }
 
     public static void RebuildAllDataIndices()
@@ -159,14 +216,15 @@ internal static class ProtoRegistrationRuntime
 
     private static Type? GetProtoSetElementType(Type type)
     {
-        while (type != null)
+        Type? current = type;
+        while (current != null)
         {
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ProtoSet<>))
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == typeof(ProtoSet<>))
             {
-                return type.GetGenericArguments()[0];
+                return current.GetGenericArguments()[0];
             }
 
-            type = type.BaseType;
+            current = current.BaseType;
         }
 
         return null;
@@ -176,6 +234,12 @@ internal static class ProtoRegistrationRuntime
         where T : Proto
     {
         var list = (protoSet.dataArray ?? Array.Empty<T>()).ToList();
+        var phaseEntries = DspCore.ProtoRegistration.GetByPhase(phase)
+            .Where(item => item.Proto is T)
+            .ToArray();
+        StableProtoIdRuntime.Resolve(phaseEntries, list.Where(item => item != null).Select(item => item!.ID).ToArray());
+        EnsureNoImplicitDuplicateIds(list, phaseEntries, phase, typeof(T));
+
         foreach (var proto in protos)
         {
             if (proto is not T typedProto)
@@ -209,6 +273,56 @@ internal static class ProtoRegistrationRuntime
 
         protoSet.dataArray = list.ToArray();
         RebuildDataIndices(protoSet);
+    }
+
+    private static void EnsureNoImplicitDuplicateIds<T>(
+        IReadOnlyList<T> existing,
+        IReadOnlyList<ProtoRegistrationEntry> entries,
+        CoreDataPhase phase,
+        Type protoType)
+        where T : Proto
+    {
+        var seen = new Dictionary<int, ProtoRegistrationEntry>();
+        foreach (var entry in entries)
+        {
+            if (entry.Proto is not Proto proto || proto.ID <= 0)
+            {
+                throw new InvalidOperationException($"Registered {protoType.Name} from {entry.OwnerModGuid} has no positive ID.");
+            }
+
+            if (seen.TryGetValue(proto.ID, out var previous))
+            {
+                throw new InvalidOperationException(
+                    $"Duplicate {protoType.Name} ID {proto.ID} in {phase}: {DescribeEntry(previous)} and {DescribeEntry(entry)}. Use ProtoStableId or choose a different int ID.");
+            }
+
+            seen[proto.ID] = entry;
+        }
+
+        if (phase != CoreDataPhase.Data)
+        {
+            return;
+        }
+
+        var stableIds = new HashSet<int>(entries.Where(item => item.StableId != null && item.Proto is Proto proto).Select(item => ((Proto)item.Proto).ID));
+        foreach (var entry in entries)
+        {
+            if (entry.StableId != null || entry.Proto is not Proto proto || stableIds.Contains(proto.ID))
+            {
+                continue;
+            }
+
+            if (existing.Any(item => item != null && item.ID == proto.ID))
+            {
+                throw new InvalidOperationException(
+                    $"Registered {protoType.Name} ID {proto.ID} from {entry.OwnerModGuid} conflicts with existing LDB data. Use ProtoStableId or choose a different int ID.");
+            }
+        }
+    }
+
+    private static string DescribeEntry(ProtoRegistrationEntry entry)
+    {
+        return $"{entry.OwnerModGuid}/{entry.Kind}/{(entry.Proto is Proto proto ? proto.ID.ToString() + ":" + proto.Name : entry.Proto.GetType().Name)}";
     }
 
     private static void RebuildDataIndices<T>(ProtoSet<T> protoSet)

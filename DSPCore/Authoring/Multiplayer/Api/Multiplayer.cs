@@ -15,6 +15,12 @@ public static class Multiplayer
     public static bool IsNebulaAvailable => MultiplayerRuntime.IsNebulaAvailable;
 
     /// <summary>
+    /// 当前是否已有联机 transport 适配器接入。
+    /// Indicates whether a multiplayer transport adapter is currently attached.
+    /// </summary>
+    public static bool HasTransport => MultiplayerRuntime.HasTransport;
+
+    /// <summary>
     /// 注册一个软 packet 处理器。
     /// Registers a soft packet handler.
     /// </summary>
@@ -37,6 +43,24 @@ public static class Multiplayer
     }
 
     /// <summary>
+    /// 发送一个普通软 packet。
+    /// Sends a regular soft packet.
+    /// </summary>
+    /// <param name="packetId">packet ID。Packet ID.</param>
+    /// <param name="payload">packet 负载。Packet payload.</param>
+    /// <param name="target">发送目标。Send target.</param>
+    /// <param name="targetId">目标 ID。Target id.</param>
+    /// <returns>存在适配器且已接收发送请求时返回 true。Returns true when a transport accepted the send request.</returns>
+    public static bool SendPacket(
+        string packetId,
+        byte[] payload,
+        MultiplayerSendTarget target = MultiplayerSendTarget.All,
+        int targetId = 0)
+    {
+        return MultiplayerRuntime.SendPacket(packetId, payload, target, targetId);
+    }
+
+    /// <summary>
     /// 注册一个主机转发 packet 边界。
     /// Registers a host relay packet boundary.
     /// </summary>
@@ -56,6 +80,18 @@ public static class Multiplayer
     public static void RegisterHostRelay(MultiplayerRelayDescriptor descriptor)
     {
         DspCore.Multiplayer.RegisterRelay(descriptor);
+    }
+
+    /// <summary>
+    /// 发送一个需要主机处理的软 packet。
+    /// Sends a soft packet that should be handled by the host.
+    /// </summary>
+    /// <param name="packetId">packet ID。Packet ID.</param>
+    /// <param name="payload">packet 负载。Packet payload.</param>
+    /// <returns>存在适配器且已接收发送请求时返回 true。Returns true when a transport accepted the send request.</returns>
+    public static bool SendHostRelay(string packetId, byte[] payload)
+    {
+        return MultiplayerRuntime.SendHostRelay(packetId, payload);
     }
 
     /// <summary>
@@ -83,6 +119,18 @@ public static class Multiplayer
     public static void RegisterPlanetData(MultiplayerPlanetDataDescriptor descriptor)
     {
         DspCore.Multiplayer.RegisterPlanetData(descriptor);
+    }
+
+    /// <summary>
+    /// 请求主机导出指定星球的数据。
+    /// Requests host-side planet data export.
+    /// </summary>
+    /// <param name="requestId">请求 ID。Request ID.</param>
+    /// <param name="planetId">星球 ID。Planet ID.</param>
+    /// <returns>存在适配器且已接收请求时返回 true。Returns true when a transport accepted the request.</returns>
+    public static bool RequestPlanetData(string requestId, int planetId)
+    {
+        return MultiplayerRuntime.RequestPlanetData(requestId, planetId);
     }
 
     /// <summary>
@@ -122,6 +170,26 @@ public static class Multiplayer
     }
 
     /// <summary>
+    /// 由可选联机适配器注册真实 transport。
+    /// Registers the real transport from an optional multiplayer adapter.
+    /// </summary>
+    /// <param name="transport">联机 transport。Multiplayer transport.</param>
+    public static void RegisterTransport(IMultiplayerTransport transport)
+    {
+        MultiplayerRuntime.RegisterTransport(transport);
+    }
+
+    /// <summary>
+    /// 由可选联机适配器注销真实 transport。
+    /// Unregisters the real transport from an optional multiplayer adapter.
+    /// </summary>
+    /// <param name="transport">联机 transport。Multiplayer transport.</param>
+    public static void UnregisterTransport(IMultiplayerTransport transport)
+    {
+        MultiplayerRuntime.UnregisterTransport(transport);
+    }
+
+    /// <summary>
     /// 尝试获取指定 packet 描述。
     /// Tries to get a packet descriptor by id.
     /// </summary>
@@ -155,6 +223,56 @@ public static class Multiplayer
     public static bool TryGetClientSaveInitializer(string ownerModGuid, out MultiplayerClientSaveDescriptor descriptor)
     {
         return DspCore.Multiplayer.TryGetClientSaveInitializer(ownerModGuid, out descriptor);
+    }
+
+    /// <summary>
+    /// 由联机适配器把收到的 packet 派发给作者注册的处理器。
+    /// Dispatches a received packet from a multiplayer adapter to the registered author handler.
+    /// </summary>
+    /// <param name="packetId">packet ID。Packet ID.</param>
+    /// <param name="payload">packet 负载。Packet payload.</param>
+    /// <returns>找到声明时返回 true。Returns true when a declaration was found.</returns>
+    public static bool DispatchPacket(string packetId, byte[] payload)
+    {
+        return MultiplayerRuntime.DispatchPacket(packetId, payload);
+    }
+
+    /// <summary>
+    /// 由联机适配器把需要主机处理的 packet 派发给主机处理器。
+    /// Dispatches a host-handled packet from a multiplayer adapter to the host handler.
+    /// </summary>
+    /// <param name="packetId">packet ID。Packet ID.</param>
+    /// <param name="payload">packet 负载。Packet payload.</param>
+    /// <returns>找到声明时返回 true。Returns true when a declaration was found.</returns>
+    public static bool DispatchHostRelay(string packetId, byte[] payload)
+    {
+        return MultiplayerRuntime.DispatchHostRelay(packetId, payload);
+    }
+
+    /// <summary>
+    /// 由联机适配器导出某个星球的声明数据。
+    /// Exports declared planet data for a multiplayer adapter.
+    /// </summary>
+    /// <param name="requestId">请求 ID。Request ID.</param>
+    /// <param name="planetId">星球 ID。Planet ID.</param>
+    /// <param name="payload">导出的负载。Exported payload.</param>
+    /// <returns>找到声明时返回 true。Returns true when a declaration was found.</returns>
+    public static bool TryExportPlanetData(string requestId, int planetId, out byte[] payload)
+    {
+        return MultiplayerRuntime.TryExportPlanetData(requestId, planetId, out payload);
+    }
+
+    /// <summary>
+    /// 由联机适配器导入某个星球的声明数据。
+    /// Imports declared planet data from a multiplayer adapter.
+    /// </summary>
+    /// <param name="requestId">请求 ID。Request ID.</param>
+    /// <param name="planetId">星球 ID。Planet ID.</param>
+    /// <param name="payload">导入的负载。Imported payload.</param>
+    /// <returns>找到声明时返回 true。Returns true when a declaration was found.</returns>
+    public static bool ImportPlanetData(string requestId, int planetId, byte[] payload)
+    {
+        return MultiplayerRuntime.ImportPlanetData(requestId, planetId, payload);
     }
 
     /// <summary>

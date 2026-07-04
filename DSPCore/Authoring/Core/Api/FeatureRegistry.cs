@@ -11,6 +11,7 @@ namespace DSPCore;
 public sealed class FeatureRegistry
 {
     private readonly Dictionary<string, FeatureDescriptor> features = new(StringComparer.Ordinal);
+    private readonly HashSet<string> initialized = new(StringComparer.Ordinal);
 
     /// <summary>
     /// 注册一个功能块。
@@ -25,6 +26,21 @@ public sealed class FeatureRegistry
         }
 
         features[descriptor.Id] = descriptor;
+        if (DspCore.IsInitialized && initialized.Add(descriptor.Id))
+        {
+            InvokeInitialize(descriptor);
+        }
+    }
+
+    internal void InitializeAll()
+    {
+        foreach (var feature in GetAll())
+        {
+            if (initialized.Add(feature.Id))
+            {
+                InvokeInitialize(feature);
+            }
+        }
     }
 
     /// <summary>
@@ -50,5 +66,18 @@ public sealed class FeatureRegistry
             .OrderBy(item => item.Priority)
             .ThenBy(item => item.Id, StringComparer.Ordinal)
             .ToArray();
+    }
+
+    private static void InvokeInitialize(FeatureDescriptor descriptor)
+    {
+        try
+        {
+            descriptor.Initialize();
+        }
+        catch (Exception ex)
+        {
+            DspCore.Errors.ReportException(descriptor.Id, ex);
+            DspCore.Logger?.LogError($"DSPCore feature {descriptor.Id} initialization failed: {ex}");
+        }
     }
 }

@@ -19,6 +19,8 @@ public static class KeyBindRegistrationExample
 {
     public static void Register()
     {
+        Options.Page("com.example.settings", "com.example.my-mod", "Example Settings");
+
         KeyBinds.Register(
             // Id 应稳定，通常使用 mod 前缀。
             // Use a stable id, normally prefixed by your mod id.
@@ -32,7 +34,8 @@ public static class KeyBindRegistrationExample
             callback: ToggleExamplePanel,
             action: CoreKeyAction.Press,
             conflictGroup: 2,
-            canOverride: true);
+            canOverride: true,
+            displayPageId: "com.example.settings");
     }
 
     private static void ToggleExamplePanel()

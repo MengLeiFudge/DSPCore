@@ -34,7 +34,7 @@ internal sealed class OptionsWindow : UiWindow
             rowGap: UiPageLayout.Gap,
             children:
             [
-                GridDsl.Header("DSPCore Settings", "Unified options registered by mods.", row: 0, col: 0),
+                GridDsl.Header(OptionText.Title, OptionText.Summary, row: 0, col: 0),
                 GridDsl.ScrollableContentCard(
                     contentHeight: contentHeight,
                     row: 1,
@@ -46,11 +46,14 @@ internal sealed class OptionsWindow : UiWindow
                 GridDsl.FooterCard(
                     row: 2,
                     col: 0,
-                    cols: [GridDsl.Fr(1f), GridDsl.Px(120f)],
+                    cols: [GridDsl.Fr(1f), GridDsl.Px(136f), GridDsl.Px(144f), GridDsl.Px(96f)],
+                    columnGap: 8f,
                     children:
                     [
-                        GridDsl.TextNode("Changes are written to the DSPCore BepInEx config.", row: 0, col: 0),
-                        GridDsl.ButtonNode("Close", Close, row: 0, col: 1)
+                        GridDsl.TextNode(OptionText.Footer, row: 0, col: 0, wrap: true),
+                        GridDsl.ButtonNode(OptionText.GlobalSavesButton, OptionRuntime.OpenGlobalSavesWindow, row: 0, col: 1),
+                        GridDsl.ButtonNode(BuildBarText.OpenEditor, BuildBarRuntime.OpenOverrideWindow, row: 0, col: 2),
+                        GridDsl.ButtonNode(OptionText.Close, Close, row: 0, col: 3)
                     ])
             ]);
 
@@ -70,17 +73,17 @@ internal sealed class OptionsWindow : UiWindow
             .ThenBy(page => page.PageId, StringComparer.Ordinal)
             .ToDictionary(page => page.PageId, page => page, StringComparer.Ordinal);
 
-        return DspCore.Options.GetAll()
-            .OrderBy(option => pages.TryGetValue(option.PageId ?? string.Empty, out var page) ? page.Order : int.MaxValue)
-            .ThenBy(option => option.PageId ?? string.Empty, StringComparer.Ordinal)
+        return ExpandDisplayOptions(DspCore.Options.GetAll())
+            .OrderBy(option => pages.TryGetValue(GetRenderPageId(option), out var page) ? page.Order : int.MaxValue)
+            .ThenBy(option => GetRenderPageId(option), StringComparer.Ordinal)
             .ThenBy(option => option.Order)
             .ThenBy(option => option.Section, StringComparer.Ordinal)
             .ThenBy(option => option.Key, StringComparer.Ordinal)
-            .GroupBy(option => option.PageId ?? string.Empty, StringComparer.Ordinal)
+            .GroupBy(GetRenderPageId, StringComparer.Ordinal)
             .Select(group =>
             {
                 pages.TryGetValue(group.Key, out var page);
-                return new OptionGroup(page?.Title ?? "General", group.ToList());
+                return new OptionGroup(page?.Title ?? OptionText.General, group.ToList());
             })
             .ToList();
     }
@@ -185,7 +188,7 @@ internal sealed class OptionsWindow : UiWindow
                 height / 2f,
                 CaptureButtonWidth,
                 root,
-                "Capture",
+                OptionText.Capture,
                 UiPageLayout.BodyFontSize,
                 "capture-key-button",
                 () => optionsWindow.StartKeyCapture(option, input, descriptionText));
@@ -195,7 +198,7 @@ internal sealed class OptionsWindow : UiWindow
     private void StartKeyCapture(OptionDescriptor option, InputField input, Text descriptionText)
     {
         keyCapture = new KeyCaptureState(option, input, descriptionText, Time.frameCount);
-        input.text = "Press a key...";
+        input.text = OptionText.PressAKey.Translate();
         input.ActivateInputField();
     }
 
@@ -257,14 +260,66 @@ internal sealed class OptionsWindow : UiWindow
             y,
             ResetButtonWidth,
             root,
-            "Reset",
+            OptionText.Reset,
             UiPageLayout.BodyFontSize,
             "reset-option-button",
             () =>
             {
                 OptionRuntime.SetString(option.Section, option.Key, option.DefaultValue);
                 OptionRuntime.OpenWindow();
-            });
+        });
+    }
+
+    private static IEnumerable<OptionDescriptor> ExpandDisplayOptions(IEnumerable<OptionDescriptor> options)
+    {
+        foreach (var option in options)
+        {
+            if (!KeyBinds.IsKeyBindOption(option))
+            {
+                yield return option;
+                continue;
+            }
+
+            if (!TryGetKeyDescriptor(option, out var descriptor))
+            {
+                yield return option;
+                continue;
+            }
+
+            var placement = KeyBinds.GetPlacement();
+            var hasModPage = KeyBinds.TryGetDisplayPageId(descriptor, out var modPageId);
+            if (placement == KeyBindPlacement.ModSettings || placement == KeyBindPlacement.Both)
+            {
+                yield return option with { RenderPageId = hasModPage ? modPageId : KeyBinds.OptionsPageId };
+            }
+
+            if (placement == KeyBindPlacement.KeyBindings || (placement == KeyBindPlacement.Both && hasModPage))
+            {
+                yield return option with { RenderPageId = KeyBinds.OptionsPageId };
+            }
+        }
+    }
+
+    private static string GetRenderPageId(OptionDescriptor option)
+    {
+        return option.RenderPageId ?? option.PageId ?? string.Empty;
+    }
+
+    private static bool TryGetKeyDescriptor(OptionDescriptor option, out KeyBindDescriptor descriptor)
+    {
+        foreach (var candidate in DspCore.KeyBinds.GetAll())
+        {
+            if (candidate.CanOverride &&
+                ("KeyBinds." + candidate.OwnerModGuid).Equals(option.Section, StringComparison.Ordinal) &&
+                candidate.Id.Equals(option.Key, StringComparison.Ordinal))
+            {
+                descriptor = candidate;
+                return true;
+            }
+        }
+
+        descriptor = default!;
+        return false;
     }
 
     private static float ReadRangeValue(OptionDescriptor option, float minimum, float maximum)
@@ -315,7 +370,7 @@ internal sealed class OptionsWindow : UiWindow
     {
         public override LayoutNode Node(int row)
         {
-            return GridDsl.TextNode("No options registered.", row: row, col: 0);
+            return GridDsl.TextNode(OptionText.NoOptions, row: row, col: 0);
         }
     }
 

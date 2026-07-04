@@ -15,8 +15,8 @@ public static class BuildBarTool
     /// <param name="index">按钮索引。Button index.</param>
     /// <param name="itemId">物品 ID。Item id.</param>
     /// <param name="isTopRow">是否为扩展上层行。Whether the binding targets the extended top row.</param>
-    /// <returns>绑定被接受时返回 true。Returns true when the binding is accepted.</returns>
-    [System.Obsolete("Use ItemProto.SetBuildBar(tab, row, index) or DSPCore.BuildBar.BindQuickBar(tab, row, index, itemId) instead.")]
+    /// <returns>绑定写入当前作者默认绑定时返回 true。Returns true when the binding becomes the current author default.</returns>
+    [System.Obsolete("Use ItemProto.SetBuildBar(category, row, index) or DSPCore.BuildBar.BindQuickBar(category, row, index, itemId) instead.")]
     public static bool SetBuildBar(int category, int index, int itemId, bool isTopRow)
     {
         return DSPCore.LegacyBuildBarCompatibility.SetBuildBar(category, index, itemId, isTopRow ? 2 : 1);

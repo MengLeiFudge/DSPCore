@@ -18,17 +18,32 @@ namespace ExampleMod;
 // Usage:
 // - Call ItemProto.SetBuildBar after the item proto is created.
 // - Use BuildBar.BindQuickBar only when you only have an item id.
+// - Use SetBuildBarWithResult / BindQuickBarWithResult when you need conflict details.
 public static class QuickBarBindingExample
 {
     public static void Register(ItemProto myItemProto)
     {
         // 首选写法：刚创建 ItemProto 后，直接把它绑定到快捷建造栏。
         // Preferred style: bind the item proto directly after creating it.
-        myItemProto.SetBuildBar(tab: 3, row: 2, index: 5);
+        myItemProto.SetBuildBar(category: 3, row: 2, index: 5);
 
         // 只有手上只有 item id 时，才使用静态入口。
         // Use the static entry only when you only have an item id.
-        BuildBar.BindQuickBar(tab: 3, row: 2, index: 4, itemId: 9554);
+        BuildBar.BindQuickBar(category: 3, row: 2, index: 4, itemId: 9554);
+
+        // 需要知道是否被其他作者默认绑定占用时，读取结构化结果。
+        // Read the structured result when you need to know whether another author default occupies the slot.
+        BuildBarBindResult result = myItemProto.SetBuildBarWithResult(category: 3, row: 2, index: 6);
+        if (result.Status == BuildBarBindStatus.Occupied)
+        {
+            // 这里可以选择改用其他槽位，或者明确使用 ReplaceExisting 覆盖。
+            // Choose another slot here, or explicitly use ReplaceExisting if replacing is intentional.
+            myItemProto.SetBuildBarWithResult(
+                category: 3,
+                row: 2,
+                index: 6,
+                conflictPolicy: BuildBarConflictPolicy.ReplaceExisting);
+        }
 
         // 需要沿用 BuildIndex 风格时，可从 BuildIndex 拆出 category/index。
         // Use the BuildIndex-style overload when migrating BuildIndex-based code.
@@ -36,7 +51,7 @@ public static class QuickBarBindingExample
 
         // 玩家在你的 UI 中重绑槽位时，写入 DSPCore 自有玩家覆盖层。
         // When your UI lets a player rebind a slot, write the DSPCore-owned override layer.
-        BuildBar.SetPlayerOverride(tab: 3, row: 2, index: 5, itemId: 9555);
+        BuildBar.SetPlayerOverride(category: 3, row: 2, index: 5, itemId: 9555);
 
         // 清除覆盖后，该槽位会回到作者默认绑定。
         // Clearing the override makes the slot fall back to the author default.

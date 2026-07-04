@@ -40,6 +40,8 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
         EntityLifecycleRuntime.Initialize();
         PlanetLifecycleRuntime.Initialize();
         GalaxyLifecycleRuntime.Initialize();
+        GlobalSaveRuntime.Initialize();
+        LocalizationRuntime.Initialize();
         SaveRuntime.RegisterLegacyHandlers();
         harmony = new Harmony(PluginGuid);
         harmony.PatchAll(typeof(ProtoRegistrationRuntimePatches));
@@ -52,6 +54,7 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
         harmony.PatchAll(typeof(PickerRuntimePatches));
         harmony.PatchAll(typeof(RecipeTypeRuntimePatches));
         harmony.PatchAll(typeof(UiWindowRuntimePatches));
+        harmony.PatchAll(typeof(OptionWindowEntryRuntimePatches));
         harmony.PatchAll(typeof(EntityLifecycleRuntimePatches));
         harmony.PatchAll(typeof(PlanetLifecycleRuntimePatches));
         harmony.PatchAll(typeof(BuildingParameterRuntimePatches));
@@ -65,6 +68,7 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
     private void OnDestroy()
     {
         Lifecycle.RaiseDestroyed();
+        GlobalSaveRuntime.Save();
         harmony?.UnpatchSelf();
         ErrorRuntime.Dispose();
     }

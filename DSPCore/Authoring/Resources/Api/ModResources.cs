@@ -72,6 +72,32 @@ public static class ModResources
     }
 
     /// <summary>
+    /// 立即查询已注册的本地化文本。
+    /// Immediately queries a registered localization text.
+    /// </summary>
+    /// <param name="key">本地化键。Localization key.</param>
+    /// <param name="value">翻译文本。Translated text.</param>
+    /// <param name="language">语言标识；为空时使用当前游戏语言。Language id; current game language is used when omitted.</param>
+    /// <returns>找到文本时返回 true。Returns true when a text is found.</returns>
+    public static bool TryTranslate(string key, out string value, string? language = null)
+    {
+        return DspCore.Resources.TryTranslate(key, out value, language);
+    }
+
+    /// <summary>
+    /// 立即查询已注册的本地化文本，找不到时返回 fallback 或 key。
+    /// Immediately queries a registered localization text and returns fallback or key when missing.
+    /// </summary>
+    /// <param name="key">本地化键。Localization key.</param>
+    /// <param name="language">语言标识；为空时使用当前游戏语言。Language id; current game language is used when omitted.</param>
+    /// <param name="fallback">可选 fallback。Optional fallback.</param>
+    /// <returns>翻译文本、fallback 或 key。Translated text, fallback, or key.</returns>
+    public static string Translate(string key, string? language = null, string? fallback = null)
+    {
+        return DspCore.Resources.Translate(key, language, fallback);
+    }
+
+    /// <summary>
     /// 获取所有资源根。
     /// Gets all resource roots.
     /// </summary>

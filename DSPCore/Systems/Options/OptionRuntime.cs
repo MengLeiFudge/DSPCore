@@ -8,6 +8,7 @@ internal static class OptionRuntime
     private static readonly Dictionary<string, ConfigEntry<string>> Entries = new();
     private static ConfigFile? configFile;
     private static OptionsWindow? window;
+    private static GlobalSavesWindow? globalSavesWindow;
 
     public static void Initialize(ConfigFile config)
     {
@@ -71,7 +72,25 @@ internal static class OptionRuntime
             window = null;
         }
 
-        window = UiWindowManager.CreateWindow<OptionsWindow>("dspcore-options-window", "DSPCore Settings");
+        window = UiWindowManager.CreateWindow<OptionsWindow>("dspcore-options-window", OptionText.Title);
         window.Open();
+    }
+
+    public static void OpenGlobalSavesWindow()
+    {
+        if (!UiWindowManager.Initialized || !UIRoot.instance)
+        {
+            DspCore.Logger?.LogWarning("DSPCore global save window cannot open before UIRoot is initialized.");
+            return;
+        }
+
+        if (globalSavesWindow != null)
+        {
+            UiWindowManager.DestroyWindow(globalSavesWindow);
+            globalSavesWindow = null;
+        }
+
+        globalSavesWindow = UiWindowManager.CreateWindow<GlobalSavesWindow>("dspcore-global-saves-window", OptionText.GlobalSavesTitle);
+        globalSavesWindow.Open();
     }
 }

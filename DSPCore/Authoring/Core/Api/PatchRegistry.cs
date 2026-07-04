@@ -24,6 +24,7 @@ public sealed class PatchRegistry
         }
 
         patches.Add(descriptor);
+        PatchRuntime.ApplyIfReady(descriptor);
     }
 
     /// <summary>

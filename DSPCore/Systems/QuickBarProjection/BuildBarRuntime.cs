@@ -24,10 +24,88 @@ internal static class BuildBarRuntime
     private static readonly Dictionary<RowButtonKey, Image> ExtendedIcons = new();
     private static readonly Dictionary<RowButtonKey, Text> ExtendedCounts = new();
     private static UIBuildMenu? currentMenu;
+    private static BuildBarOverrideWindow? overrideWindow;
 
     public static void Initialize()
     {
         DspCore.Saves.Register("DSPCore.BuildBar", new BuildBarSaveHandler(), CoreLoadOrder.Postload);
+    }
+
+    public static void OpenOverrideWindow()
+    {
+        if (!UiWindowManager.Initialized || !UIRoot.instance)
+        {
+            DspCore.Logger?.LogWarning("DSPCore build bar override window cannot open before UIRoot is initialized.");
+            return;
+        }
+
+        ReopenOverrideWindow();
+    }
+
+    public static void OpenSlotEditor(BuildBarSlot slot)
+    {
+        Pickers.Open(new PickerRequest(
+            Kind: PickerKind.Item,
+            OwnerModGuid: DSPCorePlugin.PluginGuid,
+            ShowLocked: true,
+            ShowAll: true,
+            OnReturn: selected =>
+            {
+                if (selected is ItemProto item && item.ID > 0)
+                {
+                    SetPlayerOverrideAndRefresh(slot, item.ID);
+                }
+            }));
+    }
+
+    public static void ClearSlot(BuildBarSlot slot)
+    {
+        SetPlayerOverrideAndRefresh(slot, 0);
+    }
+
+    public static void UseDefault(BuildBarSlot slot)
+    {
+        DspCore.BuildBar.ClearPlayerOverride(slot);
+        RefreshBindings();
+        ReopenOverrideWindow();
+    }
+
+    private static void SetPlayerOverrideAndRefresh(BuildBarSlot slot, int itemId)
+    {
+        if (!DspCore.BuildBar.SetPlayerOverride(slot, itemId))
+        {
+            return;
+        }
+
+        RefreshBindings();
+        ReopenOverrideWindow();
+    }
+
+    internal static void ReopenOverrideWindow()
+    {
+        if (!UiWindowManager.Initialized || !UIRoot.instance)
+        {
+            return;
+        }
+
+        if (overrideWindow != null)
+        {
+            UiWindowManager.DestroyWindow(overrideWindow);
+            overrideWindow = null;
+        }
+
+        overrideWindow = UiWindowManager.CreateWindow<BuildBarOverrideWindow>("dspcore-buildbar-override-window", BuildBarText.Title);
+        overrideWindow.Open();
+    }
+
+    private static void RefreshBindings()
+    {
+        Apply();
+        if (currentMenu != null)
+        {
+            EnsureExtendedRows(currentMenu);
+            RefreshExtendedRows(currentMenu);
+        }
     }
 
     public static void Apply()
@@ -41,12 +119,12 @@ internal static class BuildBarRuntime
         foreach (var pair in DspCore.BuildBar.GetPlayerOverrides())
         {
             var slot = pair.Key;
-            if (pair.Value != 0 || slot.Row != 1 || !IsInVanillaBounds(protos, slot.Tab, slot.Index))
+            if (pair.Value != 0 || slot.Row != 1 || !IsInVanillaBounds(protos, slot.Category, slot.Index))
             {
                 continue;
             }
 
-            protos[slot.Tab, slot.Index] = null!;
+            protos[slot.Category, slot.Index] = null!;
             StaticLoadedField?.SetValue(null, true);
         }
 
@@ -59,9 +137,9 @@ internal static class BuildBarRuntime
                 continue;
             }
 
-            if (slot.Tab > 15 || slot.Index > 12)
+            if (slot.Category > 15 || slot.Index > 12)
             {
-                DspCore.Logger?.LogWarning($"Build bar slot tab {slot.Tab}, row {slot.Row}, index {slot.Index} is outside vanilla UIBuildMenu bounds.");
+                DspCore.Logger?.LogWarning($"Build bar slot category {slot.Category}, row {slot.Row}, index {slot.Index} is outside vanilla UIBuildMenu bounds.");
                 continue;
             }
 
@@ -72,10 +150,10 @@ internal static class BuildBarRuntime
                 continue;
             }
 
-            item.BuildIndex = slot.Tab * 100 + slot.Index;
-            protos[slot.Tab, slot.Index] = item;
+            item.BuildIndex = slot.Category * 100 + slot.Index;
+            protos[slot.Category, slot.Index] = item;
             StaticLoadedField?.SetValue(null, true);
-            DspCore.Logger?.LogInfo($"Applied build bar slot tab {slot.Tab}, row {slot.Row}, index {slot.Index} -> item {itemId}.");
+            DspCore.Logger?.LogInfo($"Applied build bar slot category {slot.Category}, row {slot.Row}, index {slot.Index} -> item {itemId}.");
         }
     }
 
@@ -300,7 +378,7 @@ internal static class BuildBarRuntime
             writer.Write(overrides.Count);
             foreach (var pair in overrides)
             {
-                writer.Write(pair.Key.Tab);
+                writer.Write(pair.Key.Category);
                 writer.Write(pair.Key.Row);
                 writer.Write(pair.Key.Index);
                 writer.Write(pair.Value);

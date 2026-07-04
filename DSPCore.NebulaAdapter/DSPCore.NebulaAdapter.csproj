@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\DefaultPath.props" Condition="Exists('..\DefaultPath.props')" />
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AssemblyName>DSPCore.NebulaAdapter</AssemblyName>
+    <RootNamespace>DSPCore.NebulaAdapter</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Description>Nebula multiplayer adapter for DSPCore.</Description>
+    <ProfileDir Condition="'$(ProfileDir)' == '' and '$(OS)' == 'Windows_NT' and '$(USERPROFILE)' != ''">$(USERPROFILE)\AppData\Roaming\r2modmanPlus-local\DysonSphereProgram\profiles\Default</ProfileDir>
+    <ProfileDir Condition="'$(ProfileDir)' == '' and Exists('/mnt/c/Users/MLJ/AppData/Roaming/r2modmanPlus-local/DysonSphereProgram/profiles/Default')">/mnt/c/Users/MLJ/AppData/Roaming/r2modmanPlus-local/DysonSphereProgram/profiles/Default</ProfileDir>
+    <DSPGameDir Condition="'$(DSPGameDir)' == '' and Exists('/mnt/d/Steam/steamapps/common/Dyson Sphere Program')">/mnt/d/Steam/steamapps/common/Dyson Sphere Program</DSPGameDir>
+    <BepInExCoreDir Condition="'$(ProfileDir)' != ''">$(ProfileDir)/BepInEx/core</BepInExCoreDir>
+    <DumpedAssembliesDir Condition="'$(ProfileDir)' != ''">$(ProfileDir)/BepInEx/DumpedAssemblies/DSPGAME</DumpedAssembliesDir>
+    <DSPManagedDir Condition="'$(DSPGameDir)' != ''">$(DSPGameDir)/DSPGAME_Data/Managed</DSPManagedDir>
+    <NebulaApiDir Condition="'$(ProfileDir)' != ''">$(ProfileDir)/BepInEx/plugins/nebula-NebulaMultiplayerModApi</NebulaApiDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <ProjectReference Include="..\DSPCore\DSPCore.csproj" Private="false" />
+    <Reference Include="BepInEx">
+      <HintPath>$(BepInExCoreDir)/BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(DSPManagedDir)/UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(DumpedAssembliesDir)/UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="NebulaAPI">
+      <HintPath>$(NebulaApiDir)/NebulaAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="ValidateNebulaAdapterReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(BepInExCoreDir)' == '' or !Exists('$(BepInExCoreDir)/BepInEx.dll')" Text="未找到 BepInEx.dll；请复制 DefaultPath.props.example 为 DefaultPath.props 并设置 ProfileDir。" />
+    <Error Condition="'$(DSPManagedDir)' == '' or !Exists('$(DSPManagedDir)/UnityEngine.dll')" Text="未找到 UnityEngine.dll；请复制 DefaultPath.props.example 为 DefaultPath.props 并设置 DSPGameDir。" />
+    <Error Condition="'$(DumpedAssembliesDir)' == '' or !Exists('$(DumpedAssembliesDir)/UnityEngine.CoreModule.dll')" Text="未找到 UnityEngine.CoreModule.dll；请检查 ProfileDir 的 BepInEx/DumpedAssemblies/DSPGAME。" />
+    <Error Condition="'$(NebulaApiDir)' == '' or !Exists('$(NebulaApiDir)/NebulaAPI.dll')" Text="未找到 NebulaAPI.dll；请安装 NebulaMultiplayerModApi 或设置 ProfileDir。" />
+  </Target>
+</Project>

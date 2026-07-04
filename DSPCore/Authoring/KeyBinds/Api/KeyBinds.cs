@@ -11,6 +11,11 @@ namespace DSPCore;
 public static class KeyBinds
 {
     internal const string OptionsPageId = "dspcore.keybinds";
+    internal const string PlacementSection = "DSPCore.KeyBinds";
+    internal const string PlacementKey = "Placement";
+    internal const string PlacementModSettings = "ModSettings";
+    internal const string PlacementKeyBindings = "KeyBindings";
+    internal const string PlacementBoth = "Both";
 
     /// <summary>
     /// 注册一个可重绑定按键。
@@ -24,6 +29,7 @@ public static class KeyBinds
     /// <param name="action">触发方式。Trigger action.</param>
     /// <param name="conflictGroup">冲突组。Conflict group.</param>
     /// <param name="canOverride">玩家是否可以重绑定。Whether players can rebind it.</param>
+    /// <param name="displayPageId">可选模组设置页 ID；为空时只使用统一按键页。Optional mod settings page ID; unified key-bind page only when omitted.</param>
     public static void Register(
         string id,
         string ownerModGuid,
@@ -32,7 +38,8 @@ public static class KeyBinds
         Action callback,
         CoreKeyAction action = CoreKeyAction.Press,
         int conflictGroup = 0,
-        bool canOverride = true)
+        bool canOverride = true,
+        string? displayPageId = null)
     {
         Register(new KeyBindDescriptor(
             id,
@@ -42,7 +49,8 @@ public static class KeyBinds
             action,
             conflictGroup,
             canOverride,
-            callback));
+            callback,
+            displayPageId));
     }
 
     /// <summary>
@@ -95,6 +103,35 @@ public static class KeyBinds
         return string.IsNullOrEmpty(conflictText)
             ? description
             : description + "; <color=#ffb347>" + conflictText + "</color>";
+    }
+
+    internal static bool IsKeyBindOption(OptionDescriptor option)
+    {
+        return option.Kind == OptionValueKind.KeyBinding && TryGetDescriptor(option.Section, option.Key, out _);
+    }
+
+    internal static bool TryGetDisplayPageId(KeyBindDescriptor descriptor, out string pageId)
+    {
+        var value = descriptor.DisplayPageId;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            pageId = string.Empty;
+            return false;
+        }
+
+        pageId = value!;
+        return true;
+    }
+
+    internal static KeyBindPlacement GetPlacement()
+    {
+        var text = DspCore.Options.GetString(PlacementSection, PlacementKey);
+        if (Enum.TryParse(text, true, out KeyBindPlacement placement))
+        {
+            return placement;
+        }
+
+        return KeyBindPlacement.Both;
     }
 
     private static string GetOptionSection(KeyBindDescriptor descriptor)

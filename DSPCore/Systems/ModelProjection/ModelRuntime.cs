@@ -79,14 +79,16 @@ internal static class ModelRuntime
         return clone;
     }
 
-    private static PrefabDesc? ClonePrefab(PrefabDesc source)
+    private static PrefabDesc? ClonePrefab(PrefabDesc? source)
     {
         if (source == null)
         {
             return null;
         }
 
+#pragma warning disable SYSLIB0050
         var clone = (PrefabDesc)FormatterServices.GetUninitializedObject(typeof(PrefabDesc));
+#pragma warning restore SYSLIB0050
         CopyPublicFields(source, clone);
         return clone;
     }

@@ -401,6 +401,15 @@ public static class Options
     }
 
     /// <summary>
+    /// 打开 DSPCore 全局存档只读窗口。
+    /// Opens the DSPCore read-only global save window.
+    /// </summary>
+    public static void OpenGlobalSavesWindow()
+    {
+        OptionRuntime.OpenGlobalSavesWindow();
+    }
+
+    /// <summary>
     /// 导出所有已注册配置项的当前值快照。
     /// Exports current values of all registered options.
     /// </summary>

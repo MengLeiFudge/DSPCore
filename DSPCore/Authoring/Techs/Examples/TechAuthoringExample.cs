@@ -16,9 +16,15 @@ public static class TechAuthoringExample
 {
     public static void Register(TechProto techProto)
     {
-        techProto.RegisterTech(
-            ownerModGuid: "com.example.my-mod",
-            phase: CoreDataPhase.DataUpdates,
-            purpose: "Unlock example machine");
+        techProto
+            .SetIconTag("example-tech")
+            .SetHidden()
+            .SetPreTechsImplicit(1001)
+            .GrantItems(new[] { 9554 }, new[] { 1 })
+            .SetPropertyOverrideItems(new[] { 6001 }, new[] { 200 })
+            .RegisterTech(
+                ownerModGuid: "com.example.my-mod",
+                phase: CoreDataPhase.DataUpdates,
+                purpose: "Unlock example machine");
     }
 }

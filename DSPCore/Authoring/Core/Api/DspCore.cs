@@ -39,6 +39,12 @@ public static class DspCore
     public static SaveRegistry Saves { get; } = new();
 
     /// <summary>
+    /// 全局跨存档注册表。
+    /// Global cross-save state registry.
+    /// </summary>
+    public static SaveRegistry GlobalSaves { get; } = new();
+
+    /// <summary>
     /// 全局原型注册门面。
     /// Global proto registration facade.
     /// </summary>
@@ -203,17 +209,12 @@ public static class DspCore
 
         Logger = logger;
         RegisterBuiltInFeatures();
-        foreach (var feature in Features.GetAll())
-        {
-            feature.Initialize();
-        }
-
-        foreach (var module in Modules.GetAll())
-        {
-            module.Initialize();
-        }
-
+        OptionText.RegisterBuiltInLocalizations();
+        BuildBarText.RegisterBuiltInLocalizations();
+        RegisterBuiltInOptions();
         IsInitialized = true;
+        Features.InitializeAll();
+        Modules.InitializeAll();
     }
 
     private static void RegisterBuiltInFeatures()
@@ -244,4 +245,21 @@ public static class DspCore
             Features.Register(new FeatureDescriptor(id, displayName, priority, static () => { }));
         }
     }
+
+    private static void RegisterBuiltInOptions()
+    {
+        global::DSPCore.Options.RegisterPage("dspcore.settings", PluginGuidFallback, "DSPCore", -1000);
+        global::DSPCore.Options.Enum(
+            global::DSPCore.KeyBinds.PlacementSection,
+            global::DSPCore.KeyBinds.PlacementKey,
+            KeyBindPlacement.Both,
+            "Where rebindable mod key bindings are shown in the DSPCore settings window.",
+            new OptionUi("dspcore.settings", "Key Bind Display")
+            {
+                Order = 100,
+                CanReset = true
+            });
+    }
+
+    private const string PluginGuidFallback = "com.menglei.dsp.core";
 }

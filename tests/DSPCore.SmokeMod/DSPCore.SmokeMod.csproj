@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\DefaultPath.props" Condition="Exists('..\..\DefaultPath.props')" />
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AssemblyName>DSPCore.SmokeMod</AssemblyName>
+    <RootNamespace>DSPCore.SmokeMod</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Description>Manual in-game smoke test plugin for DSPCore.</Description>
+    <ProfileDir Condition="'$(ProfileDir)' == '' and '$(OS)' == 'Windows_NT' and '$(USERPROFILE)' != ''">$(USERPROFILE)\AppData\Roaming\r2modmanPlus-local\DysonSphereProgram\profiles\Default</ProfileDir>
+    <ProfileDir Condition="'$(ProfileDir)' == '' and Exists('/mnt/c/Users/MLJ/AppData/Roaming/r2modmanPlus-local/DysonSphereProgram/profiles/Default')">/mnt/c/Users/MLJ/AppData/Roaming/r2modmanPlus-local/DysonSphereProgram/profiles/Default</ProfileDir>
+    <DSPGameDir Condition="'$(DSPGameDir)' == '' and Exists('/mnt/d/Steam/steamapps/common/Dyson Sphere Program')">/mnt/d/Steam/steamapps/common/Dyson Sphere Program</DSPGameDir>
+    <BepInExCoreDir Condition="'$(ProfileDir)' != ''">$(ProfileDir)/BepInEx/core</BepInExCoreDir>
+    <DumpedAssembliesDir Condition="'$(ProfileDir)' != ''">$(ProfileDir)/BepInEx/DumpedAssemblies/DSPGAME</DumpedAssembliesDir>
+    <DSPManagedDir Condition="'$(DSPGameDir)' != ''">$(DSPGameDir)/DSPGAME_Data/Managed</DSPManagedDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\DSPCore\DSPCore.csproj" Private="false" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <Reference Include="BepInEx">
+      <HintPath>$(BepInExCoreDir)/BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(DumpedAssembliesDir)/Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(DSPManagedDir)/UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(DumpedAssembliesDir)/UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="ValidateRuntimeReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(BepInExCoreDir)' == '' or !Exists('$(BepInExCoreDir)/BepInEx.dll')" Text="未找到 BepInEx.dll；请设置 ProfileDir。" />
+    <Error Condition="'$(DumpedAssembliesDir)' == '' or !Exists('$(DumpedAssembliesDir)/Assembly-CSharp.dll')" Text="未找到 Assembly-CSharp.dll；请设置 ProfileDir 并确认 dumped assemblies。" />
+    <Error Condition="'$(DSPManagedDir)' == '' or !Exists('$(DSPManagedDir)/UnityEngine.dll')" Text="未找到 UnityEngine.dll；请设置 DSPGameDir。" />
+    <Error Condition="'$(DumpedAssembliesDir)' == '' or !Exists('$(DumpedAssembliesDir)/UnityEngine.CoreModule.dll')" Text="未找到 UnityEngine.CoreModule.dll；请设置 ProfileDir 并确认 dumped assemblies。" />
+  </Target>
+</Project>

@@ -195,7 +195,8 @@ public static class GridDsl {
             ObjectName = objectName,
             Children = children ?? Array.Empty<LayoutNode>(),
             OnBuilt = onBuilt,
-            RootFactory = (parent, rect) => UiPageLayout.CreateFooterCard(parent, objectName, rect.Top),
+            RootFactory = (parent, rect) => UiPageLayout.CreateFooterCard(parent, objectName, rect.Top, rect.Width,
+                rect.Height),
         };
     }
 
@@ -211,7 +212,8 @@ public static class GridDsl {
             ColSpan = colSpan,
             ObjectName = objectName,
             BuildAction = (wnd, parent) => {
-                UiPageLayout.HeaderRefs header = UiPageLayout.CreatePageHeader(wnd, parent, title, summary, objectName);
+                UiPageLayout.HeaderRefs header = UiPageLayout.CreatePageHeader(wnd, parent, title, summary, objectName,
+                    parent.sizeDelta.x, parent.sizeDelta.y);
                 onBuilt?.Invoke(header);
             },
         };

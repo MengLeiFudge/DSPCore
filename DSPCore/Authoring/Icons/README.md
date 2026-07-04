@@ -25,7 +25,7 @@ pack.IconFromAssetBundle("example-bundle-icon", "example-icons", "example-machin
 pack.ItemIcon("example-machine", "example-machine.png", itemId: 9554);
 ```
 
-资源包会把相对路径拼到 `RootPath` 下，例如 `"example-machine.png"` 会解析为 `"assets/icons/example-machine.png"`。`ItemIcon` / `RecipeIcon` 等 typed helper 会自动选择目标 `ProtoKind`。嵌入资源名不拼接 root，因为它必须是 assembly 的 manifest resource name。
+资源包会通过 Resources 的统一路径规则把相对路径拼到 `RootPath` 下，例如 `"example-machine.png"` 会解析为 `"assets/icons/example-machine.png"`。`ItemIcon` / `RecipeIcon` 等 typed helper 会自动选择目标 `ProtoKind`。嵌入资源名不拼接 root，因为它必须是 assembly 的 manifest resource name。
 
 ## 功能：注册独立共享图标
 
@@ -77,6 +77,7 @@ Icons.BindToProto(
 - 注册阶段只保存图标 descriptor；同一个 `Id` 后一次注册会覆盖前一次。
 - `ModResourcePack` 只负责补齐 owner 和相对路径，最终仍会注册普通 `IconDescriptor`。
 - 图标解析会识别 `embedded://` 和 `assetbundle://` 内部路径；普通路径优先从 Unity `Resources.Load<Sprite>` 加载，失败后再按文件路径读取 PNG。
+- 本地 PNG 和 AssetBundle 路径会通过 `DspCore.Resources` 解析：先尝试原路径，找不到时再按图标 owner 已登记的资源根查找。
 - `FromEmbedded` 使用内部 `embedded://` 路径约定，运行时会在当前 AppDomain 已加载 assembly 中读取 manifest resource stream。
 - `FromAssetBundle` 使用内部 `assetbundle://` 路径约定，运行时会缓存 AssetBundle，并按资源名加载 `Sprite`，找不到时尝试 `Texture2D`。
 - 如果主图标加载失败且设置了 `FallbackIconId`，DSPCore 会递归解析 fallback 图标。
@@ -87,7 +88,7 @@ Icons.BindToProto(
 
 - 不创建 Proto；目标物品、配方、科技等必须已经存在。
 - 不负责本地化文本；文本属于 Resources。
-- 不保证外部 PNG 路径跨机器稳定；发布模组时应使用确定的资源路径。
+- 不保证未登记资源根的外部 PNG 路径跨机器稳定；发布模组时应使用确定的资源路径或先通过 `ModResources.Root(...)` / `ModResources.Pack(...)` 登记资源根。
 - 嵌入资源和 AssetBundle 的 typed 绑定暂未单独展开；复杂来源继续使用 `BindEmbeddedIconToProto(...)` 或 `BindAssetBundleIconToProto(...)`。
 - 不负责卸载 AssetBundle；如果需要更细的生命周期控制，模组应自己管理独立 bundle。
 - 不会主动加载资源 DLL；如果使用资源 DLL，必须先由你的模组或加载器把该 assembly 加载进当前 AppDomain。

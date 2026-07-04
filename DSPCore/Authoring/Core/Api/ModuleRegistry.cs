@@ -10,6 +10,7 @@ namespace DSPCore;
 public sealed class ModuleRegistry
 {
     private readonly Dictionary<string, ModuleDescriptor> modules = new(StringComparer.Ordinal);
+    private readonly HashSet<string> initialized = new(StringComparer.Ordinal);
 
     /// <summary>
     /// 注册一个模块描述。
@@ -24,6 +25,21 @@ public sealed class ModuleRegistry
         }
 
         modules[descriptor.Id] = descriptor;
+        if (DspCore.IsInitialized && initialized.Add(descriptor.Id))
+        {
+            InvokeInitialize(descriptor);
+        }
+    }
+
+    internal void InitializeAll()
+    {
+        foreach (var module in GetAll())
+        {
+            if (initialized.Add(module.Id))
+            {
+                InvokeInitialize(module);
+            }
+        }
     }
 
     /// <summary>
@@ -46,5 +62,18 @@ public sealed class ModuleRegistry
     public IReadOnlyCollection<ModuleDescriptor> GetAll()
     {
         return modules.Values;
+    }
+
+    private static void InvokeInitialize(ModuleDescriptor descriptor)
+    {
+        try
+        {
+            descriptor.Initialize();
+        }
+        catch (Exception ex)
+        {
+            DspCore.Errors.ReportException(descriptor.Id, ex);
+            DspCore.Logger?.LogError($"DSPCore module {descriptor.Id} initialization failed: {ex}");
+        }
     }
 }

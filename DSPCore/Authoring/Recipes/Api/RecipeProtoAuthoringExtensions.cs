@@ -9,6 +9,42 @@ namespace DSPCore;
 public static class RecipeProtoAuthoringExtensions
 {
     /// <summary>
+    /// 设置配方图标标签。
+    /// Sets the recipe icon tag.
+    /// </summary>
+    /// <param name="recipe">配方原型。Recipe proto.</param>
+    /// <param name="iconTag">图标标签。Icon tag.</param>
+    /// <returns>同一个配方原型，便于继续链式调用。The same recipe proto for chaining.</returns>
+    public static RecipeProto SetIconTag(this RecipeProto recipe, string iconTag)
+    {
+        if (recipe == null)
+        {
+            throw new ArgumentNullException(nameof(recipe));
+        }
+
+        recipe.IconTag = iconTag;
+        return recipe;
+    }
+
+    /// <summary>
+    /// 设置配方是否禁用增产语义。
+    /// Sets whether the recipe disables proliferator productivity semantics.
+    /// </summary>
+    /// <param name="recipe">配方原型。Recipe proto.</param>
+    /// <param name="nonProductive">是否禁用增产。Whether productivity is disabled.</param>
+    /// <returns>同一个配方原型，便于继续链式调用。The same recipe proto for chaining.</returns>
+    public static RecipeProto SetNonProductive(this RecipeProto recipe, bool nonProductive = true)
+    {
+        if (recipe == null)
+        {
+            throw new ArgumentNullException(nameof(recipe));
+        }
+
+        recipe.NonProductive = nonProductive;
+        return recipe;
+    }
+
+    /// <summary>
     /// 设置配方在分页或选择器中的 GridIndex。
     /// Sets the recipe's GridIndex for tabs or picker surfaces.
     /// </summary>
@@ -59,6 +95,27 @@ public static class RecipeProtoAuthoringExtensions
         }
 
         Recipes.Register(recipe, ownerModGuid, phase, purpose);
+        return recipe;
+    }
+
+    /// <summary>
+    /// 使用稳定身份注册当前配方原型。
+    /// Registers the current recipe proto with a stable identity.
+    /// </summary>
+    /// <param name="recipe">配方原型。Recipe proto.</param>
+    /// <param name="ownerModGuid">所属模组 GUID。Owner mod GUID.</param>
+    /// <param name="stableId">稳定 Proto 身份。Stable proto identity.</param>
+    /// <param name="phase">数据阶段。Data phase.</param>
+    /// <param name="purpose">注册目的说明。Registration purpose.</param>
+    /// <returns>同一个配方原型，便于继续链式调用。The same recipe proto for chaining.</returns>
+    public static RecipeProto RegisterRecipe(this RecipeProto recipe, string ownerModGuid, ProtoStableId stableId, CoreDataPhase phase = CoreDataPhase.Data, string? purpose = null)
+    {
+        if (recipe == null)
+        {
+            throw new ArgumentNullException(nameof(recipe));
+        }
+
+        Recipes.Register(recipe, ownerModGuid, stableId, phase, purpose);
         return recipe;
     }
 
