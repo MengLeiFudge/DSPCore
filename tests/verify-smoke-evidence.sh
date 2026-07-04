@@ -45,16 +45,14 @@ for check in "$@"; do
             require "DSPCore smoke declarations registered." "Smoke mod must register declarations."
             ;;
         ui)
-            require "DSPCore smoke opened settings from key bind." "Ctrl+F8 must open the DSPCore settings window."
-            require "DSPCore smoke window state settings: exists=True, activeSelf=True, activeInHierarchy=True" "DSPCore settings window must exist and be active after Ctrl+F8."
+            require "DSPCore smoke opened settings from key bind." "Ctrl+F8 must open the vanilla option window and select the DSPCore page."
+            require "DSPCore smoke window state settings: exists=True, activeSelf=True, activeInHierarchy=True" "DSPCore option page must exist and be active after Ctrl+F8."
             ;;
         ui-pages)
-            require "DSPCore smoke opened global saves from key bind." "Ctrl+F6 must open the DSPCore GlobalSaves window."
-            require "DSPCore smoke window state global saves: exists=True, activeSelf=True, activeInHierarchy=True" "DSPCore GlobalSaves window must exist and be active after Ctrl+F6."
-            require "DSPCore smoke opened build bar editor from key bind." "Ctrl+F7 must open the DSPCore BuildBar editor."
-            require "DSPCore smoke window state build bar editor: exists=True, activeSelf=True, activeInHierarchy=True" "DSPCore BuildBar editor must exist and be active after Ctrl+F7."
-            require "DSPCore smoke opened settings from key bind." "Ctrl+F8 must open the DSPCore settings window."
-            require "DSPCore smoke window state settings: exists=True, activeSelf=True, activeInHierarchy=True" "DSPCore settings window must exist and be active after Ctrl+F8."
+            require "DSPCore smoke flushed global saves from key bind." "Ctrl+F6 must flush GlobalSaves without opening a player-facing window."
+            require "DSPCore smoke build bar binding uses vanilla build bar hotkeys." "Ctrl+F7 must document that BuildBar rebinding uses vanilla build bar hotkeys."
+            require "DSPCore smoke opened settings from key bind." "Ctrl+F8 must open the vanilla option window and select the DSPCore page."
+            require "DSPCore smoke window state settings: exists=True, activeSelf=True, activeInHierarchy=True" "DSPCore option page must exist and be active after Ctrl+F8."
             ;;
         content)
             require "DSPCore smoke content state: iconApplied=True" "Smoke icon binding must apply a sprite to the target item."

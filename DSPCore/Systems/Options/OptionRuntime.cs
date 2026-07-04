@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using BepInEx.Configuration;
+using HarmonyLib;
 
 namespace DSPCore;
 
 internal static class OptionRuntime
 {
     private static readonly Dictionary<string, ConfigEntry<string>> Entries = new();
+    private static readonly System.Reflection.MethodInfo? OpenMethod = AccessTools.Method(typeof(ManualBehaviour), "_Open");
     private static ConfigFile? configFile;
-    private static OptionsWindow? window;
-    private static GlobalSavesWindow? globalSavesWindow;
 
     public static void Initialize(ConfigFile config)
     {
@@ -60,37 +60,29 @@ internal static class OptionRuntime
 
     public static void OpenWindow()
     {
-        if (!UiWindowManager.Initialized || !UIRoot.instance)
+        if (!(UIRoot.instance?.optionWindow is UIOptionWindow optionWindow) || !optionWindow)
         {
-            DspCore.Logger?.LogWarning("DSPCore options window cannot open before UIRoot is initialized.");
+            DspCore.Logger?.LogWarning("DSPCore option page cannot open before the vanilla option window is initialized.");
             return;
         }
 
-        if (window != null)
-        {
-            UiWindowManager.DestroyWindow(window);
-            window = null;
-        }
-
-        window = UiWindowManager.CreateWindow<OptionsWindow>("dspcore-options-window", OptionText.Title);
-        window.Open();
+        AccessOpen(optionWindow);
+        OptionPageRuntime.SetTabIndex(optionWindow);
     }
 
     public static void OpenGlobalSavesWindow()
     {
-        if (!UiWindowManager.Initialized || !UIRoot.instance)
+        DspCore.Logger?.LogInfo("DSPCore GlobalSaves has no player-facing window; global data remains available through the Saves API.");
+    }
+
+    private static void AccessOpen(UIOptionWindow optionWindow)
+    {
+        if (OpenMethod == null)
         {
-            DspCore.Logger?.LogWarning("DSPCore global save window cannot open before UIRoot is initialized.");
+            DspCore.Logger?.LogWarning("DSPCore could not open the vanilla option window through ManualBehaviour._Open.");
             return;
         }
 
-        if (globalSavesWindow != null)
-        {
-            UiWindowManager.DestroyWindow(globalSavesWindow);
-            globalSavesWindow = null;
-        }
-
-        globalSavesWindow = UiWindowManager.CreateWindow<GlobalSavesWindow>("dspcore-global-saves-window", OptionText.GlobalSavesTitle);
-        globalSavesWindow.Open();
+        OpenMethod.Invoke(optionWindow, null);
     }
 }

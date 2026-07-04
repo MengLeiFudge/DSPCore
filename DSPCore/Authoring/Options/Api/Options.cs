@@ -392,8 +392,8 @@ public static class Options
     }
 
     /// <summary>
-    /// 打开 DSPCore 统一设置窗口。
-    /// Opens the DSPCore unified settings window.
+    /// 打开原版设置窗口并切到 DSPCore 设置分页。
+    /// Opens the vanilla option window and selects the DSPCore settings tab.
     /// </summary>
     public static void OpenWindow()
     {
@@ -401,9 +401,10 @@ public static class Options
     }
 
     /// <summary>
-    /// 打开 DSPCore 全局存档只读窗口。
-    /// Opens the DSPCore read-only global save window.
+    /// 兼容旧入口；GlobalSaves 不再提供玩家窗口。
+    /// Compatibility entry; GlobalSaves no longer exposes a player-facing window.
     /// </summary>
+    [Obsolete("GlobalSaves no longer has a player-facing window.")]
     public static void OpenGlobalSavesWindow()
     {
         OptionRuntime.OpenGlobalSavesWindow();

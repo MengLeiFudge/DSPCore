@@ -9,9 +9,10 @@ namespace DSPCore;
 public static class BuildBar
 {
     /// <summary>
-    /// 打开 DSPCore 建造栏绑定编辑器。
-    /// Opens the DSPCore build bar binding editor.
+    /// 兼容旧按钮入口；建造栏绑定现在通过原版建造栏交互完成。
+    /// Compatibility entry for old buttons; build bar binding now uses vanilla build bar interactions.
     /// </summary>
+    [System.Obsolete("Build bar binding is handled from the vanilla build bar: hold the reassign or clear key over a slot.")]
     public static void OpenEditor()
     {
         BuildBarRuntime.OpenOverrideWindow();

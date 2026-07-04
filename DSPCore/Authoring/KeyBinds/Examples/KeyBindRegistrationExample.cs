@@ -8,11 +8,11 @@ namespace ExampleMod;
 // 用途：
 // - KeyBinds 用于声明可重绑定按键和触发回调。
 // - 当前运行时支持单键以及简单 Ctrl/Alt/Shift 修饰键。
-// - CanOverride=true 时会自动进入 DSPCore 统一设置窗口。
+// - CanOverride=true 时会自动进入原版按键页。
 //
 // Usage:
 // - Register once during plugin startup.
-// - Players can click Capture and press a key, or edit the key text directly.
+// - Players rebind through the vanilla key-binding page.
 // - ConflictGroup only reports same-key conflicts inside the same group.
 // - Keep callbacks short; expensive work should be deferred to your own update logic.
 public static class KeyBindRegistrationExample

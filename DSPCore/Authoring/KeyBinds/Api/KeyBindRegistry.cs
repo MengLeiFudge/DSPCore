@@ -18,7 +18,7 @@ public sealed class KeyBindRegistry
     /// <param name="descriptor">按键描述。Key binding descriptor.</param>
     public void Register(KeyBindDescriptor descriptor)
     {
-        keyBinds[descriptor.Id] = descriptor;
+        keyBinds[KeyOf(descriptor)] = descriptor;
     }
 
     /// <summary>
@@ -29,5 +29,10 @@ public sealed class KeyBindRegistry
     public IReadOnlyCollection<KeyBindDescriptor> GetAll()
     {
         return keyBinds.Values;
+    }
+
+    private static string KeyOf(KeyBindDescriptor descriptor)
+    {
+        return descriptor.OwnerModGuid + "\u001f" + descriptor.Id;
     }
 }

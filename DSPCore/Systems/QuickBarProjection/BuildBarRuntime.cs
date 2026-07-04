@@ -20,26 +20,36 @@ internal static class BuildBarRuntime
     private static readonly System.Reflection.FieldInfo? StaticLoadedField = AccessTools.Field(typeof(UIBuildMenu), "staticLoaded");
     private static readonly System.Reflection.FieldInfo? CurrentCategoryField = AccessTools.Field(typeof(UIBuildMenu), "currentCategory");
     private static readonly System.Reflection.MethodInfo? OnChildButtonClickMethod = AccessTools.Method(typeof(UIBuildMenu), "OnChildButtonClick");
+    private static readonly System.Reflection.FieldInfo? ButtonPointerEnterField = AccessTools.Field(typeof(UIButton), "isPointerEnter");
     private static readonly Dictionary<RowButtonKey, UIButton> ExtendedButtons = new();
     private static readonly Dictionary<RowButtonKey, Image> ExtendedIcons = new();
     private static readonly Dictionary<RowButtonKey, Text> ExtendedCounts = new();
     private static UIBuildMenu? currentMenu;
-    private static BuildBarOverrideWindow? overrideWindow;
 
     public static void Initialize()
     {
         DspCore.Saves.Register("DSPCore.BuildBar", new BuildBarSaveHandler(), CoreLoadOrder.Postload);
+        KeyBinds.Register(
+            "ReassignBuildBar",
+            DSPCorePlugin.PluginGuid,
+            "DSPCore Build Bar Reassign",
+            "LeftControl",
+            static () => { },
+            CoreKeyAction.Hold,
+            canOverride: true);
+        KeyBinds.Register(
+            "ClearBuildBar",
+            DSPCorePlugin.PluginGuid,
+            "DSPCore Build Bar Clear",
+            "LeftAlt",
+            static () => { },
+            CoreKeyAction.Hold,
+            canOverride: true);
     }
 
     public static void OpenOverrideWindow()
     {
-        if (!UiWindowManager.Initialized || !UIRoot.instance)
-        {
-            DspCore.Logger?.LogWarning("DSPCore build bar override window cannot open before UIRoot is initialized.");
-            return;
-        }
-
-        ReopenOverrideWindow();
+        DspCore.Logger?.LogInfo("DSPCore build bar binding uses the vanilla build bar interaction: hold the reassign key and click a slot, or hold the clear key over a slot.");
     }
 
     public static void OpenSlotEditor(BuildBarSlot slot)
@@ -67,7 +77,6 @@ internal static class BuildBarRuntime
     {
         DspCore.BuildBar.ClearPlayerOverride(slot);
         RefreshBindings();
-        ReopenOverrideWindow();
     }
 
     private static void SetPlayerOverrideAndRefresh(BuildBarSlot slot, int itemId)
@@ -78,24 +87,6 @@ internal static class BuildBarRuntime
         }
 
         RefreshBindings();
-        ReopenOverrideWindow();
-    }
-
-    internal static void ReopenOverrideWindow()
-    {
-        if (!UiWindowManager.Initialized || !UIRoot.instance)
-        {
-            return;
-        }
-
-        if (overrideWindow != null)
-        {
-            UiWindowManager.DestroyWindow(overrideWindow);
-            overrideWindow = null;
-        }
-
-        overrideWindow = UiWindowManager.CreateWindow<BuildBarOverrideWindow>("dspcore-buildbar-override-window", BuildBarText.Title);
-        overrideWindow.Open();
     }
 
     private static void RefreshBindings()
@@ -231,6 +222,7 @@ internal static class BuildBarRuntime
 
         var category = GetCurrentCategory(menu);
         var bindings = DspCore.BuildBar.GetEffectiveBindings();
+        var forceShowAllButtons = IsReassignHeld();
         foreach (var pair in ExtendedButtons)
         {
             var key = pair.Key;
@@ -238,11 +230,28 @@ internal static class BuildBarRuntime
             var slot = new BuildBarSlot(category, key.Row, key.Index);
             var visible = bindings.TryGetValue(slot, out var itemId);
             var item = visible ? LDB.items.Select(itemId) : null;
-            visible = visible && item != null;
+            visible = (visible && item != null) || forceShowAllButtons;
 
             uiButton.gameObject.SetActive(visible);
-            if (!visible || item == null || uiButton.button == null)
+            if (!visible || uiButton.button == null)
             {
+                continue;
+            }
+
+            if (item == null)
+            {
+                uiButton.button.interactable = true;
+                uiButton.tips.itemId = 0;
+                if (ExtendedIcons.TryGetValue(key, out var emptyIcon))
+                {
+                    emptyIcon.sprite = null;
+                }
+
+                if (ExtendedCounts.TryGetValue(key, out var emptyText))
+                {
+                    emptyText.text = string.Empty;
+                }
+
                 continue;
             }
 
@@ -266,6 +275,8 @@ internal static class BuildBarRuntime
                 countText.text = count > 0 ? count.ToString() : string.Empty;
             }
         }
+
+        HandleClearHover(menu);
     }
 
     private static void OnExtendedButtonClick(int row, int index)
@@ -276,12 +287,25 @@ internal static class BuildBarRuntime
         }
 
         var category = GetCurrentCategory(currentMenu);
+        var slot = new BuildBarSlot(category, row, index);
+        if (IsReassignHeld())
+        {
+            OpenSlotEditor(slot);
+            return;
+        }
+
+        if (IsClearHeld())
+        {
+            ClearSlot(slot);
+            return;
+        }
+
         if (!IsInVanillaBounds(protos, category, index))
         {
             return;
         }
 
-        if (!DspCore.BuildBar.GetEffectiveBindings().TryGetValue(new BuildBarSlot(category, row, index), out var itemId))
+        if (!DspCore.BuildBar.GetEffectiveBindings().TryGetValue(slot, out var itemId))
         {
             return;
         }
@@ -302,6 +326,42 @@ internal static class BuildBarRuntime
         {
             protos[category, index] = original;
         }
+    }
+
+    private static void HandleClearHover(UIBuildMenu menu)
+    {
+        if (!IsClearHeld())
+        {
+            return;
+        }
+
+        var category = GetCurrentCategory(menu);
+        foreach (var pair in ExtendedButtons)
+        {
+            if (!IsPointerEnter(pair.Value))
+            {
+                continue;
+            }
+
+            ClearSlot(new BuildBarSlot(category, pair.Key.Row, pair.Key.Index));
+            VFAudio.Create("ui-click-0", null, Vector3.zero, true);
+            break;
+        }
+    }
+
+    private static bool IsReassignHeld()
+    {
+        return KeyBindRuntime.IsHeld("ReassignBuildBar", KeyCode.LeftControl);
+    }
+
+    private static bool IsClearHeld()
+    {
+        return KeyBindRuntime.IsHeld("ClearBuildBar", KeyCode.LeftAlt);
+    }
+
+    private static bool IsPointerEnter(UIButton button)
+    {
+        return ButtonPointerEnterField?.GetValue(button) is true;
     }
 
     private static int GetCurrentCategory(UIBuildMenu menu)

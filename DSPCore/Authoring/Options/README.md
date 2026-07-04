@@ -1,6 +1,6 @@
 # 配置项
 
-Options 模块让模组声明简单配置项，由 DSPCore 统一绑定到 BepInEx `ConfigFile`，并提供 DSPCore 自有统一设置窗口。公开表面包含 `Options.Page(...).Section(...)` 页面上下文入口、`String`、`Bool`、`Int`、`Float`、`Enum`、`IntRange`、`FloatRange` 短入口、底层字符串注册、设置页面描述、设置版本描述、配置导入/导出和 `Options.OpenWindow()`。
+Options 模块让模组声明简单配置项，由 DSPCore 统一绑定到 BepInEx `ConfigFile`，并提供 原版设置窗口内的 DSPCore 分页。公开表面包含 `Options.Page(...).Section(...)` 页面上下文入口、`String`、`Bool`、`Int`、`Float`、`Enum`、`IntRange`、`FloatRange` 短入口、底层字符串注册、设置页面描述、设置版本描述、配置导入/导出和 `Options.OpenWindow()`。
 
 ## 这个模块带来什么便利
 
@@ -9,8 +9,7 @@ Options 模块让模组声明简单配置项，由 DSPCore 统一绑定到 BepIn
 - 需要显示名、排序或重置按钮时，仍用同名方法传入 `OptionUi`；页面上下文会自动携带 `PageId`。
 - DSPCore 启动后会绑定已注册配置项；启动后新增的配置项也会立即绑定。
 - DSPCore 运行时尚未绑定配置文件时，短入口会返回 descriptor 默认值，不会给作者返回空字符串。
-- DSPCore 统一设置窗口会按 `OptionPageDescriptor` 和带 `PageId` 的 `OptionDescriptor` 分组展示配置项，并带有 DSPCore 自己的设置页。
-- 玩家可以在 DSPCore 设置页的 `Key Bind Display` 里选择可重绑定按键显示在模组设置页、统一按键页，或两处都显示；多处显示时仍写同一个配置项。
+- 原版设置窗口内的 DSPCore 分页会按 `OptionPageDescriptor` 和带 `PageId` 的 `OptionDescriptor` 分组展示配置项，并带有 DSPCore 自己的设置页。
 - 联机或存档兼容检查可以读取 `OptionVersionDescriptor`。
 - 需要复制、保存或跨系统传递设置时，可以导出结构化快照或文本快照，再导回当前已注册配置项。
 
@@ -56,7 +55,7 @@ bool enabled = Options.Bool(
     });
 ```
 
-`OptionUi.PageId` 控制统一设置窗口里的分组；使用 `OptionPage` 或 `OptionSection` 时，页面 ID 由上下文覆盖。`OptionUi.DisplayName` 控制玩家看到的行标题；`OptionUi.Order` 控制同页内排序；`OptionUi.CanReset` 控制是否显示 Reset 按钮。没有这些需求时继续使用最短重载。
+`OptionUi.PageId` 控制原版设置窗口内的 DSPCore 分页里的分组；使用 `OptionPage` 或 `OptionSection` 时，页面 ID 由上下文覆盖。`OptionUi.DisplayName` 控制玩家看到的行标题；`OptionUi.Order` 控制同页内排序；`OptionUi.CanReset` 控制是否显示 Reset 按钮。没有这些需求时继续使用最短重载。
 
 ## 功能：配置导入和导出
 
@@ -67,21 +66,19 @@ OptionImportReport report = Options.ImportText(text);
 
 `ExportValues()` 会返回 `OptionValueSnapshot` 集合，适合给其他系统直接消费。`ExportText()` 会生成可复制、可保存的文本；`ImportText(...)` 只会写入当前已经注册并已绑定到 BepInEx config 的配置项。未知 key、格式错误行或当前无法写入的项会进入 `OptionImportReport.SkippedKeys`。
 
-## 功能：打开统一设置窗口
+## 功能：打开原版设置窗口内的 DSPCore 分页
 
 ```csharp
 Options.OpenWindow();
-Options.OpenGlobalSavesWindow();
 ```
 
-统一设置窗口会展示所有已注册配置项：`Bool` 使用复选框，`Enum` 使用下拉框，`IntRange` / `FloatRange` 使用滑条，`String`、`Int` 和 `Float` 使用输入框，按键绑定使用输入框加 Capture 按钮。输入结束、按键捕获或点击 Reset 后会写回 DSPCore 的 BepInEx 配置文件。按键绑定会在同一 `ConflictGroup` 内提示同键冲突，并按玩家选择的 `Key Bind Display` 策略决定显示在哪些页。窗口必须在 `UIRoot` 初始化后打开；玩家可以从原版设置窗口底部的“模组设置”按钮或原版按键页末尾的“DSPCore 按键设置”按钮打开，作者代码也可以从自己的按钮、快捷键或 UI 回调调用 `Options.OpenWindow()`。`OpenGlobalSavesWindow()` 会打开跨存档全局数据的只读 metadata 页面；它不提供编辑或二进制内容查看。
+原版设置窗口内的 DSPCore 分页会展示所有已注册配置项：`Bool` 使用复选框，`Enum` 使用下拉框，`IntRange` / `FloatRange` 使用滑条，`String`、`Int` 和 `Float` 使用输入框。窗口必须在 `UIRoot` 初始化后打开；作者代码可以从自己的按钮、快捷键或 UI 回调调用 `Options.OpenWindow()`。`Options.OpenGlobalSavesWindow()` 只保留源码兼容，不再创建玩家窗口。
 
 ## 边界
 
 - 当前写入 BepInEx 的底层值仍是字符串；布尔、整数、浮点和枚举有读取辅助。
-- 原版设置窗口和原版按键页只提供入口按钮；配置行、按键捕获、Reset 和冲突提示仍由 DSPCore 自有统一设置窗口承载。
-- `Key Bind Display` 只影响 DSPCore 自有统一设置窗口，不代表已经把按键行注入原版 `BuiltinKey` / `overrideKeys` 数据模型。
-- `Int` / `Float` / 按键绑定输入非法时会回滚为当前配置值；range 滑条会按最小值、最大值和步进值写回。
+- 配置行直接挂在原版设置窗口的 DSPCore 分页；按键行直接注入原版按键页，由原版 UIKeyEntry 和 overrideKeys 处理。
+- `Int` / `Float` 输入非法时会回滚为当前配置值；range 滑条会按最小值、最大值和步进值写回。
 - `Options.Page(...)` 会注册页面并返回上下文；`Options.RegisterPage(...)` 仍保留给只想登记页面 descriptor 的旧调用。
 - `OptionUi.Order` 只影响窗口里的同页排序，不改变配置加载顺序。
 - Reset 按钮只写回 descriptor 默认值，不执行迁移、重启或自定义副作用。

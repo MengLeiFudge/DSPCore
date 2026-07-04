@@ -35,8 +35,8 @@ public sealed record OptionDescriptor(
     public int Order { get; init; }
 
     /// <summary>
-    /// 是否在统一设置窗口显示重置按钮。
-    /// Whether the unified settings window shows a reset button.
+    /// 是否在原版设置窗口 DSPCore 分页显示重置按钮。
+    /// Whether the DSPCore page inside the vanilla option window shows a reset button.
     /// </summary>
     public bool CanReset { get; init; }
 

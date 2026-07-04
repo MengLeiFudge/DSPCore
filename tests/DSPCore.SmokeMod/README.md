@@ -34,14 +34,14 @@ tests/install-smoke-mod.sh /mnt/c/Users/MLJ/AppData/Roaming/r2modmanPlus-local/D
 ## 游戏内检查项
 
 1. 启动游戏后日志应出现 `DSPCore smoke declarations registered.`。
-2. 原版设置窗口底部应有“模组设置”，打开后能看到 `DSPCore Smoke 验证` 页面。
-3. Smoke 页面应显示 bool、enum、int range、内容投射开关和七个可重绑定按键。
-4. 按 `Ctrl+F6` 应打开 DSPCore 全局数据只读页，并让该页显示 `com.menglei.dsp.core.smoke`。
-5. 按 `Ctrl+F7` 应打开 DSPCore 建造栏绑定编辑器。
-6. 按 `Ctrl+F8` 应打开 DSPCore 设置窗口。
+2. 原版设置窗口应出现 DSPCore 分页，并能看到 `DSPCore Smoke 验证` 页面。
+3. Smoke 页面应显示 bool、enum、int range 和内容投射开关；七个可重绑定按键应出现在原版按键页。
+4. 按 `Ctrl+F6` 应刷新 GlobalSaves 并写入日志，不打开玩家窗口。
+5. 按 `Ctrl+F7` 应记录建造栏绑定改为使用原版建造栏热键交互，不打开编辑器窗口。
+6. 按 `Ctrl+F8` 应打开原版设置窗口并切到 DSPCore 分页。
 7. 按 `Ctrl+F9` 应写入一条 `SmokeManualReport`，再触发 fatal/error copy 时诊断文本应包含该报告。
 8. 建造栏 category 3 的第 1 行第 11 格应尝试绑定铁块；第 2 行第 11 格应尝试绑定铜块。若被其他模组占位，日志/绑定结果用于确认冲突策略。
-9. 从 DSPCore 建造栏绑定编辑器选择一个槽位后应能打开物品 picker、写入覆盖、清空、恢复默认。
+9. 按住建造栏重绑键点击槽位应打开物品 picker 并写入覆盖；按住清空键悬停槽位应显式清空。
 10. 专用内容投射 smoke profile 中，把 `DSPCore.Smoke.EnableContentProjection` 配置为 `true` 后启动/读档，日志应出现 `DSPCore smoke content state: iconApplied=True`，证明 PNG 图标加载并绑定到原版铁块；同一行还应有 `recipeMapped=True` 和 `recipeTypeValue=20`，证明 smoke 自注册配方被标记到 DSPCore 自定义配方类型。该开关默认关闭，避免普通测试 profile 中的导出器或其他工具把 smoke 自定义配方当成真实业务内容处理。
 
 ## Nebula 双端检查项
@@ -80,7 +80,7 @@ tests/start-dsp-profile.sh /mnt/c/Users/MLJ/AppData/Roaming/r2modmanPlus-local/D
 ```
 
 1. 启动后日志应出现 `DSPCore Nebula adapter is initialized.`，并且 smoke 设置页仍能打开。
-2. 客户端按 `Ctrl+F10`，另一端日志应出现 `DSPCore smoke received packet`；GlobalSaves 只读页的 `com.menglei.dsp.core.smoke` 字节数应变化。
+2. 客户端按 `Ctrl+F10`，另一端日志应出现 `DSPCore smoke received packet`；`Ctrl+F6` 应只刷新 GlobalSaves 并写入日志，不打开玩家窗口。
 3. 客户端按 `Ctrl+F11`，主机日志应出现 `DSPCore smoke host handled relay`。
 4. 客户端进入一个星球后按 `Ctrl+F12`，主机日志应出现 `DSPCore smoke exported planet data`，客户端日志应出现 `DSPCore smoke imported planet data`。
 5. 没装 DSPCore_NebulaAdapter 或当前不在联机房间时，这三个按键应只记录 `accepted=False`，不会抛异常。

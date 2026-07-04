@@ -54,7 +54,8 @@ public sealed class DSPCorePlugin : BaseUnityPlugin
         harmony.PatchAll(typeof(PickerRuntimePatches));
         harmony.PatchAll(typeof(RecipeTypeRuntimePatches));
         harmony.PatchAll(typeof(UiWindowRuntimePatches));
-        harmony.PatchAll(typeof(OptionWindowEntryRuntimePatches));
+        harmony.PatchAll(typeof(OptionPageRuntimePatches));
+        harmony.PatchAll(typeof(KeyBindRuntimePatches));
         harmony.PatchAll(typeof(EntityLifecycleRuntimePatches));
         harmony.PatchAll(typeof(PlanetLifecycleRuntimePatches));
         harmony.PatchAll(typeof(BuildingParameterRuntimePatches));

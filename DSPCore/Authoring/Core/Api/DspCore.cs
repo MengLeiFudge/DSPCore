@@ -210,7 +210,6 @@ public static class DspCore
         Logger = logger;
         RegisterBuiltInFeatures();
         OptionText.RegisterBuiltInLocalizations();
-        BuildBarText.RegisterBuiltInLocalizations();
         RegisterBuiltInOptions();
         IsInitialized = true;
         Features.InitializeAll();
@@ -249,16 +248,6 @@ public static class DspCore
     private static void RegisterBuiltInOptions()
     {
         global::DSPCore.Options.RegisterPage("dspcore.settings", PluginGuidFallback, "DSPCore", -1000);
-        global::DSPCore.Options.Enum(
-            global::DSPCore.KeyBinds.PlacementSection,
-            global::DSPCore.KeyBinds.PlacementKey,
-            KeyBindPlacement.Both,
-            "Where rebindable mod key bindings are shown in the DSPCore settings window.",
-            new OptionUi("dspcore.settings", "Key Bind Display")
-            {
-                Order = 100,
-                CanReset = true
-            });
     }
 
     private const string PluginGuidFallback = "com.menglei.dsp.core";

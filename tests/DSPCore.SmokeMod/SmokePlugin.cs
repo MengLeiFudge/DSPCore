@@ -372,20 +372,16 @@ public sealed class SmokePlugin : BaseUnityPlugin
     {
         GlobalState.OpenGlobalSavesCount++;
         GlobalState.LastOpenUtc = DateTime.UtcNow.ToString("O");
-        Options.OpenGlobalSavesWindow();
         Saves.SaveGlobal();
-        Logger.LogInfo("DSPCore smoke opened global saves from key bind. Count=" + GlobalState.OpenGlobalSavesCount);
-        LogWindowState("global saves", "dspcore-global-saves-window");
+        Logger.LogInfo("DSPCore smoke flushed global saves from key bind. Count=" + GlobalState.OpenGlobalSavesCount);
     }
 
     private void OpenBuildBarEditor()
     {
         GlobalState.OpenBuildBarEditorCount++;
         GlobalState.LastOpenUtc = DateTime.UtcNow.ToString("O");
-        BuildBar.OpenEditor();
         Saves.SaveGlobal();
-        Logger.LogInfo("DSPCore smoke opened build bar editor from key bind. Count=" + GlobalState.OpenBuildBarEditorCount);
-        LogWindowState("build bar editor", "dspcore-buildbar-override-window");
+        Logger.LogInfo("DSPCore smoke build bar binding uses vanilla build bar hotkeys. Count=" + GlobalState.OpenBuildBarEditorCount);
     }
 
     private void OpenSmokeSettings()
@@ -396,7 +392,7 @@ public sealed class SmokePlugin : BaseUnityPlugin
         Options.OpenWindow();
         Saves.SaveGlobal();
         Logger.LogInfo("DSPCore smoke opened settings from key bind. Count=" + GlobalState.OpenWindowCount);
-        LogWindowState("settings", "dspcore-options-window");
+        LogWindowState("settings", "dspcore-option-page");
     }
 
     private void LogWindowState(string label, string objectName)

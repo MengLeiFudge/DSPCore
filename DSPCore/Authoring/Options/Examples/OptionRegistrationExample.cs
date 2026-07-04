@@ -4,7 +4,7 @@ internal static class OptionRegistrationExample
 {
     public static void Register()
     {
-        // Page registers a DSPCore settings page and returns a context. The page id must stay
+        // Page registers a DSPCore page inside the vanilla option window and returns a context. The page id must stay
         // stable because each option stores it as its grouping key.
         OptionSection settings = Options.Page(
             pageId: "com.example.settings",
@@ -75,9 +75,8 @@ internal static class OptionRegistrationExample
 
     public static void OpenFromButtonOrKey()
     {
-        // DSPCore also adds a Mod Settings button to the vanilla option window.
-        // Call OpenWindow yourself only from a button, key bind, or custom UI callback after UIRoot exists.
-        // Calling it during early plugin startup logs a warning and does not create a window.
+        // Call OpenWindow only from a button, key bind, or custom UI callback after UIRoot exists.
+        // Calling it during early plugin startup logs a warning and does not open the vanilla option window.
         Options.OpenWindow();
     }
 

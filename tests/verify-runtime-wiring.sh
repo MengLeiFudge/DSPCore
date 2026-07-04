@@ -42,52 +42,60 @@ require "LocalizationRuntime.Initialize();" "$plugin" "DSPCorePlugin must load l
 require "harmony.PatchAll(typeof(ProtoRegistrationRuntimePatches));" "$plugin" "Proto registration patches must be wired."
 require "harmony.PatchAll(typeof(BuildBarRuntimePatches));" "$plugin" "Build bar runtime patches must be wired."
 require "harmony.PatchAll(typeof(PickerRuntimePatches));" "$plugin" "Picker runtime patches must be wired."
-require "harmony.PatchAll(typeof(OptionWindowEntryRuntimePatches));" "$plugin" "Options entry patches must be wired."
+require "harmony.PatchAll(typeof(OptionPageRuntimePatches));" "$plugin" "Options page patches must be wired."
+require "harmony.PatchAll(typeof(KeyBindRuntimePatches));" "$plugin" "Key bind runtime patches must be wired."
 require "harmony.PatchAll(typeof(EntityLifecycleRuntimePatches));" "$plugin" "Entity lifecycle patches must be wired."
 require "harmony.PatchAll(typeof(PlanetLifecycleRuntimePatches));" "$plugin" "Planet lifecycle patches must be wired."
 require "harmony.PatchAll(typeof(BuildingParameterRuntimePatches));" "$plugin" "Blueprint parameter patches must be wired."
 require "harmony.PatchAll(typeof(GalaxyLifecycleRuntimePatches));" "$plugin" "Galaxy lifecycle patches must be wired."
 require "PatchRuntime.ApplyRegisteredPatches(harmony);" "$plugin" "Author patch platform must be applied after Harmony is ready."
 
-options_entry="DSPCore/Systems/Options/OptionWindowEntryRuntime.cs"
-require "private const string ButtonName = \"dspcore-options-entry-button\";" "$options_entry" "Vanilla option window entry button name must stay stable."
-require "private const string KeyButtonName = \"dspcore-key-options-entry-button\";" "$options_entry" "Vanilla key-binding page entry button name must stay stable."
-require "OptionRuntime.OpenWindow();" "$options_entry" "Option entry button must open the DSPCore options window."
-require "[HarmonyPatch(typeof(UIOptionWindow), \"_OnCreate\")]" "$options_entry" "DSPCore options entry must be created with the vanilla option window."
-require "[HarmonyPatch(typeof(UIOptionWindow), \"_OnOpen\")]" "$options_entry" "DSPCore options entry must be restored when the vanilla option window opens."
-require "SetButtonText(button, OptionText.EntryButton);" "$options_entry" "Main options entry must use localized text."
-require "SetButtonText(button, OptionText.KeyEntryButton);" "$options_entry" "Key page entry must use localized text."
+options_page="DSPCore/Systems/Options/OptionPageRuntime.cs"
+require "private const string TabObjectName = \"dspcore-option-tab\";" "$options_page" "DSPCore options must add a tab inside the vanilla option window."
+require "private const string PageObjectName = \"dspcore-option-page\";" "$options_page" "DSPCore options must render inside the vanilla option window."
+require "[HarmonyPatch(typeof(UIOptionWindow), \"_OnCreate\")]" "$options_page" "DSPCore option page must be prepared with the vanilla option window."
+require "[HarmonyPatch(typeof(UIOptionWindow), \"_OnOpen\")]" "$options_page" "DSPCore option page must be restored when the vanilla option window opens."
+require "[HarmonyPatch(typeof(UIOptionWindow), \"OnTabButtonClick\")]" "$options_page" "Vanilla tab clicks must hide the DSPCore option page."
+require "OptionPageRuntime.SaveOptions();" "$options_page" "DSPCore option page must apply pending values with the vanilla apply button."
+require "OptionPageRuntime.DiscardOptions();" "$options_page" "DSPCore option page must discard pending values with the vanilla cancel button."
+require "option.Kind != OptionValueKind.KeyBinding" "$options_page" "Key binds must be excluded from DSPCore option controls and handled by the vanilla key page."
+require "UiComboBox.CreateComboBox" "$options_page" "Option page must render enum controls."
+require "UiSlider.CreateSlider" "$options_page" "Option page must render range controls."
+require "UiCheckBox.CreateCheckBox" "$options_page" "Option page must render bool controls."
 
-options_window="DSPCore/Systems/Options/OptionsWindow.cs"
-require "GridDsl.Header(OptionText.Title, OptionText.Summary" "$options_window" "Options window must render its localized header."
-require "GridDsl.ButtonNode(OptionText.GlobalSavesButton, OptionRuntime.OpenGlobalSavesWindow" "$options_window" "Options window must expose the read-only global saves viewer."
-require "GridDsl.ButtonNode(BuildBarText.OpenEditor, BuildBarRuntime.OpenOverrideWindow" "$options_window" "Options window must expose the BuildBar editor entry."
-require "GridDsl.ButtonNode(OptionText.Close, Close" "$options_window" "Options window must expose a close button."
-require "AddResetButton(window, root, option" "$options_window" "Options window must render reset controls for resettable options."
-require "StartKeyCapture(option, input, descriptionText)" "$options_window" "Options window must expose key capture controls."
-require "KeyBindRuntime.TryCaptureCurrentKey(out var keyText)" "$options_window" "Key capture must read real key input through KeyBindRuntime."
-require "KeyBinds.BuildOptionDescription(option)" "$options_window" "Key binding rows must show conflict-aware descriptions."
+keybind="DSPCore/Systems/KeyBindProjection/KeyBindRuntime.cs"
+require "DSPGame.key.builtinKeys = keys.ToArray();" "$keybind" "Key binds must inject custom BuiltinKey entries for the vanilla key page."
+require "private const int VanillaKeyLimit = 256;" "$keybind" "Key bind runtime must keep the vanilla key id boundary explicit."
+require "private const int OverrideKeyCapacity = 512;" "$keybind" "Key bind runtime must extend override key storage."
+require "SaveCustomKeys();" "$keybind" "Custom key overrides must be saved outside vanilla options.xml."
+require "EnsureOptionWindowKeyEntries(UIOptionWindow window)" "$keybind" "Late key registrations must add missing vanilla key-page entries."
+require "window.CreateKeyEntry(i, builtinKeys[i])" "$keybind" "Missing vanilla key-page entries must reuse the vanilla UIKeyEntry factory."
+require "[HarmonyPatch(typeof(GameOption), nameof(GameOption.InitKeys))]" "$keybind" "Key bind runtime must extend GameOption key initialization."
+require "[HarmonyPatch(typeof(GameOption), nameof(GameOption.ExportXML))]" "$keybind" "Key bind runtime must avoid exporting custom key ids into vanilla XML."
 
-global_saves_window="DSPCore/Systems/Options/GlobalSavesWindow.cs"
-require "GlobalSaveRuntime.CreateOverview();" "$global_saves_window" "Global save viewer must read the runtime snapshot."
-require "GridDsl.Header(OptionText.GlobalSavesTitle, OptionText.GlobalSavesSummary" "$global_saves_window" "Global save viewer must render a localized header."
-require "OptionText.GlobalSavesFooter" "$global_saves_window" "Global save viewer must state that data is read-only."
-require "GlobalSaveBlockSnapshot" "$global_saves_window" "Global save viewer must render block snapshots rather than raw save bytes."
-require "GetStatusText(GlobalSaveBlockSnapshot block)" "$global_saves_window" "Global save viewer must distinguish registered, initialized, and file-only blocks."
+if [[ -e "$repo_root/DSPCore/Systems/Options/OptionsWindow.cs" ]]; then
+    echo "DSPCore must not keep the old self-owned OptionsWindow." >&2
+    exit 1
+fi
+
+if [[ -e "$repo_root/DSPCore/Systems/Options/GlobalSavesWindow.cs" ]]; then
+    echo "GlobalSaves must not expose a player-facing window." >&2
+    exit 1
+fi
 
 global_save="DSPCore/Systems/SaveBridge/GlobalSaveRuntime.cs"
-require "public static GlobalSaveOverview CreateOverview()" "$global_save" "GlobalSaveRuntime must expose a read-only overview for the UI."
+require "public static GlobalSaveOverview CreateOverview()" "$global_save" "GlobalSaveRuntime must expose a read-only overview for author APIs and diagnostics."
 require "GlobalSaveBlockSnapshot" "$global_save" "GlobalSaveRuntime overview must use block metadata snapshots."
 require "Blocks.Clear();" "$global_save" "GlobalSaveRuntime must keep in-memory block metadata synchronized after save/load."
 
 buildbar="DSPCore/Systems/QuickBarProjection/BuildBarRuntime.cs"
 require "DspCore.Saves.Register(\"DSPCore.BuildBar\", new BuildBarSaveHandler(), CoreLoadOrder.Postload);" "$buildbar" "BuildBar player overrides must be saved through DSPCore saves."
-require "BuildBarOverrideWindow? overrideWindow" "$buildbar" "BuildBar runtime must retain the player override editor window."
-require "public static void OpenOverrideWindow()" "$buildbar" "BuildBar runtime must expose an editor open entry."
-require "Pickers.Open(new PickerRequest(" "$buildbar" "BuildBar editor must select items through the picker surface."
-require "SetPlayerOverrideAndRefresh(slot, item.ID)" "$buildbar" "BuildBar editor selection must write player overrides."
-require "SetPlayerOverrideAndRefresh(slot, 0)" "$buildbar" "BuildBar editor must support explicit empty slots."
-require "DspCore.BuildBar.ClearPlayerOverride(slot)" "$buildbar" "BuildBar editor must support returning to author defaults."
+require "ReassignBuildBar" "$buildbar" "BuildBar player rebinding must use the vanilla build bar interaction key."
+require "ClearBuildBar" "$buildbar" "BuildBar player clearing must use the vanilla build bar interaction key."
+require "Pickers.Open(new PickerRequest(" "$buildbar" "BuildBar hotkey rebinding must select items through the picker surface."
+require "SetPlayerOverrideAndRefresh(slot, item.ID)" "$buildbar" "BuildBar hotkey selection must write player overrides."
+require "SetPlayerOverrideAndRefresh(slot, 0)" "$buildbar" "BuildBar hotkey interaction must support explicit empty slots."
+require "DspCore.BuildBar.ClearPlayerOverride(slot)" "$buildbar" "BuildBar runtime must support returning to author defaults."
 require "DspCore.BuildBar.GetPlayerOverrides()" "$buildbar" "BuildBar runtime must apply player overrides."
 require "DspCore.BuildBar.GetEffectiveBindings()" "$buildbar" "BuildBar runtime must use author defaults overlaid with player overrides."
 require "EnsureExtendedRows(__instance);" "$buildbar" "BuildBar row > 1 UI buttons must be created when the build menu opens."
@@ -96,15 +104,10 @@ require "[HarmonyPatch(typeof(UIBuildMenu), nameof(UIBuildMenu.StaticLoad))]" "$
 require "[HarmonyPatch(typeof(UIBuildMenu), \"_OnOpen\")]" "$buildbar" "BuildBar must patch menu open."
 require "[HarmonyPatch(typeof(UIBuildMenu), \"_OnUpdate\")]" "$buildbar" "BuildBar must patch menu update."
 require "ImportRebindBuildBarConfig();" "$buildbar" "BuildBar must keep the one-time RebindBuildBar import path."
-
-buildbar_editor="DSPCore/Systems/QuickBarProjection/BuildBarOverrideWindow.cs"
-require "GridDsl.Header(BuildBarText.Title, BuildBarText.Summary" "$buildbar_editor" "BuildBar editor must render a localized header."
-require "BuildBarRuntime.OpenSlotEditor(selectedSlot)" "$buildbar_editor" "BuildBar editor must expose item selection for the selected slot."
-require "BuildBarRuntime.ClearSlot(selectedSlot)" "$buildbar_editor" "BuildBar editor must expose explicit empty overrides."
-require "BuildBarRuntime.UseDefault(selectedSlot)" "$buildbar_editor" "BuildBar editor must expose default restoration."
-require "DspCore.BuildBar.GetPlayerOverrides()" "$buildbar_editor" "BuildBar editor must show player override state."
-require "DspCore.BuildBar.GetAll()" "$buildbar_editor" "BuildBar editor must show author default bindings."
-require "GetEditableRowCount()" "$buildbar_editor" "BuildBar editor must expose every row used by author defaults or player overrides."
+if [[ -e "$repo_root/DSPCore/Systems/QuickBarProjection/BuildBarOverrideWindow.cs" ]]; then
+    echo "BuildBar must not keep the old self-owned override editor window." >&2
+    exit 1
+fi
 
 picker="DSPCore/Systems/PickerSurfaces/PickerRuntime.cs"
 for surface in UIItemPicker UIRecipePicker UISignalPicker UISignalTagPicker; do

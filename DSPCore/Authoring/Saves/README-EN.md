@@ -9,7 +9,7 @@ The Saves block lets a mod store its own state in DSPCore `.dspcore` sidecar sav
 - `IntoOtherSave()` is called for new games or saves that do not contain your mod data, reducing the risk of state leaking from one save into another.
 - Covered legacy DSPModSave handlers bridge into the same SaveRegistry for migration.
 - `Saves.Auto<TState>(...)` can create and save simple state objects marked with `[CoreSaveField]`; pass an existing instance when defaults or dependencies must be prepared first.
-- `Saves.GlobalAuto<TState>(...)` / `GlobalRegister(...)` store cross-save data, suitable for achievement statistics, global unlock records, or player-profile-level state. It is not Config; DSPCore exposes only a read-only metadata page, not editable UI.
+- `Saves.GlobalAuto<TState>(...)` / `GlobalRegister(...)` store cross-save data, suitable for achievement statistics, global unlock records, or player-profile-level state. It is not Config, and DSPCore does not provide a player-facing window or editor for it.
 - Tagged block helpers let evolving fields be read and written by tag; unknown fields are skipped, lowering version-upgrade cost.
 
 ## Capability: Save Simple State With An Automatic Schema
@@ -59,7 +59,7 @@ Saves.GlobalRegister(
     initialize: () => totalRuns = 0);
 ```
 
-Global data is imported when DSPCore starts. If a mod registers a global handler later, DSPCore immediately imports existing data for that handler or calls its initializer. DSPCore saves global data once during plugin shutdown; call `Saves.SaveGlobal()` when data must be flushed immediately. Players can open the read-only Global Data page from the DSPCore unified settings window to inspect registered handlers, persisted file-only blocks, and byte counts, but cannot edit content through the UI.
+Global data is imported when DSPCore starts. If a mod registers a global handler later, DSPCore immediately imports existing data for that handler or calls its initializer. DSPCore saves global data once during plugin shutdown; call `Saves.SaveGlobal()` when data must be flushed immediately. GlobalSaves does not provide a player-facing window; inspection and troubleshooting should go through mod logs, DSPCore logs, or author APIs.
 
 ## Capability: Register A Save Handler
 
@@ -86,7 +86,7 @@ If the same `modGuid` registers more than once, the later registration replaces 
 ## What DSPCore Does After The Call
 
 - After a successful save, DSPCore writes a matching `.dspcore` file and stores each handler's data range by registered `modGuid`.
-- Global saves use `DSPCore/GlobalSaves.dspcore` and store one data block per registered global handler `modGuid`; the unified settings window shows only block metadata and does not display raw binary content.
+- Global saves use `DSPCore/GlobalSaves.dspcore` and store one data block per registered global handler `modGuid`; DSPCore does not show those blocks in a player-facing window.
 - Before loading a save, DSPCore opens the `.dspcore` file and reads its header, then calls `Import` by `CoreLoadOrder`.
 - If the current save has no data for a registered mod, DSPCore calls that handler's `IntoOtherSave()`.
 - New games call `IntoOtherSave()` for every handler.

@@ -9,7 +9,7 @@ The BuildBar block lets a mod place an existing item on a quick build bar slot. 
 - Legacy BuildBarTool / LDBTool style `SetBuildBar` calls bridge to the same binding model, reducing the risk of multiple build bar patches overwriting each other.
 - Extended row buttons reuse vanilla click behavior, icons, item counts, and unlock checks instead of forcing each mod to rebuild that UI behavior.
 - DSPCore-owned player overrides can replace author defaults and are saved in the `.dspcore` sidecar.
-- Players can open the Build Bar editor from the DSPCore unified settings window, select a slot, bind an item through the vanilla item picker, explicitly empty the slot, or return it to the author default.
+- Players can hold the build-bar reassign key and click a slot to bind an item through the vanilla item picker, or hold the clear key over a slot to explicitly empty it.
 
 ## Capability: Bind Existing Items To Build Bar Slots
 
@@ -51,18 +51,17 @@ itemProto.SetBuildBarWithResult(
 
 ## Capability: Player Slot Overrides
 
-DSPCore includes a basic player editor. Players open Mod Settings from the vanilla option window, then open Build Bar, select a `category` / `row` / `index` slot, use Select Item to open the vanilla item picker, Empty to explicitly clear the slot, or Default to remove the override and return to the author default.
+DSPCore reuses the build bar itself as the player rebinding entry. Holding the `DSPCore Build Bar Reassign` key and clicking a slot opens the vanilla item picker. Holding the `DSPCore Build Bar Clear` key over a slot explicitly clears that slot. Both keys are injected into the vanilla key-binding page.
 
 If your own UI also lets players rebind build bar slots, write to the same player override layer:
 
 ```csharp
 BuildBar.SetPlayerOverride(category: 3, row: 2, index: 5, itemId: 9555);
 BuildBar.ClearPlayerOverride(new BuildBarSlot(3, 2, 5));
-BuildBar.OpenEditor();
 ```
 
 Overrides take precedence over author defaults and are saved through DSPCore's `.dspcore` sidecar. Passing `itemId = 0` explicitly empties the slot; call `ClearPlayerOverride(...)` to remove the override and return to the author default.
-`OpenEditor()` opens the DSPCore build bar binding editor after `UIRoot` is initialized, so a mod button or key bind can reuse the same player editing surface.
+`BuildBar.OpenEditor()` remains only as an obsolete source-compatibility entry and no longer opens a separate window.
 
 ## What DSPCore Does After The Call
 
@@ -73,7 +72,7 @@ Overrides take precedence over author defaults and are saved through DSPCore's `
 - When the build menu opens and refreshes, `row > 1` bindings create or refresh DSPCore extended buttons.
 - When an extended button is clicked, DSPCore temporarily injects the item into the current category's vanilla slot and invokes the vanilla build bar click logic.
 - Runtime reads effective bindings after applying player overrides on top of author defaults; player overrides are imported and exported with DSPCore saves.
-- The DSPCore unified settings window exposes a Build Bar entry; after a player edits a slot, DSPCore immediately refreshes the current build bar projection.
+- After a player changes a slot through build-bar hotkeys, DSPCore immediately refreshes the current build bar projection.
 - If the current save has no DSPCore BuildBar data yet, DSPCore reads RebindBuildBar's `RebindBuildBar/CustomBarBind.cfg` and imports `[BuildBarBinds]` entries as vanilla row-1 player overrides.
 
 ## Capability: Legacy BuildBarTool / LDBTool Compatibility
@@ -90,7 +89,7 @@ These entries map to `category`, `row`, and `index`. New code should use `ItemPr
 
 - It does not create `ItemProto`, recipes, icons, or localization entries; those belong to ProtoRegistration, Icons, and Resources.
 - It does not decide whether an item is unlocked; extended buttons use vanilla history unlock state and sandbox instant-item state for interactivity.
-- It does not take over RebindBuildBar's rebinding UI, hotkeys, or later config writes; DSPCore only imports existing `CustomBarBind.cfg` entries into its own player override layer. Later player edits are written by DSPCore's Build Bar editor to the `.dspcore` save.
+- It does not take over RebindBuildBar's rebinding UI, hotkeys, or later config writes; DSPCore only imports existing `CustomBarBind.cfg` entries into its own player override layer. Later DSPCore player edits are written by the build-bar hotkey interaction to the `.dspcore` save.
 - `row = 1` is limited by vanilla `UIBuildMenu.protos` dimensions; current runtime skips row-1 bindings outside vanilla tab/index bounds.
 
 ## Examples

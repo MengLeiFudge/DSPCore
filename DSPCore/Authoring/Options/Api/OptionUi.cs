@@ -1,8 +1,8 @@
 namespace DSPCore;
 
 /// <summary>
-/// 描述短配置入口在统一设置窗口中的展示元数据。
-/// Describes presentation metadata for short option entries in the unified settings window.
+/// 描述短配置入口在原版设置窗口 DSPCore 分页中的展示元数据。
+/// Describes presentation metadata for short option entries on the DSPCore page inside the vanilla option window.
 /// </summary>
 /// <param name="PageId">可选设置页面 ID。Optional settings page id.</param>
 /// <param name="DisplayName">可选显示名称。Optional display name.</param>
@@ -21,8 +21,8 @@ public sealed record OptionUi(string? PageId = null, string? DisplayName = null)
     public int Order { get; init; }
 
     /// <summary>
-    /// 是否在统一设置窗口显示重置按钮。
-    /// Whether the unified settings window shows a reset button.
+    /// 是否在原版设置窗口 DSPCore 分页显示重置按钮。
+    /// Whether the DSPCore page inside the vanilla option window shows a reset button.
     /// </summary>
     public bool CanReset { get; init; }
 }
